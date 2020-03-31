@@ -102,7 +102,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DockerComposeUp();
-            Thread.Sleep(30_000);
+            Thread.Sleep(60_000);
             
             try
             {
