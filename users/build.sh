@@ -1,45 +1,62 @@
 #!/usr/bin/env bash
 
-# Define directories.
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SCRIPT="./build/main.cake"
-TOOLS_DIR=$SCRIPT_DIR/tools
-CAKE_VERSION=0.35.0
-CAKE_ARGUMENTS=()
+echo $(bash --version 2>&1 | head -n 1)
 
-# Parse arguments.
-for i in "$@"; do
-    case $1 in
-        -s|--script) SCRIPT="$2"; shift ;;
-        --cake-version) CAKE_VERSION="--version=$2"; shift ;;
-        --) shift; CAKE_ARGUMENTS+=("$@"); break ;;
-        *) CAKE_ARGUMENTS+=("$1") ;;
-    esac
-    shift
-done
+set -eo pipefail
+SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
-# Make sure the tools folder exist.
-if [ ! -d "$TOOLS_DIR" ]; then
-  mkdir "$TOOLS_DIR"
-fi
+###########################################################################
+# CONFIGURATION
+###########################################################################
 
-#Install lib
-CAKE_PATH="$TOOLS_DIR/dotnet-cake"
-CAKE_INSTALLED_VERSION=$($CAKE_PATH --version 2>&1)
+BUILD_PROJECT_FILE="$SCRIPT_DIR/build/build.csproj"
+TEMP_DIRECTORY="$SCRIPT_DIR/../.tmp"
 
-if [ "$CAKE_VERSION" != "$CAKE_INSTALLED_VERSION" ]; then
-    if [ -f "$CAKE_PATH" ]; then
-        dotnet tool uninstall Cake.Tool --tool-path "$TOOLS_DIR" 
-    fi
+DOTNET_GLOBAL_FILE="$SCRIPT_DIR/global.json"
+DOTNET_INSTALL_URL="https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh"
+DOTNET_CHANNEL="Current"
 
-    echo "Installing Cake $CAKE_VERSION..."
-    dotnet tool install Cake.Tool --tool-path "$TOOLS_DIR" --version $CAKE_VERSION
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
-    if [ $? -ne 0 ]; then
-        echo "An error occured while installing Cake."
-        exit 1
+###########################################################################
+# EXECUTION
+###########################################################################
+
+function FirstJsonValue {
+    perl -nle 'print $1 if m{"'$1'": "([^"]+)",?}' <<< ${@:2}
+}
+
+# If global.json exists, load expected version
+if [[ -f "$DOTNET_GLOBAL_FILE" ]]; then
+    DOTNET_VERSION=$(FirstJsonValue "version" $(cat "$DOTNET_GLOBAL_FILE"))
+    if [[ "$DOTNET_VERSION" == ""  ]]; then
+        unset DOTNET_VERSION
     fi
 fi
 
-# Start Cake
-exec "$CAKE_PATH" "$SCRIPT" "${CAKE_ARGUMENTS[@]}"
+# If dotnet is installed locally, and expected version is not set or installation matches the expected version
+if [[ -x "$(command -v dotnet)" && (-z ${DOTNET_VERSION+x} || $(dotnet --version 2>&1) == "$DOTNET_VERSION") ]]; then
+    export DOTNET_EXE="$(command -v dotnet)"
+else
+    DOTNET_DIRECTORY="$TEMP_DIRECTORY/dotnet-unix"
+    export DOTNET_EXE="$DOTNET_DIRECTORY/dotnet"
+
+    # Download install script
+    DOTNET_INSTALL_FILE="$TEMP_DIRECTORY/dotnet-install.sh"
+    mkdir -p "$TEMP_DIRECTORY"
+    curl -Lsfo "$DOTNET_INSTALL_FILE" "$DOTNET_INSTALL_URL"
+    chmod +x "$DOTNET_INSTALL_FILE"
+
+    # Install by channel or version
+    if [[ -z ${DOTNET_VERSION+x} ]]; then
+        "$DOTNET_INSTALL_FILE" --install-dir "$DOTNET_DIRECTORY" --channel "$DOTNET_CHANNEL" --no-path
+    else
+        "$DOTNET_INSTALL_FILE" --install-dir "$DOTNET_DIRECTORY" --version "$DOTNET_VERSION" --no-path
+    fi
+fi
+
+echo "Microsoft (R) .NET Core SDK version $("$DOTNET_EXE" --version)"
+
+"$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false -nologo -clp:NoSummary --verbosity quiet
+"$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- "$@"
