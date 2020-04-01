@@ -27,10 +27,10 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(AddressAdd operation, CancellationToken cancellation = default)
         { 
-            var scope = _logger.BeginScope("Get Address. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Get Address. [UserId: {userId}]", operation.UserId);
             try
             {
-                IUserAggregationRoot root = await _store.GetAsync(operation.UserId, cancellation);
+                var root = await _store.GetAsync(operation.UserId, cancellation);
 
                 if (root == null)
                 {
@@ -40,7 +40,7 @@ namespace Users.Application.Operations
                 
                 if (root.AddAddress(operation.Line, operation.Number, operation.PostCode) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}].", error.ErrorCode);
+                    _logger.LogInformation("Error [ErrorCode: {errorCode}].", error.ErrorCode);
                     return error;
                 }
 

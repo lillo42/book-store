@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Management.Endpoint.Health;
+using Users.Web.Middleware;
 using Users.Web.Modules;
 using Users.Web.Services;
 
@@ -66,7 +67,12 @@ namespace Users.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSerilogRequestLogging();
+            app.UseCorrelationId();
+            app.UseSerilogRequestLogging(opt =>
+            {
+                opt.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+            });
+            
             app.UseRouting();
 
             app.UseMiniProfiler();

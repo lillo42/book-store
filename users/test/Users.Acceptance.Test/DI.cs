@@ -22,7 +22,7 @@ namespace Users.Acceptance.Test
                 .AddSingleton(configure);
             
             var channel = new Channel(configure.GetValue<string>("Host"), ChannelCredentials.Insecure);
-            collection.AddSingleton(new Web.Proto.Users.UsersClient(channel));
+            collection.AddScoped(p => new Web.Proto.Users.UsersClient(channel));
 
             Provider = collection.BuildServiceProvider();
         }

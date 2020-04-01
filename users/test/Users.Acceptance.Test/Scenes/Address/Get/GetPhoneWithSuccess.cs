@@ -39,7 +39,7 @@ namespace Users.Acceptance.Test.Scenes.Address.Get
         [AndGiven(StepTitle =  "With Address")]
         private async Task WithAddress()
         {
-            for (int i = 0; i < _address.Length; i++)
+            for (var i = 0; i < _address.Length; i++)
             {
                 var request = Fixture.Build<AddAddressRequest>()
                     .With(x => x.UserId, _userId)
@@ -82,7 +82,7 @@ namespace Users.Acceptance.Test.Scenes.Address.Get
         public void Execute(int length)
         {
             _address = new Web.Proto.Address[length];
-            for (int i = 0; i < _address.Length; i++)
+            for (var i = 0; i < _address.Length; i++)
             {
                 _address[i] = Fixture.Build<Web.Proto.Address>()
                     .With(x => x.PostCode, Fixture.Create<string>().Substring(0, 10))

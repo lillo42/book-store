@@ -42,7 +42,8 @@ namespace Users.Web
                 .UseSystemd()
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-                    .ReadFrom.Configuration(hostingContext.Configuration))
+                    .ReadFrom.Configuration(hostingContext.Configuration)
+                    .Enrich.FromLogContext())
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config

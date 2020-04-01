@@ -14,7 +14,7 @@ namespace Users.Migrations
             long? migration = null;
             var mode = "up";
 
-            for (int i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
                 var arg = args[i].ToLower();
                 switch (arg)

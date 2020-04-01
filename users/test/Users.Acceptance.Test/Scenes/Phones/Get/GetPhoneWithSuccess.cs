@@ -39,7 +39,7 @@ namespace Users.Acceptance.Test.Scenes.Phones.Get
         [AndGiven(StepTitle =  "With phone")]
         private async Task WithPhone()
         {
-            for (int i = 0; i < _numbers.Length; i++)
+            for (var i = 0; i < _numbers.Length; i++)
             {
                 var request = Fixture.Build<AddPhoneRequest>()
                     .With(x => x.UserId, _userId)
