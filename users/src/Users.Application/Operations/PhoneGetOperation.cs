@@ -27,7 +27,7 @@ namespace Users.Application.Operations
         
         public async ValueTask<Result> ExecuteAsync(PhoneGet operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Get phone. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Get phone. [UserId: {userId}]", operation.UserId);
             try
             {
                 var root = await _store.GetAsync(operation.UserId, cancellation);

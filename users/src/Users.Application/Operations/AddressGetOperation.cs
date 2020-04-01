@@ -27,7 +27,7 @@ namespace Users.Application.Operations
         
         public async ValueTask<Result> ExecuteAsync(AddressGet operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Get Address. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Get Address. [UserId: {userId}]", operation.UserId);
             try
             {
                 var root = await _store.GetAsync(operation.UserId, cancellation);

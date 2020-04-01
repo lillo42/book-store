@@ -30,18 +30,18 @@ namespace Users.Application.Operations
 
         public ValueTask<Result> ExecuteAsync(UserGetAll operation, CancellationToken cancellation = default)
         {
-            using (_logger.BeginScope("Get All user. [Take: {0}][Skip: {1}]",
+            using (_logger.BeginScope("Get All user. [Take: {take][Skip: {skip}]",
                 operation.Take, operation.Skip))
             {
                 if (operation.Take < 0)
                 {
-                    _logger.LogInformation("Invalid Take: {0}", operation.Take);
+                    _logger.LogInformation("Invalid Take: {take}", operation.Take);
                     return new ValueTask<Result>(DomainError.GetError.InvalidTake);
                 }
 
                 if (operation.Skip < 0)
                 {
-                    _logger.LogInformation("Invalid Skip: {0}", operation.Skip);
+                    _logger.LogInformation("Invalid Skip: {skip}", operation.Skip);
                     return new ValueTask<Result>(DomainError.GetError.InvalidSkip);
                 }
 

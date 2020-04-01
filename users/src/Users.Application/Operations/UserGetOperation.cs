@@ -27,7 +27,7 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(UserGet operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Get user. [UserId: {0}]", operation.Id);
+            var scope = _logger.BeginScope("Get user. [UserId: {userId}]", operation.Id);
             try
             {
                 var user = await _repository.GetByIdAsync(operation.Id, cancellation);

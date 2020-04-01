@@ -38,7 +38,7 @@ namespace Users.Application.Operations
                 if (root.Create(operation.Email, operation.FirstName,
                     operation.LastNames, operation.BirthDate) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}]", error.ErrorCode);
+                    _logger.LogInformation("Error [ErrorCode: {errorCode}]", error.ErrorCode);
                     return error;
                 }
 
@@ -49,7 +49,7 @@ namespace Users.Application.Operations
                 }
 
                 await _store.SaveAsync(root, cancellation);
-                _logger.LogInformation("User created: [UserId: {0}]", root.State.Id );
+                _logger.LogInformation("User created: [UserId: {userId}]", root.State.Id );
                 return Result.Ok(_mapper.Map((Domain.Common.User)root.State));
                 
             }

@@ -21,7 +21,7 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(AddressRemove operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Remove Address. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Remove Address. [UserId: {userId}]", operation.UserId);
             try
             {
                 var root = await _store.GetAsync(operation.UserId, cancellation);
@@ -33,7 +33,7 @@ namespace Users.Application.Operations
 
                 if (root.RemoveAddress(operation.Id) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}]", error.ErrorCode);
+                    _logger.LogInformation("Error [ErrorCode: {errorCode}]", error.ErrorCode);
                     return error;
                 }
 

@@ -26,7 +26,7 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(UserUpdate operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Updating user. [UserId: {0}]", operation.Id);
+            var scope = _logger.BeginScope("Updating user. [UserId: {userId}]", operation.Id);
             try
             {
                 var root = await _store.GetAsync(operation.Id, cancellation);
@@ -39,7 +39,7 @@ namespace Users.Application.Operations
 
                 if (root.Update(operation.FirstName, operation.LastNames, operation.BirthDate) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}]", error.ErrorCode);
+                    _logger.LogInformation("Error [ErrorCode: {errorCode}]", error.ErrorCode);
                     return error;
                 }
 

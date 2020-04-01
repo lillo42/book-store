@@ -27,7 +27,7 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(PhoneAdd operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Add Phone. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Add Phone. [UserId: {userId}]", operation.UserId);
             try
             {
                 var root = await _store.GetAsync(operation.UserId, cancellation);
@@ -40,7 +40,7 @@ namespace Users.Application.Operations
 
                 if (root.AddPhone(operation.Number) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}]", error.ErrorCode);
+                    _logger.LogInformation("Error. [ErrorCode: {errorCode}]", error.ErrorCode);
                     return error;
                 }
 

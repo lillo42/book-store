@@ -40,7 +40,7 @@ namespace Users.Application.Operations
                 
                 if (root.AddAddress(operation.Line, operation.Number, operation.PostCode) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {errorCode}].", error.ErrorCode);
+                    _logger.LogInformation("Error. [ErrorCode: {errorCode}].", error.ErrorCode);
                     return error;
                 }
 

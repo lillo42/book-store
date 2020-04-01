@@ -20,7 +20,7 @@ namespace Users.Application.Operations
 
         public async ValueTask<Result> ExecuteAsync(PhoneRemove operation, CancellationToken cancellation = default)
         {
-            var scope = _logger.BeginScope("Remove Phone. [UserId: {0}]", operation.UserId);
+            var scope = _logger.BeginScope("Remove Phone. [UserId: {userId}]", operation.UserId);
             try
             {
                 var root = await _store.GetAsync(operation.UserId, cancellation);
@@ -32,7 +32,7 @@ namespace Users.Application.Operations
 
                 if (root.RemovePhone(operation.Number) is ErrorResult error)
                 {
-                    _logger.LogInformation("Error [ErrorCode: {0}]", error.ErrorCode);
+                    _logger.LogInformation("Error. [ErrorCode: {errorCode}]", error.ErrorCode);
                     return error;
                 }
 
