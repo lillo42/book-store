@@ -35,12 +35,12 @@ namespace IdentityServer.Infrastructure.Entities
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            if (obj is Role role)
             {
-                return false;
+                return Equals(role);
             }
             
-            return Equals((Role) obj);
+            return false;
         }
 
         public override int GetHashCode() 
