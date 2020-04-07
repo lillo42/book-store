@@ -4,10 +4,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
 using IdentityModel;
 using IdentityServer.Infrastructure.Repositories;
-using IdentityServer.Web.Modules;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
@@ -51,15 +49,6 @@ namespace IdentityServer.Web.Validators
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, "invalid username or password");
             }
         }
-        
-        // ConfigureContainer is where you can register things directly
-        // with Autofac. This runs after ConfigureServices so the things
-        // here will override registrations made in ConfigureServices.
-        // Don't build the container; that gets done for you by the factory.
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            builder.RegisterModule<RepositoryModule>();
-        }
 
         private static string ComputeHash(string password)
         {
@@ -68,7 +57,7 @@ namespace IdentityServer.Web.Validators
                 return string.Empty;
             }
 
-            using var hashAlgorithm = SHA1.Create();
+            using var hashAlgorithm = SHA256.Create();
             var data = Encoding.UTF8.GetBytes(password);
             var hash = hashAlgorithm.ComputeHash(data);
             

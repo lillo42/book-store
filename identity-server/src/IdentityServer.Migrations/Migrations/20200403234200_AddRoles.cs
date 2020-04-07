@@ -10,8 +10,11 @@ namespace IdentityServer.Migrations.Migrations
             Create.Table("Roles")
                 .WithColumn("id").AsGuid().PrimaryKey("PK_Roles")
                 .WithColumn("name").AsString(20).NotNullable().Unique("IX_Roles_Name")
+                .WithColumn("display_name").AsString().NotNullable()
                 .WithColumn("description").AsString(250);
-            
+
+            #region Client
+
             Create.Table("ClientsRoles")
                 .WithColumn("client_id").AsGuid()
                 .WithColumn("role_id").AsGuid();
@@ -27,7 +30,11 @@ namespace IdentityServer.Migrations.Migrations
             Create.ForeignKey("FK_ClientsRoles_Clients")
                 .FromTable("ClientsRoles").ForeignColumn("client_id")
                 .ToTable("Clients").PrimaryColumn("id");
-            
+
+
+            #endregion
+
+            #region Users
             Create.Table("UsersRoles")
                 .WithColumn("user_id").AsGuid()
                 .WithColumn("role_id").AsGuid();
@@ -43,6 +50,8 @@ namespace IdentityServer.Migrations.Migrations
             Create.ForeignKey("FK_UsersRoles_Users")
                 .FromTable("UsersRoles").ForeignColumn("user_id")
                 .ToTable("Users").PrimaryColumn("id");
+
+            #endregion
         }
 
         public override void Down()
@@ -52,7 +61,7 @@ namespace IdentityServer.Migrations.Migrations
             Delete.Table("ClientsRoles");
 
             Delete.ForeignKey("FK_UsersRoles_Roles");
-            Delete.ForeignKey("FK_UsersRoles_Clients");
+            Delete.ForeignKey("FK_UsersRoles_Users");
             Delete.Table("UsersRoles");
             
             Delete.Table("Roles");

@@ -10,7 +10,7 @@ namespace IdentityServer.Migrations.Migrations
             Create.Table("Resource")
                 .WithColumn("id").AsGuid().PrimaryKey()
                 .WithColumn("name").AsString(20).NotNullable().Unique("IX_Resource_Name")
-                .WithColumn("display_name").AsString(50)
+                .WithColumn("display_name").AsString(50).NotNullable()
                 .WithColumn("description").AsString(250)
                 .WithColumn("enable").AsBoolean().NotNullable();
         }

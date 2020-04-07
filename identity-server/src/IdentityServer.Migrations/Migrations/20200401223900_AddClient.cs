@@ -11,7 +11,6 @@ namespace IdentityServer.Migrations.Migrations
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey("PK_Clients_Id")
                 .WithColumn("client_id").AsAnsiString(50).NotNullable().Indexed("IX_Clients_ClientId")
                 .WithColumn("password").AsString(250).NotNullable();
-            
         }
 
         public override void Down()

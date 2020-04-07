@@ -24,10 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\IdentityServer.Infrastructure\IdentityServer.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers" />
-  </ItemGroup>
   
   
 

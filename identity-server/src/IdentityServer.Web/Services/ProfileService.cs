@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityServer.Infrastructure.Repositories;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -33,7 +34,7 @@ namespace IdentityServer.Web.Services
                     .ConfigureAwait(false);
                 if (roles != null)
                 {
-                    context.AddRequestedClaims(roles.Select(x => new Claim("roles", x.Name)));
+                    context.AddRequestedClaims(roles.Select(x => new Claim(JwtClaimTypes.Role, x.Name)));
                 }
             }
             

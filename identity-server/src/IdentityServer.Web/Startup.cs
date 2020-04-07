@@ -1,4 +1,6 @@
+using Autofac;
 using IdentityServer.Infrastructure.Repositories;
+using IdentityServer.Web.Modules;
 using IdentityServer.Web.Services;
 using IdentityServer.Web.Store;
 using IdentityServer.Web.Validators;
@@ -31,6 +33,15 @@ namespace IdentityServer.Web
                 .AddResourceStore<ResourceStore>()
                 .AddProfileService<ProfileService>()
                 .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
+        }
+        
+        // ConfigureContainer is where you can register things directly
+        // with Autofac. This runs after ConfigureServices so the things
+        // here will override registrations made in ConfigureServices.
+        // Don't build the container; that gets done for you by the factory.
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule<RepositoryModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

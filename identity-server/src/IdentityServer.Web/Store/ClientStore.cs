@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityServer.Infrastructure.Repositories;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -29,7 +30,7 @@ namespace IdentityServer.Web.Store
                 {
                     ClientId = client.ClientId,
                     ClientName =  clientId,
-                    Claims = client.Roles.Select(x => new Claim("roles", x.Name)).ToHashSet(),
+                    Claims = client.Roles.Select(x => new Claim(JwtClaimTypes.Role, x.Name)).ToHashSet(),
                     ClientSecrets = new List<Secret>
                     {
                         new Secret(client.Password)
@@ -41,7 +42,7 @@ namespace IdentityServer.Web.Store
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        "roles",
+                        JwtClaimTypes.Role,
                     },
                     Enabled = true,
                 };

@@ -11,5 +11,6 @@ namespace IdentityServer.Infrastructure.Entities
         public bool IsActive { get; set; }
         
         public ICollection<Role> Roles { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
     }
 }

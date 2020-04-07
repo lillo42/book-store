@@ -18,18 +18,16 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Client> GetClientAsync(string clientId)
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
-            {
-                return await connection
-                    .QueryFirstOrDefaultAsync<Client>($@"
+            await using var connection = new NpgsqlConnection(_connectionString);
+            return await connection
+                .QueryFirstOrDefaultAsync<Client>($@"
                           SELECT 
-                                ""id"" as Id, 
-                                ""client_id"" as ClientId, 
-                                ""password"" as Password 
+                                ""id"" AS Id, 
+                                ""client_id"" AS ClientId, 
+                                ""password"" AS Password
                             FROM public.""Clients""
                             WHERE client_id = @clientId", new { clientId })
-                    .ConfigureAwait(false);
-            }
+                .ConfigureAwait(false);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace IdentityServer.Infrastructure.Entities
 {
@@ -7,6 +8,12 @@ namespace IdentityServer.Infrastructure.Entities
         public Guid Id { get; set; }
         
         public string Name { get; set; }
+        
+        public string Description { get; set; }
+        
+        public string DisplayName { get; set; }
+        
+        public ICollection<Permission> Permissions { get; set; }
 
         public bool Equals(Role other)
         {
