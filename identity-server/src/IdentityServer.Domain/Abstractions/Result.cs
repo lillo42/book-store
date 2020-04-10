@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Users.Domain
+namespace IdentityServer.Domain.Abstractions
 {
     public abstract class Result : IEquatable<Result>
     {

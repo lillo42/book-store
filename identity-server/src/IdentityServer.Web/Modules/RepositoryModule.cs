@@ -7,17 +7,7 @@ namespace IdentityServer.Web.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<UserRepository>()
-                .As<IReadOnlyUsersRepository>()
-                .InstancePerLifetimeScope();
             
-            builder.RegisterType<ClientRepository>()
-                .As<IReadOnlyClientRepository>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<ResourceRepository>()
-                .As<IReadOnlyResourceRepository>()
-                .InstancePerLifetimeScope();
         }
     }
 }

@@ -1,9 +1,5 @@
 using Autofac;
-using IdentityServer.Infrastructure.Repositories;
 using IdentityServer.Web.Modules;
-using IdentityServer.Web.Services;
-using IdentityServer.Web.Store;
-using IdentityServer.Web.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,10 +25,11 @@ namespace IdentityServer.Web
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddClientStore<ClientStore>()
-                .AddResourceStore<ResourceStore>()
-                .AddProfileService<ProfileService>()
-                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
+                // .AddClientStore<ClientStore>()
+                // .AddResourceStore<ResourceStore>()
+                // .AddProfileService<ProfileService>()
+                // .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                ;
         }
         
         // ConfigureContainer is where you can register things directly

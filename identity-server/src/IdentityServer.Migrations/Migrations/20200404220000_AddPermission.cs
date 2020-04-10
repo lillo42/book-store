@@ -66,7 +66,7 @@ namespace IdentityServer.Migrations.Migrations
                 .ToTable("Permissions").PrimaryColumn("id");
             
             Create.ForeignKey("FK_ClientsPermissions_Roles")
-                .FromTable("ClientsPermissions").ForeignColumn("role_id")
+                .FromTable("RolesPermissions").ForeignColumn("role_id")
                 .ToTable("Roles").PrimaryColumn("id");
 
             #endregion
