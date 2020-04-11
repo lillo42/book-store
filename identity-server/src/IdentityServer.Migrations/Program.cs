@@ -1,5 +1,8 @@
 ﻿using System;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
+using IdentityServer.Autofac;
 using IdentityServer.Migrations.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +35,7 @@ namespace IdentityServer.Migrations
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
+                Log.Fatal(ex, "Migration terminated unexpectedly");
                 return 1;
             }
             finally
@@ -124,7 +127,7 @@ namespace IdentityServer.Migrations
         /// </summary>
         private static IServiceProvider CreateServices(IConfiguration configuration)
         {
-            return new ServiceCollection()
+            var service = new ServiceCollection()
                 .AddSingleton(configuration)
                 // Add common FluentMigrator services
                 .AddFluentMigratorCore()
@@ -133,11 +136,19 @@ namespace IdentityServer.Migrations
                     // Add SQLite support to FluentMigrator
                     .AddPostgres()
                     // Set the connection string
-                    .WithGlobalConnectionString(provider => provider.GetRequiredService<IConfiguration>().GetConnectionString("Postgres"))
+                    .WithGlobalConnectionString(provider =>
+                        provider.GetRequiredService<IConfiguration>().GetConnectionString("Postgres"))
                     // Define the assembly containing the migrations
-                    .ScanIn(typeof(AddClient).Assembly).For.Migrations())
-                // Build the service provider
-                .BuildServiceProvider(false);
+                    .ScanIn(typeof(AddClient).Assembly).For.Migrations());
+            
+            var container = new ContainerBuilder();
+            container.Populate(service);
+
+            container
+                .RegisterModule<AggregationStoreModule>()
+                .RegisterModule<RepositoryModule>();
+            
+            return new AutofacServiceProvider(container.Build());
         }
         
         private static void EnsureDatabase(string connectionString)

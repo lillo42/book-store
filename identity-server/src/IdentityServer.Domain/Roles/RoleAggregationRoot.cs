@@ -1,9 +1,9 @@
 using System;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Role;
+using IdentityServer.Domain.Abstractions.Role.Events;
 using IdentityServer.Domain.Common;
 using IdentityServer.Domain.Extensions;
-using IdentityServer.Domain.Roles.Events;
 using Microsoft.Extensions.Logging;
 using static IdentityServer.Domain.DomainError;
 
@@ -79,7 +79,7 @@ namespace IdentityServer.Domain.Roles
             return Result.Ok();
         }
 
-        public Result AddPermission(Permission permission)
+        public Result AddPermission(Common.Permission permission)
         {
             if (permission == null)
             {
@@ -95,7 +95,7 @@ namespace IdentityServer.Domain.Roles
             return Result.Ok();
         }
 
-        public Result RemovePermission(Permission permission)
+        public Result RemovePermission(Common.Permission permission)
         {
             if (permission == null)
             {

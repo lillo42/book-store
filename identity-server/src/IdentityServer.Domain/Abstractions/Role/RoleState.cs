@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using IdentityServer.Domain.Abstractions;
-using IdentityServer.Domain.Common;
-using IdentityServer.Domain.Roles.Events;
+using IdentityServer.Domain.Abstractions.Role.Events;
 
-namespace IdentityServer.Domain.Roles
+namespace IdentityServer.Domain.Abstractions.Role
 {
     public class RoleState : IState<Guid>
     {
@@ -23,7 +21,7 @@ namespace IdentityServer.Domain.Roles
         
         public string DisplayName => _role.DisplayName;
         
-        public ISet<Permission> Permissions => _role.Permissions;
+        public ISet<Common.Permission> Permissions => _role.Permissions;
         
         
         public void Apply(CreateRoleEvent @event)

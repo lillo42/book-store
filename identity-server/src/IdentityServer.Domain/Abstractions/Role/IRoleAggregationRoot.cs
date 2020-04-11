@@ -10,8 +10,8 @@ namespace IdentityServer.Domain.Abstractions.Role
         
         Result Update(string name, string displayName, string description);
 
-        Result AddPermission(Permission permission);
+        Result AddPermission(Common.Permission permission);
         
-        Result RemovePermission(Permission permission);
+        Result RemovePermission(Common.Permission permission);
     }
 }

@@ -21,5 +21,17 @@ namespace IdentityServer.Domain
             
             public static ErrorResult NotContainsPermission { get; } = Fail("ROL007", "Role does not have this permission");
         }
+        
+        public static class PermissionError
+        {
+            public static ErrorResult MissingName { get; } = Fail("PRM000", "Missing name");
+            public static ErrorResult InvalidName { get; } = Fail("PRM001", "Invalid name");
+            
+            public static ErrorResult MissingDisplayName { get; } = Fail("PRM002", "Missing display name");
+            public static ErrorResult InvalidDisplayName { get; } = Fail("PRM003", "Invalid display name");
+            
+            public static ErrorResult InvalidDescription { get; } = Fail("PRM004", "Invalid description");
+            
+        }
     }
 }

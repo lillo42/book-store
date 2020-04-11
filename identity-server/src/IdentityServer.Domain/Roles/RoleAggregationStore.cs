@@ -3,10 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Domain.Common;
-using IdentityServer.Domain.Roles.Events;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
-using IdentityServer.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.Roles
@@ -28,13 +26,13 @@ namespace IdentityServer.Domain.Roles
             _logger = _loggerFactory.CreateLogger<RoleAggregationStore>();
         }
 
-        public RoleAggregationRoot Create()
+        public IRoleAggregationRoot Create()
         {
             _logger.LogDebug($"Going to create new {nameof(RoleAggregationRoot)}");
             return CreateNew(new Common.Role());
         }
 
-        public async Task<RoleAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
+        public async Task<IRoleAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get role. [RoleId: {roleId}]", id);
             var role = await _unitOfWork.Repository.GetByIdAsync(id, cancellation)
@@ -49,34 +47,35 @@ namespace IdentityServer.Domain.Roles
                 _loggerFactory.CreateLogger<RoleAggregationRoot>());
         }
 
-        public async Task SaveAsync(RoleAggregationRoot aggregate, CancellationToken cancellation = default)
+        public async Task SaveAsync(IRoleAggregationRoot aggregate, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going being transaction");
-            _unitOfWork.BeginTransaction();
-
-            var role = (Role) aggregate.State;
-
-            if (role.Id == Guid.Empty)
+            using (_unitOfWork.BeginTransaction())
             {
-                await _unitOfWork.Repository.CreateAsync(role, cancellation)
+                var role = (Role) aggregate.State;
+
+                if (role.Id == Guid.Empty)
+                {
+                    await _unitOfWork.Repository.CreateAsync(role, cancellation)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    await _unitOfWork.Repository.CreateAsync(role, cancellation)
+                        .ConfigureAwait(false);
+                }
+
+                await _unitOfWork.Repository.AddPermissionsAsync(role, cancellation)
+                    .ConfigureAwait(false);
+
+                await _unitOfWork.Repository.RemovePermissionsAsync(role, cancellation)
+                    .ConfigureAwait(false);
+
+                _logger.LogDebug("Going to save changes");
+                await _unitOfWork.SaveAsync(cancellation)
                     .ConfigureAwait(false);
             }
-            else
-            {
-                await _unitOfWork.Repository.CreateAsync(role, cancellation)
-                    .ConfigureAwait(false);
-            }
 
-            await _unitOfWork.Repository.AddPermissionsAsync(role, cancellation)
-                .ConfigureAwait(false);
-            
-            await _unitOfWork.Repository.RemovePermissionsAsync(role, cancellation)
-                .ConfigureAwait(false);
-
-            _logger.LogDebug("Going to save changes");
-            await _unitOfWork.SaveAsync(cancellation)
-                .ConfigureAwait(false);
-            
             _logger.LogDebug("Going to save events");
             await _eventRepository.SaveAsync(aggregate.Events, cancellation)
                 .ConfigureAwait(false);

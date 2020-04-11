@@ -3,7 +3,7 @@ using IdentityServer.Domain.Roles;
 
 namespace IdentityServer.Domain.Abstractions.Role
 {
-    public interface IRoleAggregationStore : IAggregateStore<RoleAggregationRoot, RoleState, Guid>
+    public interface IRoleAggregationStore : IAggregateStore<IRoleAggregationRoot, RoleState, Guid>
     {
         
     }

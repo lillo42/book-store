@@ -1,11 +1,10 @@
 using System;
-using IdentityServer.Domain.Abstractions;
 
-namespace IdentityServer.Domain.Roles.Events
+namespace IdentityServer.Domain.Abstractions.Role.Events
 {
-    public class UpdateRoleEvent : IEvent
+    public class CreateRoleEvent : IEvent
     {
-        public UpdateRoleEvent(string name, string displayName, string description)
+        public CreateRoleEvent(string name, string displayName, string description)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             DisplayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
@@ -13,11 +12,12 @@ namespace IdentityServer.Domain.Roles.Events
         }
 
         public string Name { get; }
-        public string Description { get; }
+        
         public string DisplayName { get; }
+        public string Description { get; }
         
         public DateTime OccurredOn { get; } = DateTime.UtcNow;
         
-        string IEvent.Name => nameof(UpdateRoleEvent);
+        string IEvent.Name => nameof(CreateRoleEvent);
     }
 }
