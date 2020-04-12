@@ -2,7 +2,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
-using IdentityServer.Autofac;
 using IdentityServer.Migrations.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -143,10 +142,6 @@ namespace IdentityServer.Migrations
             
             var container = new ContainerBuilder();
             container.Populate(service);
-
-            container
-                .RegisterModule<AggregationStoreModule>()
-                .RegisterModule<RepositoryModule>();
             
             return new AutofacServiceProvider(container.Build());
         }

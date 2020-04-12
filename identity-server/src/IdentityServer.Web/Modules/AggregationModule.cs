@@ -1,12 +1,14 @@
 using Autofac;
 using IdentityServer.Domain.Abstractions.Permission;
 using IdentityServer.Domain.Abstractions.Role;
+using IdentityServer.Domain.Abstractions.User;
 using IdentityServer.Domain.Permission;
-using IdentityServer.Domain.Roles;
+using IdentityServer.Domain.Role;
+using IdentityServer.Domain.User;
 
-namespace IdentityServer.Autofac
+namespace IdentityServer.Web.Modules
 {
-    public class AggregationStoreModule : Module
+    public class AggregationModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
@@ -16,6 +18,10 @@ namespace IdentityServer.Autofac
             
             builder.RegisterType<RoleAggregationStore>()
                 .As<IRoleAggregationStore>()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<UserAggregationStore>()
+                .As<IUserAggregationStore>()
                 .InstancePerLifetimeScope();
         }
     }

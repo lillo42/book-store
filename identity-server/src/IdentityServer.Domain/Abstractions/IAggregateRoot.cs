@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IdentityServer.Domain.Common;
 
 namespace IdentityServer.Domain.Abstractions
 {
@@ -7,6 +8,6 @@ namespace IdentityServer.Domain.Abstractions
     {
         TState State { get; }
         
-        IEnumerable<IEvent> Events { get; }
+        IEnumerable<Event> Events { get; }
     }
 }

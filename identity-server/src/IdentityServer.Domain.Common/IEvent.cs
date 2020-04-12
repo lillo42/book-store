@@ -1,10 +1,9 @@
 using System;
 
-namespace IdentityServer.Domain.Abstractions
+namespace IdentityServer.Domain.Common
 {
-    public interface IEvent
+    public abstract class Event
     {
-        string Name { get; }
-        DateTime OccurredOn { get; }
+        public DateTime OccurredOn { get; } = DateTime.UtcNow;
     }
 }

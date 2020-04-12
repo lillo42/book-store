@@ -31,7 +31,7 @@ namespace IdentityServer.Domain.Common
                 return true;
             }
             
-            return Name == other.Name;
+            return Id == other.Id;
         }
 
         public override bool Equals(object obj)
@@ -55,6 +55,6 @@ namespace IdentityServer.Domain.Common
         }
 
         public override int GetHashCode() 
-            => HashCode.Combine(Name);
+            => HashCode.Combine(Id);
     }
 }

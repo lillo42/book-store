@@ -1,5 +1,7 @@
 using Autofac;
 using IdentityServer.Web.Modules;
+using IdentityServer.Web.Services;
+using IdentityServer.Web.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,8 +29,8 @@ namespace IdentityServer.Web
                 .AddDeveloperSigningCredential()
                 // .AddClientStore<ClientStore>()
                 // .AddResourceStore<ResourceStore>()
-                // .AddProfileService<ProfileService>()
-                // .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                .AddProfileService<ProfileService>()
+                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
                 ;
         }
         

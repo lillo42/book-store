@@ -1,8 +1,9 @@
 using System;
+using IdentityServer.Domain.Common;
 
 namespace IdentityServer.Domain.Abstractions.Role.Events
 {
-    public class UpdateRoleEvent : IEvent
+    public class UpdateRoleEvent : Event
     {
         public UpdateRoleEvent(string name, string displayName, string description)
         {
@@ -14,9 +15,5 @@ namespace IdentityServer.Domain.Abstractions.Role.Events
         public string Name { get; }
         public string Description { get; }
         public string DisplayName { get; }
-        
-        public DateTime OccurredOn { get; } = DateTime.UtcNow;
-        
-        string IEvent.Name => nameof(UpdateRoleEvent);
     }
 }

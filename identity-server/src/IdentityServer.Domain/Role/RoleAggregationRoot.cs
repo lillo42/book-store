@@ -1,20 +1,25 @@
 using System;
+using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Domain.Abstractions.Role.Events;
-using IdentityServer.Domain.Common;
 using IdentityServer.Domain.Extensions;
+using IdentityServer.Infrastructure.Abstractions.Repositories;
 using Microsoft.Extensions.Logging;
 using static IdentityServer.Domain.DomainError;
 
-namespace IdentityServer.Domain.Roles
+namespace IdentityServer.Domain.Role
 {
     public class RoleAggregationRoot : AggregateRoot<RoleState, Guid>, IRoleAggregationRoot
     {
+        private readonly IReadOnlyPermissionRepository _permissions;
+        
         public RoleAggregationRoot(RoleState state, 
-            ILogger<RoleAggregationRoot> logger) 
+            ILogger<RoleAggregationRoot> logger, 
+            IReadOnlyPermissionRepository permissions) 
             : base(state, logger)
         {
+            _permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
         }
 
         public Result Create(string name, string displayName, string description)
@@ -79,11 +84,17 @@ namespace IdentityServer.Domain.Roles
             return Result.Ok();
         }
 
-        public Result AddPermission(Common.Permission permission)
+        public async Task<Result> AddPermission(Common.Permission permission)
         {
             if (permission == null)
             {
                 return RoleError.InvalidPermission;
+            }
+            
+            if (!await _permissions.ExistAsync(permission.Id)
+                .ConfigureAwait(false))
+            {
+                return UserError.InvalidPermission;
             }
 
             if (State.Permissions.Contains(permission))
@@ -95,16 +106,22 @@ namespace IdentityServer.Domain.Roles
             return Result.Ok();
         }
 
-        public Result RemovePermission(Common.Permission permission)
+        public async Task<Result> RemovePermission(Common.Permission permission)
         {
             if (permission == null)
             {
                 return RoleError.InvalidPermission;
             }
             
+            if (!await _permissions.ExistAsync(permission.Id)
+                .ConfigureAwait(false))
+            {
+                return UserError.InvalidPermission;
+            }
+            
             if (!State.Permissions.Contains(permission))
             {
-                return RoleError.PermissionAlreadyExist;
+                return RoleError.NotContainsPermission;
             }
             
             Apply(new RemovePermissionEvent(permission));

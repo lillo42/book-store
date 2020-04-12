@@ -56,7 +56,8 @@ namespace IdentityServer.Infrastructure.Repositories
                     ""display_name"" AS DisplayName, 
                     ""description"" AS Description 
                 FROM public.""Roles"" 
-                WHERE  ""id"" = @id;
+                WHERE  ""id"" = @id
+                LIMIT 1;
                 SELECT
                     ""id"" AS Id,
                     ""name"" AS Name, 
@@ -101,5 +102,11 @@ namespace IdentityServer.Infrastructure.Repositories
                     new { role_id = entity.Id, permisions = entity.Permissions.Select(x=> x.Id).ToArray()})
                 .ConfigureAwait(false);
         }
+        
+        public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default) 
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Roles\" where \"id\" = @id",
+                    new {id})
+                .ConfigureAwait(false);
     }
 }

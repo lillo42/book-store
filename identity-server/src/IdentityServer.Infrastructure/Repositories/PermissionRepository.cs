@@ -52,5 +52,11 @@ namespace IdentityServer.Infrastructure.Repositories
                     "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\" WHERE \"id\" = @id", 
                     new { id })
                 .ConfigureAwait(false);
+
+        public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default) 
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Permissions\" where \"id\" = @id",
+                    new {id})
+                .ConfigureAwait(false);
     }
 }

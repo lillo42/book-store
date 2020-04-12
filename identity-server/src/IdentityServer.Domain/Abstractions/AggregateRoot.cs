@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using IdentityServer.Domain.Common;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.Abstractions
@@ -8,9 +9,9 @@ namespace IdentityServer.Domain.Abstractions
         where TState : class, IState<TId>
     {
         public TState State { get; }
-        public IEnumerable<IEvent> Events => _events;
+        public IEnumerable<Event> Events => _events;
 
-        private readonly ICollection<IEvent> _events;
+        private readonly ICollection<Event> _events;
         private readonly ILogger _logger;
 
         protected AggregateRoot(TState state, 
@@ -18,13 +19,13 @@ namespace IdentityServer.Domain.Abstractions
         {
             State = state ?? throw new ArgumentNullException(nameof(state));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _events = new List<IEvent>();
+            _events = new List<Event>();
         }
 
         protected void Apply<TEvent>(TEvent @event)
-            where TEvent : IEvent
+            where TEvent : Event
         {
-            _logger.LogTrace("Going to apply event '{eventName}'", @event.Name);
+            _logger.LogTrace("Going to apply event '{eventName}'", typeof(TEvent).Name);
             ((dynamic)State).Apply(@event);
             _events.Add(@event);
         }

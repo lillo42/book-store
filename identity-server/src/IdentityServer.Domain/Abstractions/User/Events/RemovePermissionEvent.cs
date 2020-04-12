@@ -1,7 +1,7 @@
 using System;
 using IdentityServer.Domain.Common;
 
-namespace IdentityServer.Domain.Abstractions.Role.Events
+namespace IdentityServer.Domain.Abstractions.User.Events
 {
     public class RemovePermissionEvent : Event
     {

@@ -1,5 +1,4 @@
 using System;
-using IdentityServer.Domain.Roles;
 
 namespace IdentityServer.Domain.Abstractions.Role
 {

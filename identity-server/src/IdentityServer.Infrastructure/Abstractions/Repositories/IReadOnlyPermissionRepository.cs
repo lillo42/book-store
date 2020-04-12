@@ -8,5 +8,7 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories
     public interface IReadOnlyPermissionRepository
     {
         Task<Permission> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        
+        Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

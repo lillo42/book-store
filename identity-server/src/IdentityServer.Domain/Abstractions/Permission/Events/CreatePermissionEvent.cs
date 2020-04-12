@@ -1,8 +1,9 @@
 using System;
+using IdentityServer.Domain.Common;
 
 namespace IdentityServer.Domain.Abstractions.Permission.Events
 {
-    public class CreatePermissionEvent : IEvent
+    public class CreatePermissionEvent : Event
     {
         public CreatePermissionEvent(string name, string displayName, string description)
         {
@@ -15,9 +16,5 @@ namespace IdentityServer.Domain.Abstractions.Permission.Events
         
         public string DisplayName { get; }
         public string Description { get; }
-        
-        public DateTime OccurredOn { get; } = DateTime.UtcNow;
-        
-        string IEvent.Name => nameof(CreatePermissionEvent);
     }
 }
