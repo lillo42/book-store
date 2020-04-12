@@ -8,6 +8,8 @@ namespace IdentityServer.Migrations.Migrations
     [Migration(20200410222600)]
     public class AddUserAPI : Migration
     {
+     
+        private static readonly Guid UserResource =  Guid.Parse("db08e398-89e7-4488-869c-7ef29dbff340");
         
         private static readonly Guid ReadPermissions = Guid.Parse("3e6729a7-b9d0-4111-91d9-e40f2f663a74");
         private static readonly Guid WritePermissions = Guid.Parse("cfd53b49-4efd-45ce-9dce-16a7c49df687");
@@ -21,6 +23,8 @@ namespace IdentityServer.Migrations.Migrations
 
         public override void Up()
         {
+            Insert.Resource(UserResource, "users", "User API", "User API", true);
+            
             Insert.Permission( ReadPermissions, "read_user", "Read User", "Read User");
             Insert.Permission( WritePermissions, "write_user", "Update User", "Update User");
             Insert.Permission( CreatePermissions, "create_user", "Create User", "Create User");
@@ -52,6 +56,8 @@ namespace IdentityServer.Migrations.Migrations
             Delete.Permission(WritePermissions);
             Delete.Permission(DeletePermissions);
             Delete.Permission(CreatePermissions);
+            
+            Delete.Resource(UserResource);
         }
     }
 }

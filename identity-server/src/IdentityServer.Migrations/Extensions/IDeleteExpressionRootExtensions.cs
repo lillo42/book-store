@@ -27,5 +27,11 @@ namespace FluentMigrator.Builders.Delete
             delete.FromTable("Permissions")
                 .Row(new {id});
         }
+
+        public static void Resource(this IDeleteExpressionRoot delete, Guid id)
+        {
+            delete.FromTable("Resource")
+                .Row(new {id});
+        }
     }
 }

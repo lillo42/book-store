@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Common;
 
-namespace IdentityServer.Infrastructure.Abstractions.Repositories
+namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
 {
     public interface IReadOnlyPermissionRepository
     {

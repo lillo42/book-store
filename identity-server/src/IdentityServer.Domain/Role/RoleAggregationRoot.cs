@@ -4,7 +4,7 @@ using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Domain.Abstractions.Role.Events;
 using IdentityServer.Domain.Extensions;
-using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 using static IdentityServer.Domain.DomainError;
 

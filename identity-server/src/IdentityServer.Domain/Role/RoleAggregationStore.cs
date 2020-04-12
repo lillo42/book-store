@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.Role

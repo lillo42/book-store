@@ -5,6 +5,7 @@ using IdentityServer.Domain.Abstractions.User;
 using IdentityServer.Domain.Role;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.User

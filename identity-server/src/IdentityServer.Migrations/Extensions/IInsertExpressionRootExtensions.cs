@@ -41,5 +41,19 @@ namespace FluentMigrator.Builders.Insert
                     });
             }
         }
+        
+        public static void Resource(this IInsertExpressionRoot insert, Guid id, string name, string displayName,
+            string description, bool isEnable)
+        {
+            insert.IntoTable("Resources")
+                .Row(new
+                {
+                    id,
+                    name,
+                    display_name = displayName,
+                    description,
+                    enable = isEnable
+                });
+        }
     }
 }

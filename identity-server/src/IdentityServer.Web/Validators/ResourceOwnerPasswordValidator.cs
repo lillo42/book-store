@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;

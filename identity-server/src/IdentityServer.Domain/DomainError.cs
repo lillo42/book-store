@@ -51,5 +51,16 @@ namespace IdentityServer.Domain
             public static ErrorResult RoleAlreadyExist { get; } = Fail("USR009", "User already have this role");
             public static ErrorResult NotContainsRole { get; } = Fail("USR010", "User does not have this role");
         }
+        
+        public static class ResourceError
+        {
+            public static ErrorResult MissingName { get; } = Fail("RSC000", "Missing name");
+            public static ErrorResult InvalidName { get; } = Fail("RSC001", "Invalid name");
+            
+            public static ErrorResult MissingDisplayName { get; } = Fail("RSC002", "Missing display name");
+            public static ErrorResult InvalidDisplayName { get; } = Fail("RSC003", "Invalid display name");
+            
+            public static ErrorResult InvalidDescription { get; } = Fail("RSC004", "Invalid description");
+        }
     }
 }

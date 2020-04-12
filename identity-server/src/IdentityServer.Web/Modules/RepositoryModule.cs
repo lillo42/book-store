@@ -2,6 +2,7 @@ using Autofac;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
 
 namespace IdentityServer.Web.Modules
@@ -27,6 +28,10 @@ namespace IdentityServer.Web.Modules
             builder.RegisterType<UserRepository>()
                 .As<IUserRepository>()
                 .As<IReadOnlyUserRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ResourceRepository>()
+                .As<IReadOnlyResourceRepository>()
                 .InstancePerLifetimeScope();
         }
     }

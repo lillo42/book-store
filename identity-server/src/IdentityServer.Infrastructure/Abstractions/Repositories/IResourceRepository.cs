@@ -3,8 +3,7 @@ using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 
 namespace IdentityServer.Infrastructure.Abstractions.Repositories
 {
-    public interface IPermissionRepository : IRepository<Permission>, IReadOnlyPermissionRepository
+    public interface IResourceRepository : IRepository<Resource>, IReadOnlyResourceRepository
     {
-        
     }
 }

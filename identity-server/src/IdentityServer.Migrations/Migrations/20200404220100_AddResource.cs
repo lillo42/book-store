@@ -7,7 +7,7 @@ namespace IdentityServer.Migrations.Migrations
     {
         public override void Up()
         {
-            Create.Table("Resource")
+            Create.Table("Resources")
                 .WithColumn("id").AsGuid().PrimaryKey()
                 .WithColumn("name").AsString(20).NotNullable().Unique("IX_Resource_Name")
                 .WithColumn("display_name").AsString(50).NotNullable()

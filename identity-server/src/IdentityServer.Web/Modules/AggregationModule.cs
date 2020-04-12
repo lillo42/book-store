@@ -1,8 +1,10 @@
 using Autofac;
 using IdentityServer.Domain.Abstractions.Permission;
+using IdentityServer.Domain.Abstractions.Resource;
 using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Domain.Abstractions.User;
 using IdentityServer.Domain.Permission;
+using IdentityServer.Domain.Resource;
 using IdentityServer.Domain.Role;
 using IdentityServer.Domain.User;
 
@@ -22,6 +24,10 @@ namespace IdentityServer.Web.Modules
             
             builder.RegisterType<UserAggregationStore>()
                 .As<IUserAggregationStore>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ResourceAggregationStore>()
+                .As<IResourceAggregationStore>()
                 .InstancePerLifetimeScope();
         }
     }
