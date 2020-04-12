@@ -9,8 +9,9 @@ namespace IdentityServer.Migrations.Migrations
         {
             Create.Table("Clients")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey("PK_Clients_Id")
+                .WithColumn("name").AsString(50).NotNullable()
                 .WithColumn("client_id").AsAnsiString(50).NotNullable().Indexed("IX_Clients_ClientId")
-                .WithColumn("password").AsString(250).NotNullable();
+                .WithColumn("client_secret").AsString(250).NotNullable();
         }
 
         public override void Down()
