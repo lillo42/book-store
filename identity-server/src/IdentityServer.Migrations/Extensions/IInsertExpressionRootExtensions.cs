@@ -52,7 +52,7 @@ namespace FluentMigrator.Builders.Insert
                     name,
                     display_name = displayName,
                     description,
-                    enable = isEnable
+                    is_active = isEnable
                 });
         }
     }

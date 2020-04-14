@@ -20,43 +20,56 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default) 
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"enable\" AS IsEnable  FROM public.\"Resource\" WHERE \"id\" = @id",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"id\" = @id",
                     new {id})
                 .ConfigureAwait(false);
 
         public async Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default) 
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"enable\" AS IsEnable  FROM public.\"Resource\" WHERE \"name\" = @name",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" = @name",
                     new {name})
                 .ConfigureAwait(false);
 
         public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default) 
             => await _connection.QueryAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"enable\" AS IsEnable  FROM public.\"Resource\"")
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\"")
                 .ConfigureAwait(false);
 
         public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default) 
             => await _connection.QueryAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"enable\" AS IsEnable  FROM public.\"Resource\" WHERE \"name\" IN @names",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" IN @names",
                     new {names})
                 .ConfigureAwait(false);
 
-        public async Task CreateAsync(Resource entity, CancellationToken cancellationToken = default) 
-            => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "INSERT INTO public.\"Resource\" (\"id\", \"name\", \"display_name\", \"enable\") VALUES (@id, @name, @display_name, @enable)",
-                    new { id = entity.Id, name = entity.Name, display_name = entity.DisplayName, enable = entity.IsEnable})
+        public async Task CreateAsync(Resource entity, CancellationToken cancellationToken = default)
+        {
+            entity.Id = Guid.NewGuid();
+            await _connection.ExecuteAsync(
+                    "INSERT INTO public.\"Resources\" (\"id\", \"name\", \"display_name\", \"is_active\") VALUES (@id, @name, @display_name, @is_active)",
+                    new
+                    {
+                        id = entity.Id, name = entity.Name, display_name = entity.DisplayName, is_active = entity.IsEnable
+                    })
                 .ConfigureAwait(false);
+        }
 
         public async Task UpdateAsync(Resource entity, CancellationToken cancellationToken = default) 
-            => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "UPDATE public.\"Resource\" SET \"name\" = @name, \"display_name\" = @display_name,  \"enable\" = @enable WHERE \"id\" = @id",
-                    new { id = entity.Id, name = entity.Name, display_name = entity.DisplayName, enable = entity.IsEnable})
+            => await _connection.ExecuteAsync(
+                    "UPDATE public.\"Resources\" SET \"name\" = @name, \"display_name\" = @display_name,  \"is_active\" = @is_active WHERE \"id\" = @id",
+                    new { id = entity.Id, name = entity.Name, display_name = entity.DisplayName, is_active = entity.IsEnable})
                 .ConfigureAwait(false);
 
-        public async Task DeleteAsync(Resource entity, CancellationToken cancellationToken = default) 
-            => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "DELETE FROM public.\"Resource\" WHERE \"id\" = @id",
+        public async Task DeleteAsync(Resource entity, CancellationToken cancellationToken = default)
+        {
+            await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"ClientsResources\" WHERE \"resource_id\" = @resource_id",
+                    new { resource_id = entity.Id})
+                .ConfigureAwait(false);
+            
+            await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"Resources\" WHERE \"id\" = @id",
                     new { id = entity.Id})
                 .ConfigureAwait(false);
+        } 
     }
 }

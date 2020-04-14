@@ -9,6 +9,7 @@ namespace IdentityServer.Domain.Common
         public string Name { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public bool IsEnable { get; set; }
         
         public ISet<Role> Roles { get; set; }
         public ISet<Permission> Permissions { get; set; }

@@ -1,6 +1,7 @@
 using Autofac;
 using IdentityServer.Web.Modules;
 using IdentityServer.Web.Services;
+using IdentityServer.Web.Store;
 using IdentityServer.Web.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,11 +28,10 @@ namespace IdentityServer.Web
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                // .AddClientStore<ClientStore>()
-                // .AddResourceStore<ResourceStore>()
+                .AddClientStore<ClientStore>()
+                .AddResourceStore<ResourceStore>()
                 .AddProfileService<ProfileService>()
-                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
-                ;
+                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
         }
         
         // ConfigureContainer is where you can register things directly
@@ -40,7 +40,8 @@ namespace IdentityServer.Web
         // Don't build the container; that gets done for you by the factory.
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterModule<RepositoryModule>();
+            builder.RegisterModule<RepositoryModule>()
+                .RegisterModule<AggregationModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

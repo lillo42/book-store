@@ -42,6 +42,16 @@ namespace IdentityServer.Infrastructure.Repositories
                 .ConfigureAwait(false);
             
             await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"ClientsPermissions\" WHERE \"permission_id\" = @permission_id", 
+                    new { permission_id = entity.Id })
+                .ConfigureAwait(false);
+            
+            await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"UsersPermissions\" WHERE \"permission_id\" = @permission_id", 
+                    new { permission_id = entity.Id })
+                .ConfigureAwait(false);
+            
+            await _connection.ExecuteAsync(
                     "DELETE FROM public.\"Permissions\" WHERE \"id\" = @id", 
                     new { id = entity.Id })
                 .ConfigureAwait(false);

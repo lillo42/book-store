@@ -31,7 +31,13 @@ namespace IdentityServer.Web.Modules
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ResourceRepository>()
+                .As<IResourceRepository>()
                 .As<IReadOnlyResourceRepository>()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientRepository>()
+                .As<IClientRepository>()
+                .As<IReadOnlyClientRepository>()
                 .InstancePerLifetimeScope();
         }
     }
