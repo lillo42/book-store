@@ -41,14 +41,24 @@ namespace IdentityServer.Infrastructure.Repositories
                     new {names})
                 .ConfigureAwait(false);
 
+        public async Task<bool> ExistAsync(Guid resourceId, CancellationToken cancellationToken = default) 
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Permissions\" where \"id\" = :id LIMIT 1;",
+                    new { id =  resourceId })
+                .ConfigureAwait(false);
+
         public async Task CreateAsync(Resource entity, CancellationToken cancellationToken = default)
         {
             entity.Id = Guid.NewGuid();
             await _connection.ExecuteAsync(
-                    "INSERT INTO public.\"Resources\" (\"id\", \"name\", \"display_name\", \"is_active\") VALUES (@id, @name, @display_name, @is_active)",
+                    "INSERT INTO public.\"Resources\" (\"id\", \"name\", \"display_name\", \"description\",  \"is_active\") VALUES (:id, :name, :display_name, :description, :is_active)",
                     new
                     {
-                        id = entity.Id, name = entity.Name, display_name = entity.DisplayName, is_active = entity.IsEnable
+                        id = entity.Id, 
+                        name = entity.Name, 
+                        display_name = entity.DisplayName, 
+                        description = entity.Description,
+                        is_active = entity.IsEnable
                     })
                 .ConfigureAwait(false);
         }

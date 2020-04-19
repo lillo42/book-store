@@ -72,7 +72,7 @@ namespace IdentityServer.Domain.User
                 }
                 else
                 {
-                    await _unitOfWork.Repository.CreateAsync(user, cancellation)
+                    await _unitOfWork.Repository.UpdateAsync(user, cancellation)
                         .ConfigureAwait(false);
                 }
 

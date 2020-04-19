@@ -5,6 +5,13 @@ namespace IdentityServer.Domain.Common
 {
     public class Client
     {
+        public Client()
+        {
+            Roles = new HashSet<Role>();
+            Permissions = new HashSet<Permission>();
+            Resources = new HashSet<Resource>();
+        }
+        
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string ClientId { get; set; }

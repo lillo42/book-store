@@ -49,6 +49,61 @@ namespace IdentityServer.Infrastructure.Repositories
                 .ConfigureAwait(false);
         }
 
+        #region Roles
+        public async Task AddRoleAsync(Client entity, Role role, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                "INSERT INTO public.\"ClientsRoles\" (client_id, role_id) VALUES (:client_id, :role_id)",
+                new { client_id = entity.Id, role_id = role.Id })
+                .ConfigureAwait(false);
+        }
+
+        public async Task RemoveRoleAsync(Client entity, Role role, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"ClientsRoles\" WHERE client_id = :client_id AND role_id = :role_id",
+                    new { client_id = entity.Id, role_id = role.Id })
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Permssions
+        public async Task AddPermissionAsync(Client entity, Permission permission, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                    "INSERT INTO public.\"ClientsPermissions\" (client_id, permission_id) VALUES (:client_id, :permission_id)",
+                    new { client_id = entity.Id, permission_id = permission.Id })
+                .ConfigureAwait(false);
+        }
+
+        public async Task RemovePermissionAsync(Client entity, Permission permission, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                    "DELETE FROM public.\"ClientsPermissions\" WHERE client_id = :client_id AND  permission_id = :permission_id",
+                    new { client_id = entity.Id, permission_id = permission.Id })
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region Resource
+
+        public async Task AddResourceAsync(Client entity, Resource resource, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                    "INSERT INTO public.\"ClientsResources\" (client_id, resource_id) VALUES (:client_id, :resource_id)",
+                    new { client_id = entity.Id, resource_id = resource.Id })
+                .ConfigureAwait(false);
+        }
+
+        public async Task RemoveResourceAsync(Client entity, Resource resource, CancellationToken cancellation = default)
+        {
+            await _connection.ExecuteAsync(
+                "DELETE FROM public.\"ClientsResources\" WHERE client_id = :client_id AND resource_id = :resource_id",
+                new {client_id = entity.Id, resource_id = resource.Id});
+        }
+
+        #endregion
+        
         public async Task DeleteAsync(Client entity, CancellationToken cancellationToken = default)
         {
             await _connection.ExecuteAsync(

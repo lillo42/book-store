@@ -62,5 +62,30 @@ namespace IdentityServer.Domain
             
             public static ErrorResult InvalidDescription { get; } = Fail("RSC004", "Invalid description");
         }
+        
+        public static class ClientError
+        {
+            public static ErrorResult MissingName { get; } = Fail("CLT000", "Missing name");
+            public static ErrorResult InvalidName { get; } = Fail("CLT001", "Invalid name");
+            
+            public static ErrorResult MissingClientId { get; } = Fail("CLT002", "Missing client id");
+            public static ErrorResult InvalidClientId { get; } = Fail("CLT003", "Invalid client id");
+            
+            public static ErrorResult MissingClientSecret { get; } = Fail("CLT004", "Missing client secret");
+            public static ErrorResult InvalidClientSecret { get; } = Fail("CLT005", "Invalid client secret");
+            
+            public static ErrorResult InvalidPermission { get; } = Fail("CLT007", "Invalid permission");
+            public static ErrorResult PermissionAlreadyExist { get; } = Fail("CLT008", "Client already have this permission");
+            public static ErrorResult NotContainsPermission { get; } = Fail("CLT009", "Client does not have this permission");
+            
+            public static ErrorResult InvalidRole { get; } = Fail("CLT010", "Invalid role");
+            public static ErrorResult RoleAlreadyExist { get; } = Fail("CLT011", "Client already have this role");
+            public static ErrorResult NotContainsRole { get; } = Fail("CLT012", "Client does not have this role");
+            
+            public static ErrorResult InvalidResource { get; } = Fail("CLT013", "Invalid resource");
+            public static ErrorResult ResourceAlreadyExist { get; } = Fail("CLT014", "Client already have this resource");
+            public static ErrorResult NotContainsResource { get; } = Fail("CLT015", "Client does not have this resource");
+
+        }
     }
 }
