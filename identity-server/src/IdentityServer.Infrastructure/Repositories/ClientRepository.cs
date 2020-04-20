@@ -149,13 +149,13 @@ namespace IdentityServer.Infrastructure.Repositories
                     R.""id"" AS Id,
                     R.""name"" AS Name
                 FROM public.""Roles"" R
-                INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CP.""role_id""
+                INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CR.""role_id""
                 WHERE CR.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
                     R.""name"" AS Name
                 FROM public.""Resources"" R
-                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CP.""resource_id""
+                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
                 WHERE CR.""client_id"" = :id;", new {id})
                 .ConfigureAwait(false);
 
@@ -212,13 +212,13 @@ namespace IdentityServer.Infrastructure.Repositories
                     R.""id"" AS Id,
                     R.""name"" AS Name
                 FROM public.""Roles"" R
-                INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CP.""role_id""
+                INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CR.""role_id""
                 WHERE CR.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
                     R.""name"" AS Name
                 FROM public.""Resources"" R
-                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CP.""resource_id""
+                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
                 WHERE CR.""client_id"" = :id;", new {id =  client})
                 .ConfigureAwait(false);
             
