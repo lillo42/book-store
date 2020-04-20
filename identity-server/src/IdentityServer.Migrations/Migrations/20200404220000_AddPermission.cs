@@ -29,6 +29,10 @@ namespace IdentityServer.Migrations.Migrations
             Create.ForeignKey("FK_ClientsPermissions_Clients")
                 .FromTable("ClientsPermissions").ForeignColumn("client_id")
                 .ToTable("Clients").PrimaryColumn("id");
+            
+            Create.Index("IX_ClientsPermissions_ClientId")
+                .OnTable("ClientsPermissions")
+                .OnColumn("client_id");
             #endregion
 
             #region Users
@@ -49,6 +53,9 @@ namespace IdentityServer.Migrations.Migrations
                 .FromTable("UsersPermissions").ForeignColumn("user_id")
                 .ToTable("Users").PrimaryColumn("id");
 
+            Create.Index("IX_UsersPermissions_ClientId")
+                .OnTable("UsersPermissions")
+                .OnColumn("user_id");
             #endregion
 
             #region Roles
@@ -68,7 +75,10 @@ namespace IdentityServer.Migrations.Migrations
             Create.ForeignKey("FK_ClientsPermissions_Roles")
                 .FromTable("RolesPermissions").ForeignColumn("role_id")
                 .ToTable("Roles").PrimaryColumn("id");
-
+            
+            Create.Index("IX_RolesPermissions_ClientId")
+                .OnTable("RolesPermissions")
+                .OnColumn("role_id");
             #endregion
         }
 
