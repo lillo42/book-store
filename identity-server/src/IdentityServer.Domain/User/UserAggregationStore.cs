@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions.User;
 using IdentityServer.Domain.Role;
+using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
@@ -76,22 +77,34 @@ namespace IdentityServer.Domain.User
                         .ConfigureAwait(false);
                 }
 
-                if (aggregate.State.PermissionsHasChange)
+                foreach (var trace in aggregate.State.Permissions.Traces)
                 {
-                    await _unitOfWork.Repository.AddPermissionsAsync(user, cancellation)
-                        .ConfigureAwait(false);
-
-                    await _unitOfWork.Repository.RemovePermissionsAsync(user, cancellation)
-                        .ConfigureAwait(false);
+                    switch (trace.State)
+                    {
+                        case State.Added:
+                            await _unitOfWork.Repository.AddPermissionAsync(user, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                        case State.Removed when !trace.IsNew:
+                            await _unitOfWork.Repository.RemovePermissionAsync(user, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                    }
                 }
 
-                if (aggregate.State.RolesHasChange)
+                foreach (var trace in aggregate.State.Roles.Traces)
                 {
-                    await _unitOfWork.Repository.AddRolesAsync(user, cancellation)
-                        .ConfigureAwait(false);
-
-                    await _unitOfWork.Repository.RemoveRolesAsync(user, cancellation)
-                        .ConfigureAwait(false);
+                    switch (trace.State)
+                    {
+                        case State.Added:
+                            await _unitOfWork.Repository.AddRoleAsync(user, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                        case State.Removed when !trace.IsNew:
+                            await _unitOfWork.Repository.RemoveRoleAsync(user, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                    }
                 }
 
                 _logger.LogDebug("Going to save changes");

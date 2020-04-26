@@ -7,12 +7,12 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories
 {
     public interface IUserRepository : IRepository<User>, IReadOnlyUserRepository
     {
-        Task AddPermissionsAsync(User entity, CancellationToken cancellationToken = default);
+        Task AddPermissionAsync(User entity, Permission permission, CancellationToken cancellationToken = default);
         
-        Task RemovePermissionsAsync(User entity, CancellationToken cancellationToken = default);
+        Task RemovePermissionAsync(User entity, Permission permission,  CancellationToken cancellationToken = default);
         
-        Task AddRolesAsync(User entity, CancellationToken cancellationToken = default);
+        Task AddRoleAsync(User entity, Role role, CancellationToken cancellationToken = default);
         
-        Task RemoveRolesAsync(User entity, CancellationToken cancellationToken = default);
+        Task RemoveRoleAsync(User entity, Role role, CancellationToken cancellationToken = default);
     }
 }

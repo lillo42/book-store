@@ -7,8 +7,8 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories
 {
     public interface IRoleRepository : IRepository<Role>, IReadOnlyRoleRepository
     {
-        Task AddPermissionsAsync(Role entity, CancellationToken cancellationToken = default);
+        Task AddPermissionAsync(Role entity, Permission permission, CancellationToken cancellationToken = default);
         
-        Task RemovePermissionsAsync(Role entity, CancellationToken cancellationToken = default);
+        Task RemovePermissionAsync(Role entity, Permission permission, CancellationToken cancellationToken = default);
     }
 }

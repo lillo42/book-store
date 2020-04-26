@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using IdentityServer.Domain.Abstractions.User.Events;
+using IdentityServer.Infrastructure;
 
 namespace IdentityServer.Domain.Abstractions.User
 {
@@ -11,6 +12,8 @@ namespace IdentityServer.Domain.Abstractions.User
         public UserState(Common.User user)
         {
             _user = user;
+            Roles = new HashSetTrace<Common.Role>(user.Roles);
+            Permissions = new HashSetTrace<Common.Permission>(user.Permissions);
         }
 
         public Guid Id => _user.Id;
@@ -19,11 +22,8 @@ namespace IdentityServer.Domain.Abstractions.User
         public string Password => _user.Password;
         public bool IsEnable => _user.IsEnable;
 
-        public ISet<Common.Role> Roles => _user.Roles;
-        public ISet<Common.Permission> Permissions => _user.Permissions;
-        
-        public bool RolesHasChange { get; private set; }
-        public bool PermissionsHasChange { get; private set; }
+        public HashSetTrace<Common.Role> Roles { get; }
+        public HashSetTrace<Common.Permission> Permissions { get; }
 
         public void Apply(CreateUserEvent @event)
         {
@@ -41,25 +41,21 @@ namespace IdentityServer.Domain.Abstractions.User
         public void Apply(AddPermissionEvent @event)
         {
             _user.Permissions.Add(@event.Permission);
-            PermissionsHasChange = true;
         }
 
         public void Apply(RemovePermissionEvent @event)
         {
             _user.Permissions.Remove(@event.Permission);
-            PermissionsHasChange = true;
         }
         
         public void Apply(AddRoleEvent @event)
         {
             _user.Roles.Add(@event.Role);
-            RolesHasChange = true;
         }
 
         public void Apply(RemoveRoleEvent @event)
         {
             _user.Roles.Remove(@event.Role);
-            RolesHasChange = true;
         }
         
         public static explicit operator Common.User(UserState state)

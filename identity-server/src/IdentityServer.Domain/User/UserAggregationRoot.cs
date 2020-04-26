@@ -6,7 +6,6 @@ using IdentityServer.Domain.Abstractions.User;
 using IdentityServer.Domain.Abstractions.User.Events;
 using IdentityServer.Domain.Extensions;
 using IdentityServer.Infrastructure.Abstractions;
-using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
@@ -106,15 +105,9 @@ namespace IdentityServer.Domain.User
             return Result.Ok();
         }
 
-        public async Task<Result> RemovePermissionAsync(Common.Permission permission)
+        public Result RemovePermission(Common.Permission permission)
         {
             if (permission == null)
-            {
-                return UserError.InvalidPermission;
-            }
-
-            if (!await _permissions.ExistAsync(permission.Id)
-                .ConfigureAwait(false))
             {
                 return UserError.InvalidPermission;
             }
@@ -150,15 +143,9 @@ namespace IdentityServer.Domain.User
             return Result.Ok();
         }
 
-        public async Task<Result> RemoveRoleAsync(Common.Role role)
+        public Result RemoveRole(Common.Role role)
         {
             if (role == null)
-            {
-                return UserError.InvalidRole;
-            }
-            
-            if (!await _role.ExistAsync(role.Id)
-                .ConfigureAwait(false))
             {
                 return UserError.InvalidRole;
             }

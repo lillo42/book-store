@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using IdentityServer.Infrastructure;
 
 namespace IdentityServer.Domain.Abstractions.Client

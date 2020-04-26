@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions.Role;
+using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
@@ -69,12 +70,21 @@ namespace IdentityServer.Domain.Role
                         .ConfigureAwait(false);
                 }
 
-                await _unitOfWork.Repository.AddPermissionsAsync(role, cancellation)
-                    .ConfigureAwait(false);
-
-                await _unitOfWork.Repository.RemovePermissionsAsync(role, cancellation)
-                    .ConfigureAwait(false);
-
+                foreach (var trace in aggregate.State.Permissions.Traces)
+                {
+                    switch (trace.State)
+                    {
+                        case State.Added:
+                           await _unitOfWork.Repository.AddPermissionAsync(role, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                        case State.Removed when !trace.IsNew:
+                            await _unitOfWork.Repository.RemovePermissionAsync(role, trace.Value, cancellation)
+                                .ConfigureAwait(false);
+                            break;
+                    }
+                }
+                
                 _logger.LogDebug("Going to save changes");
                 await _unitOfWork.SaveAsync(cancellation)
                     .ConfigureAwait(false);

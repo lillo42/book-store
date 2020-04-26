@@ -10,6 +10,11 @@ namespace IdentityServer.Domain.Common
             
         }
 
+        public Role(Guid id)
+        {
+            Id = id;
+        }
+
         public Guid Id { get; set; }
         public string Name { get; set; }
         
@@ -17,7 +22,7 @@ namespace IdentityServer.Domain.Common
         
         public string DisplayName { get; set; }
         
-        public ISet<Permission> Permissions { get; set; }
+        public ISet<Permission> Permissions { get; set; } = new HashSet<Permission>();
 
         public bool Equals(Role other)
         {

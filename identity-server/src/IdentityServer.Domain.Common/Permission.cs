@@ -4,6 +4,16 @@ namespace IdentityServer.Domain.Common
 {
     public class Permission : IEquatable<Permission>
     {
+        public Permission()
+        {
+            
+        }
+
+        public Permission(Guid id)
+        {
+            Id = id;
+        }
+        
         public Guid Id { get; set; }
         public string Name { get; set; }
         

@@ -41,7 +41,8 @@ namespace IdentityServer.Web
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<RepositoryModule>()
-                .RegisterModule<AggregationModule>();
+                .RegisterModule<AggregationModule>()
+                .RegisterModule<ApplicationModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

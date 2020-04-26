@@ -10,7 +10,7 @@ namespace IdentityServer.Domain.Common
         public string Password { get; set; }
         public bool IsEnable { get; set; }
         
-        public ISet<Role> Roles { get; set; }
-        public ISet<Permission> Permissions { get; set; }
+        public ISet<Role> Roles { get; set; } = new HashSet<Role>();
+        public ISet<Permission> Permissions { get; set; } = new HashSet<Permission>();
     }
 }

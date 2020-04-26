@@ -2,7 +2,6 @@ using System;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Permission;
 using IdentityServer.Domain.Abstractions.Permission.Events;
-using IdentityServer.Domain.Abstractions.Role.Events;
 using IdentityServer.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 

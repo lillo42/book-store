@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using IdentityServer.Domain.Abstractions.Role.Events;
+using IdentityServer.Infrastructure;
 
 namespace IdentityServer.Domain.Abstractions.Role
 {
@@ -11,6 +11,7 @@ namespace IdentityServer.Domain.Abstractions.Role
         public RoleState(Common.Role role)
         {
             _role = role ?? throw new ArgumentNullException(nameof(role));
+            Permissions = new HashSetTrace<Common.Permission>(_role.Permissions);
         }
 
         public Guid Id => _role.Id;
@@ -21,7 +22,7 @@ namespace IdentityServer.Domain.Abstractions.Role
         
         public string DisplayName => _role.DisplayName;
         
-        public ISet<Common.Permission> Permissions => _role.Permissions;
+        public HashSetTrace<Common.Permission> Permissions { get; }
         
         
         public void Apply(CreateRoleEvent @event)

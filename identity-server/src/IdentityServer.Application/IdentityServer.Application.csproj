@@ -4,4 +4,14 @@
         <TargetFramework>netstandard2.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\IdentityServer.Domain.Common\IdentityServer.Domain.Common.csproj" />
+      <ProjectReference Include="..\IdentityServer.Domain\IdentityServer.Domain.csproj" />
+      <ProjectReference Include="..\IdentityServer.Infrastructure\IdentityServer.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CastForm" Version="0.0.4" />
+    </ItemGroup>
+
 </Project>

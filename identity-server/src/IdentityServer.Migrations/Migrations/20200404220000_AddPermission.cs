@@ -69,6 +69,10 @@ namespace IdentityServer.Migrations.Migrations
                 .FromTable("RolesPermissions").ForeignColumn("role_id")
                 .ToTable("Roles").PrimaryColumn("id");
 
+            Create.Index("IX_RolesPermissions_RoleId")
+                .OnTable("RolesPermissions")
+                .OnColumn("role_id");
+
             #endregion
         }
 

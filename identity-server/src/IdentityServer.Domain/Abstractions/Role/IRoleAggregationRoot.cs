@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using IdentityServer.Domain.Common;
 
 namespace IdentityServer.Domain.Abstractions.Role
 {
@@ -12,6 +11,6 @@ namespace IdentityServer.Domain.Abstractions.Role
 
         Task<Result> AddPermission(Common.Permission permission);
         
-        Task<Result> RemovePermission(Common.Permission permission);
+        Result RemovePermission(Common.Permission permission);
     }
 }

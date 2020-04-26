@@ -106,19 +106,13 @@ namespace IdentityServer.Domain.Role
             return Result.Ok();
         }
 
-        public async Task<Result> RemovePermission(Common.Permission permission)
+        public Result RemovePermission(Common.Permission permission)
         {
             if (permission == null)
             {
                 return RoleError.InvalidPermission;
             }
-            
-            if (!await _permissions.ExistAsync(permission.Id)
-                .ConfigureAwait(false))
-            {
-                return UserError.InvalidPermission;
-            }
-            
+
             if (!State.Permissions.Contains(permission))
             {
                 return RoleError.NotContainsPermission;

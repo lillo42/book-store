@@ -20,6 +20,9 @@ namespace IdentityServer.Domain
             public static ErrorResult PermissionAlreadyExist { get; } = Fail("ROL006", "Role already have this permission");
             
             public static ErrorResult NotContainsPermission { get; } = Fail("ROL007", "Role does not have this permission");
+            
+            
+            public static ErrorResult NotFound { get; } = Fail("ROL008", "Role not found");
         }
         
         public static class PermissionError
@@ -31,6 +34,8 @@ namespace IdentityServer.Domain
             public static ErrorResult InvalidDisplayName { get; } = Fail("PRM003", "Invalid display name");
             
             public static ErrorResult InvalidDescription { get; } = Fail("PRM004", "Invalid description");
+            
+            public static ErrorResult NotFound { get; } = Fail("PRM005", "Permission not found");
         }
         
         public static class UserError
@@ -50,6 +55,9 @@ namespace IdentityServer.Domain
             
             public static ErrorResult RoleAlreadyExist { get; } = Fail("USR009", "User already have this role");
             public static ErrorResult NotContainsRole { get; } = Fail("USR010", "User does not have this role");
+            
+            
+            public static ErrorResult NotFound { get; } = Fail("USR011", "User not found");
         }
         
         public static class ResourceError

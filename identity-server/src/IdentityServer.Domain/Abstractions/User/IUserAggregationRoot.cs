@@ -11,10 +11,10 @@ namespace IdentityServer.Domain.Abstractions.User
         
         Task<Result> AddPermissionAsync(Common.Permission permission);
         
-        Task<Result> RemovePermissionAsync(Common.Permission permission);
+        Result RemovePermission(Common.Permission permission);
         
         Task<Result> AddRoleAsync(Common.Role role);
         
-        Task<Result> RemoveRoleAsync(Common.Role role);
+        Result RemoveRole(Common.Role role);
     }
 }
