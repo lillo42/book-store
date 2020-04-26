@@ -1,4 +1,6 @@
 using Autofac;
+using IdentityServer.Infrastructure;
+using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Web.Modules;
 using IdentityServer.Web.Services;
 using IdentityServer.Web.Store;
@@ -43,6 +45,10 @@ namespace IdentityServer.Web
             builder.RegisterModule<RepositoryModule>()
                 .RegisterModule<AggregationModule>()
                 .RegisterModule<ApplicationModule>();
+
+            builder.RegisterType<SHA256Algorithm>()
+                .As<IHashAlgorithm>()
+                .SingleInstance();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

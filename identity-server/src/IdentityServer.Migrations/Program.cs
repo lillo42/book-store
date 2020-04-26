@@ -2,6 +2,8 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
+using IdentityServer.Infrastructure;
+using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Migrations.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -142,6 +144,10 @@ namespace IdentityServer.Migrations
             
             var container = new ContainerBuilder();
             container.Populate(service);
+            
+            container.RegisterType<SHA256Algorithm>()
+                .As<IHashAlgorithm>()
+                .SingleInstance();
             
             return new AutofacServiceProvider(container.Build());
         }

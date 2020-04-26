@@ -30,6 +30,10 @@ namespace IdentityServer.Migrations.Migrations
             Create.ForeignKey("FK_ClientsResources_Clients")
                 .FromTable("ClientsResources").ForeignColumn("client_id")
                 .ToTable("Clients").PrimaryColumn("id");
+            
+            Create.Index("IX_ClientsResources_ClientId")
+                .OnTable("ClientsResources")
+                .OnColumn("client_id");
             #endregion
         }
 
