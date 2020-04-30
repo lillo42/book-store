@@ -123,15 +123,9 @@ namespace IdentityServer.Domain.Client
             return Result.Ok();
         }
 
-        public async Task<Result> RemovePermissionAsync(Common.Permission permission)
+        public Result RemovePermission(Common.Permission permission)
         {
             if (permission == null)
-            {
-                return ClientError.InvalidPermission;
-            }
-
-            if (!await _permissions.ExistAsync(permission.Id)
-                .ConfigureAwait(false))
             {
                 return ClientError.InvalidPermission;
             }
@@ -167,19 +161,13 @@ namespace IdentityServer.Domain.Client
             return Result.Ok();
         }
 
-        public async Task<Result> RemoveRoleAsync(Common.Role role)
+        public Result RemoveRoleAsync(Common.Role role)
         {
             if (role == null)
             {
                 return ClientError.InvalidRole;
             }
-            
-            if (!await _roles.ExistAsync(role.Id)
-                .ConfigureAwait(false))
-            {
-                return ClientError.InvalidRole;
-            }
-            
+
             if (!State.Roles.Contains(role))
             {
                 return ClientError.NotContainsRole;

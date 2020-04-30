@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using IdentityServer.Application.Request.Client;
 using IdentityServer.Application.Request.User;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
@@ -8,22 +9,22 @@ using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer.Application.Operation.User
+namespace IdentityServer.Application.Operation.Client
 {
-    public class UserGetOperation : IOperation<UserGetById>
+    public class ClientGetOperation : IOperation<ClientGetById>
     {
-        private readonly IReadOnlyUserRepository _repository;
-        private readonly ILogger<UserGetOperation> _logger;
+        private readonly IReadOnlyClientRepository _repository;
+        private readonly ILogger<ClientGetOperation> _logger;
 
-        public UserGetOperation(IReadOnlyUserRepository repository, ILogger<UserGetOperation> logger)
+        public ClientGetOperation(IReadOnlyClientRepository permissionRepository, ILogger<ClientGetOperation> logger)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _repository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<Result> ExecuteAsync(UserGetById request, CancellationToken cancellationToken = default)
+        public async Task<Result> ExecuteAsync(ClientGetById request, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Going to get user. [User: {userId}]", request.Id);
+            _logger.LogInformation("Going to get client. [Client: {clientId}]", request.Id);
             try
             {
                 var role = await _repository.GetByIdAsync(request.Id, cancellationToken)
@@ -31,7 +32,7 @@ namespace IdentityServer.Application.Operation.User
 
                 if (role == null)
                 {
-                    _logger.LogInformation("User not found. [User: {userId}]", request.Id);
+                    _logger.LogInformation("Client not found. [Client: {clientId}]", request.Id);
                     return DomainError.UserError.NotFound;
                 }
                 
@@ -39,7 +40,7 @@ namespace IdentityServer.Application.Operation.User
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to get user. [User: {userId}]", request.Id);
+                _logger.LogError(e, "Error to get client. [Client: {clientId}]", request.Id);
                 return Result.Fail(e);
             }
         }
