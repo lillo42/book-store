@@ -13,6 +13,14 @@ namespace IdentityServer.Migrations.Migrations
                 .WithColumn("is_active").AsBoolean().NotNullable()
                 .WithColumn("client_id").AsAnsiString(50).NotNullable().Indexed("IX_Clients_ClientId")
                 .WithColumn("client_secret").AsString(250).NotNullable();
+
+            Create.Index("IX_Clients_Id")
+                .OnTable("Clients")
+                .OnColumn("id").Unique();
+
+            Create.Index("IX_Clients_ClientId")
+                .OnTable("Clients")
+                .OnColumn("client_id");
         }
 
         public override void Down()

@@ -32,7 +32,7 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default) 
             => await _connection.QueryAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\"")
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description,  \"is_active\" AS IsEnable  FROM public.\"Resources\"")
                 .ConfigureAwait(false);
 
         public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default) 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,19 +142,26 @@ namespace IdentityServer.Infrastructure.Repositories
                 LIMIT 1;
                 SELECT
                     P.""id"" AS Id,
-                    P.""name"" AS Name
+                    P.""name"" AS Name,
+                    P.""display_name"" AS DisplayName,
+                    P.""description"" AS Description
                 FROM public.""Permissions"" P
                 INNER JOIN public.""ClientsPermissions"" CP ON P.""id"" = CP.""permission_id""
                 WHERE CP.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
-                    R.""name"" AS Name
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description
                 FROM public.""Roles"" R
                 INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CR.""role_id""
                 WHERE CR.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
-                    R.""name"" AS Name
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description,
+                    R.""is_active"" AS IsEnable
                 FROM public.""Resources"" R
                 INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
                 WHERE CR.""client_id"" = :id;", new {id})
@@ -185,7 +193,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Client> GetByClientIdAsync(string clientId, CancellationToken cancellationToken = default)
         {
-            var client = await _connection.QueryFirstOrDefaultAsync<Client>($@"SELECT 
+            var client = await _connection.QueryFirstOrDefaultAsync<Client>($@"
+                SELECT 
                     ""id"" AS Id,
                     ""name"" AS Name, 
                     ""is_active"" AS IsEnable, 
@@ -204,22 +213,30 @@ namespace IdentityServer.Infrastructure.Repositories
             var multi = await _connection.QueryMultipleAsync($@"
                 SELECT
                     P.""id"" AS Id,
-                    P.""name"" AS Name
+                    P.""name"" AS Name,
+                    P.""display_name"" AS DisplayName,
+                    P.""description"" AS Description
                 FROM public.""Permissions"" P
                 INNER JOIN public.""ClientsPermissions"" CP ON P.""id"" = CP.""permission_id""
                 WHERE CP.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
-                    R.""name"" AS Name
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description
                 FROM public.""Roles"" R
                 INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CR.""role_id""
                 WHERE CR.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
-                    R.""name"" AS Name
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description,
+                    R.""is_active"" AS IsEnable
                 FROM public.""Resources"" R
                 INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
-                WHERE CR.""client_id"" = :id;", new {id =  client})
+                WHERE CR.""client_id"" = :id;
+                ", new {id =  client})
                 .ConfigureAwait(false);
             
             var permissions = await multi.ReadAsync<Permission>()
@@ -236,6 +253,71 @@ namespace IdentityServer.Infrastructure.Repositories
             client.Resources = resource.ToHashSet();
             
             return client;
+        }
+
+        public async IAsyncEnumerable<Client> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            var reader = await _connection.ExecuteReaderAsync($@" 
+                SELECT 
+                    ""id"" AS Id,
+                    ""name"" AS Name, 
+                    ""is_active"" AS IsEnable, 
+                    ""client_id"" AS ClientId, 
+                    ""client_secret"" AS ClientSecret 
+                FROM public.""Clients""")
+                .ConfigureAwait(false);
+
+            var parse = reader.GetRowParser<Client>();
+            while (await reader.ReadAsync(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                var client = parse(reader);
+
+                var multi = await _connection.QueryMultipleAsync($@"
+                SELECT
+                    P.""id"" AS Id,
+                    P.""name"" AS Name,
+                    P.""display_name"" AS DisplayName,
+                    P.""description"" AS Description
+                FROM public.""Permissions"" P
+                INNER JOIN public.""ClientsPermissions"" CP ON P.""id"" = CP.""permission_id""
+                WHERE CP.""client_id"" = :id;
+                SELECT
+                    R.""id"" AS Id,
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description
+                FROM public.""Roles"" R
+                INNER JOIN public.""ClientsRoles"" CR ON R.""id"" = CR.""role_id""
+                WHERE CR.""client_id"" = :id;
+                SELECT
+                    R.""id"" AS Id,
+                    R.""name"" AS Name
+                FROM public.""Resources"" R
+                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
+                WHERE CR.""client_id"" = :id;
+                SELECT
+                    R.""id"" AS Id,
+                    R.""name"" AS Name,
+                    R.""display_name"" AS DisplayName,
+                    R.""description"" AS Description,
+                    R.""is_active"" AS IsEnable
+                FROM public.""Resources"" R
+                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
+                WHERE CR.""client_id"" = :id", new {id =  client})
+                    .ConfigureAwait(false);
+
+
+                var permissions = await multi.ReadAsync<Permission>().ConfigureAwait(false);
+                var roles = await multi.ReadAsync<Role>().ConfigureAwait(false);
+                var resources = await multi.ReadAsync<Resource>().ConfigureAwait(false);
+
+                client.Permissions = permissions.ToHashSet();
+                client.Roles = roles.ToHashSet();
+                client.Resources = resources.ToHashSet();
+                
+                yield return client;
+            }
         }
     }
 }

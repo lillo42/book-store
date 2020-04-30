@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Application.Operation.Client
 {
-    public class UserGetAllOperation : IOperation<ClientGetAll>
+    public class ClientGetAllOperation : IOperation<ClientGetAll>
     {
-        private readonly ILogger<UserGetAllOperation> _logger;
+        private readonly ILogger<ClientGetAllOperation> _logger;
         private readonly IReadOnlyClientRepository _repository;
 
-        public UserGetAllOperation(IReadOnlyClientRepository permissionRepository,
-            ILogger<UserGetAllOperation> logger)
+        public ClientGetAllOperation(IReadOnlyClientRepository permissionRepository,
+            ILogger<ClientGetAllOperation> logger)
         {
             _repository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

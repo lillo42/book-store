@@ -66,13 +66,17 @@ namespace IdentityServer.Infrastructure.Repositories
                             P.""name"" AS Name,
                         FROM public.""Permissions"" P
                         INNER JOIN public.""UsersPermissions"" UP ON P.""id"" = UP.""permission_id""
-                        WHERE UR.""user_id"" = :id;
-",
+                        WHERE UR.""user_id"" = :id;",
                     new {id})
                 .ConfigureAwait(false);
 
             var user = await  multi.ReadFirstOrDefaultAsync<User>()
                 .ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return null;
+            }
 
             var roles = await multi.ReadAsync<Role>()
                 .ConfigureAwait(false);

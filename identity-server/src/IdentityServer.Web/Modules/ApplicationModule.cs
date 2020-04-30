@@ -1,10 +1,12 @@
 using Autofac;
+using IdentityServer.Application.Operation.Client;
 using IdentityServer.Application.Operation.Permission;
 using IdentityServer.Application.Operation.Resource;
 using IdentityServer.Application.Operation.Role;
 using IdentityServer.Application.Operation.User;
 using PermissionUpdateOperation = IdentityServer.Application.Operation.Permission.PermissionUpdateOperation;
 using RoleGetAllOperation = IdentityServer.Application.Operation.Role.RoleGetAllOperation;
+using UserGetAllOperation = IdentityServer.Application.Operation.User.UserGetAllOperation;
 
 namespace IdentityServer.Web.Modules
 {
@@ -105,6 +107,48 @@ namespace IdentityServer.Web.Modules
                 .InstancePerLifetimeScope();
             
             builder.RegisterType<UserGetOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            #endregion
+
+            #region Client
+            builder.RegisterType<ClientCreateOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ClientUpdateOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientAddPermissionOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientRemovePermissionOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientAddRoleOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientRemoveRoleOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientGetAllOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientGetOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientAddResourceOperation>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<ClientRemoveResourceOperation>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
             #endregion
