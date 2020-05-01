@@ -25,10 +25,7 @@ namespace IdentityServer.Application.Operation.Resource
             _logger.LogInformation("Going to get all resource");
             try
             {
-                var entites = await _permissionRepository.GetAllAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                return Result.Ok(entites);
+                return Result.Ok(_permissionRepository.GetAllAsync(cancellationToken));
             }
             catch (Exception e)
             {

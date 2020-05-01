@@ -47,9 +47,13 @@ namespace IdentityServer.Web.Store
 
         public async Task<Resources> GetAllResourcesAsync()
         {
-            var resources = await _repository.GetAllAsync()
-                .ConfigureAwait(false);
+            var resources = new LinkedList<Domain.Common.Resource>();
 
+            await foreach (var resource in _repository.GetAllAsync())
+            {
+                resources.AddLast(resource);
+            }
+            
             return new Resources(s_identity, resources.Select(ToApiResource).ToArray());
         }
         

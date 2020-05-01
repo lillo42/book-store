@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -18,22 +19,31 @@ namespace IdentityServer.Infrastructure.Repositories
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
-        public async Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default) 
+        public async Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default)
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
                     "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"id\" = @id",
                     new {id})
                 .ConfigureAwait(false);
 
-        public async Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default) 
+        public async Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
                     "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" = @name",
                     new {name})
                 .ConfigureAwait(false);
 
-        public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default) 
-            => await _connection.QueryAsync<Resource>(
+        public async IAsyncEnumerable<Resource> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var reader = await _connection.ExecuteReaderAsync(
                     "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description,  \"is_active\" AS IsEnable  FROM public.\"Resources\"")
                 .ConfigureAwait(false);
+
+            var parse = reader.GetRowParser<Resource>();
+
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                yield return parse(reader);
+            }
+        }
 
         public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default) 
             => await _connection.QueryAsync<Resource>(

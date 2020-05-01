@@ -10,7 +10,7 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
     {
         Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default);
         Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Resource> GetAllAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default);
         Task<bool> ExistAsync(Guid resourceId, CancellationToken cancellationToken = default);
     }
