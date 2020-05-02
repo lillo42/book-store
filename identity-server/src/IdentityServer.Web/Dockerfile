@@ -8,11 +8,10 @@ RUN dotnet restore ./IdentityServer.Web -s https://api.nuget.org/v3/index.json -
 RUN dotnet publish ./IdentityServer.Web -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENTRYPOINT ["dotnet", "IdentityServer.Web.dll"]
 
 ENV DOCKERIZE_VERSION v0.6.1
