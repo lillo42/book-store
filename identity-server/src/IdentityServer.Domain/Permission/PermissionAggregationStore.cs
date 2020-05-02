@@ -10,12 +10,12 @@ namespace IdentityServer.Domain.Permission
 {
     public class PermissionAggregationStore : IPermissionAggregationStore
     {
-        private readonly IUnitOfWork<IPermissionRepository> _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<PermissionAggregationStore> _logger;
 
-        public PermissionAggregationStore(IUnitOfWork<IPermissionRepository> unitOfWork, 
+        public PermissionAggregationStore(IUnitOfWork unitOfWork,
             IEventRepository eventRepository, 
             ILoggerFactory loggerFactory)
         {
@@ -34,7 +34,7 @@ namespace IdentityServer.Domain.Permission
         public async Task<IPermissionAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get role. [Permission: {permissionId}]", id);
-            var role = await _unitOfWork.Repository.GetByIdAsync(id, cancellation)
+            var role = await _unitOfWork.PermissionRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return role == null ? null : CreateNew(role);
@@ -52,22 +52,23 @@ namespace IdentityServer.Domain.Permission
             using (_unitOfWork.BeginTransaction())
             {
                 var permission = (Common.Permission) aggregate.State;
+                var repository = _unitOfWork.PermissionRepository;
 
                 if (permission.Id == Guid.Empty)
                 {
                     _logger.LogDebug("Going to create new permission.");
-                    await _unitOfWork.Repository.CreateAsync(permission, cancellation)
+                    await repository.CreateAsync(permission, cancellation)
                         .ConfigureAwait(false);
                 }
                 else
                 {
                     _logger.LogDebug("Going to update permission.");
-                    await _unitOfWork.Repository.CreateAsync(permission, cancellation)
+                    await repository.CreateAsync(permission, cancellation)
                         .ConfigureAwait(false);
                 }
 
                 _logger.LogDebug("Going to save changes");
-                await _unitOfWork.SaveAsync(cancellation)
+                await _unitOfWork.CommitAsync(cancellation)
                     .ConfigureAwait(false);
             }
 

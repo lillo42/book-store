@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ namespace IdentityServer.Infrastructure.Repositories
 {
     public class ResourceRepository : IResourceRepository
     {
-        private readonly NpgsqlConnection _connection;
+        private readonly DbConnection _connection;
 
-        public ResourceRepository(NpgsqlConnection connection)
+        public ResourceRepository(DbConnection connection)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
@@ -45,11 +46,13 @@ namespace IdentityServer.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default) 
-            => await _connection.QueryAsync<Resource>(
+        public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default)
+        {
+            return await _connection.QueryAsync<Resource>(
                     "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" IN @names",
                     new {names})
                 .ConfigureAwait(false);
+        } 
 
         public async Task<bool> ExistAsync(Guid resourceId, CancellationToken cancellationToken = default) 
             => await _connection.ExecuteScalarAsync<bool>(

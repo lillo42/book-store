@@ -9,7 +9,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer.Web.Services
+namespace IdentityServer.Web.IdentityServer4
 {
     public class ProfileService : IProfileService
     {

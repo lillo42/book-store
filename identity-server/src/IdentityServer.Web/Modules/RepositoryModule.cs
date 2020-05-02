@@ -1,9 +1,14 @@
+using System.Data.Common;
 using Autofac;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+using StackExchange.Profiling;
+using StackExchange.Profiling.Data;
 
 namespace IdentityServer.Web.Modules
 {
@@ -11,8 +16,16 @@ namespace IdentityServer.Web.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType(typeof(UnitOfWork<>))
-                .As(typeof(IUnitOfWork<>))
+
+            builder.Register(ctx => new ProfiledDbConnection(
+                    new NpgsqlConnection(ctx.Resolve<IConfiguration>().GetConnectionString("Postgres")),
+                    MiniProfiler.Current))
+                .As<DbConnection>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            
+            builder.RegisterType<UnitOfWork>()
+                .As<IUnitOfWork>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<RoleRepository>()

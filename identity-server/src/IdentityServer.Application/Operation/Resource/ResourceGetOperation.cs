@@ -6,6 +6,8 @@ using IdentityServer.Domain.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
+using static IdentityServer.Domain.DomainError;
+
 namespace IdentityServer.Application.Operation.Resource
 {
     public class ResourceGetOperation : IOperation<ResourceGetById>
@@ -28,6 +30,11 @@ namespace IdentityServer.Application.Operation.Resource
             {
                 var entity = await _repository.GetByIdAsync(request.Id, cancellationToken)
                     .ConfigureAwait(false);
+
+                if (entity == null)
+                {
+                    return ResourceError.NotFound;
+                }
                 
                 return Result.Ok(entity);
             }

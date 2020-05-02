@@ -6,32 +6,24 @@ using IdentityServer.Domain.Role;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
-using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.User
 {
     public class UserAggregationStore : IUserAggregationStore
     {
-        private readonly IUnitOfWork<IUserRepository> _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RoleAggregationStore> _logger;
         private readonly IHashAlgorithm _hash;
-        private readonly IReadOnlyRoleRepository _roleRepository;
-        private readonly IReadOnlyPermissionRepository _permissionRepository;
-
-        public UserAggregationStore(IUnitOfWork<IUserRepository> repository, 
+        public UserAggregationStore(IUnitOfWork repository, 
             IEventRepository eventRepository,
             IHashAlgorithm hash,
-            ILoggerFactory loggerFactory, 
-            IReadOnlyPermissionRepository permissionRepository, 
-            IReadOnlyRoleRepository roleRepository)
+            ILoggerFactory loggerFactory)
         {
             _unitOfWork = repository ?? throw new ArgumentNullException(nameof(repository));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
-            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _hash = hash ?? throw new ArgumentNullException(nameof(hash));
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _logger = _loggerFactory.CreateLogger<RoleAggregationStore>();
@@ -46,17 +38,17 @@ namespace IdentityServer.Domain.User
         public async Task<IUserAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         { 
             _logger.LogDebug("Going to get user. [UserId: {roleId}]", id);
-            var role = await _unitOfWork.Repository.GetByIdAsync(id, cancellation)
+            var entity = await _unitOfWork.UserRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
-            return role == null ? null : CreateNew(role);
+            return entity == null ? null : CreateNew(entity);
         }
         
         private UserAggregationRoot CreateNew(Common.User role)
         {
             return new UserAggregationRoot(new UserState(role),
                 _loggerFactory.CreateLogger<UserAggregationRoot>(),
-                _hash, _permissionRepository, _roleRepository);
+                _hash, _unitOfWork.PermissionRepository, _unitOfWork.RoleRepository);
         }
 
         public async Task SaveAsync(IUserAggregationRoot aggregate, CancellationToken cancellation = default)
@@ -65,15 +57,16 @@ namespace IdentityServer.Domain.User
             using (_unitOfWork.BeginTransaction())
             {
                 var user = (Common.User) aggregate.State;
+                var repository = _unitOfWork.UserRepository;
 
                 if (user.Id == Guid.Empty)
                 {
-                    await _unitOfWork.Repository.CreateAsync(user, cancellation)
+                    await repository.CreateAsync(user, cancellation)
                         .ConfigureAwait(false);
                 }
                 else
                 {
-                    await _unitOfWork.Repository.UpdateAsync(user, cancellation)
+                    await repository.UpdateAsync(user, cancellation)
                         .ConfigureAwait(false);
                 }
 
@@ -82,11 +75,11 @@ namespace IdentityServer.Domain.User
                     switch (trace.State)
                     {
                         case State.Added:
-                            await _unitOfWork.Repository.AddPermissionAsync(user, trace.Value, cancellation)
+                            await repository.AddPermissionAsync(user, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
                         case State.Removed when !trace.IsNew:
-                            await _unitOfWork.Repository.RemovePermissionAsync(user, trace.Value, cancellation)
+                            await repository.RemovePermissionAsync(user, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
                     }
@@ -97,18 +90,18 @@ namespace IdentityServer.Domain.User
                     switch (trace.State)
                     {
                         case State.Added:
-                            await _unitOfWork.Repository.AddRoleAsync(user, trace.Value, cancellation)
+                            await repository.AddRoleAsync(user, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
                         case State.Removed when !trace.IsNew:
-                            await _unitOfWork.Repository.RemoveRoleAsync(user, trace.Value, cancellation)
+                            await repository.RemoveRoleAsync(user, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
                     }
                 }
 
                 _logger.LogDebug("Going to save changes");
-                await _unitOfWork.SaveAsync(cancellation)
+                await _unitOfWork.CommitAsync(cancellation)
                     .ConfigureAwait(false);
             }
 

@@ -10,7 +10,8 @@ using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-namespace IdentityServer.Web.Store
+
+namespace IdentityServer.Web.IdentityServer4.Store
 {
     public class ClientStore : IClientStore
     {

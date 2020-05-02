@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -12,9 +14,9 @@ namespace IdentityServer.Infrastructure.Repositories
 {
     public class ClientRepository : IClientRepository
     {
-        private readonly NpgsqlConnection _connection;
+        private readonly DbConnection _connection;
 
-        public ClientRepository(NpgsqlConnection connection)
+        public ClientRepository(DbConnection connection)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
@@ -255,7 +257,7 @@ namespace IdentityServer.Infrastructure.Repositories
             return client;
         }
 
-        public async IAsyncEnumerable<Client> GetAllAsync(CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Client> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var reader = await _connection.ExecuteReaderAsync($@" 
                 SELECT 

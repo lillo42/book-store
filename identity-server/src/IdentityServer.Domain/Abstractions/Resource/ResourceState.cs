@@ -22,7 +22,6 @@ namespace IdentityServer.Domain.Abstractions.Resource
         
         public bool IsEnable => _resource.IsEnable;
         
-        
         public void Apply(CreateResourceEvent @event)
         {
             _resource.Name = @event.Name;

@@ -69,6 +69,10 @@ namespace IdentityServer.Domain
             public static ErrorResult InvalidDisplayName { get; } = Fail("RSC003", "Invalid display name");
             
             public static ErrorResult InvalidDescription { get; } = Fail("RSC004", "Invalid description");
+            
+            public static ErrorResult NotFound { get; } = Fail("RSC005", "Resource not found");
+            
+            public static ErrorResult InvalidId { get; } = Fail("RSC006", "Invalid Id");
         }
         
         public static class ClientError

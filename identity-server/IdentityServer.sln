@@ -8,10 +8,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Web", "src\IdentityServer.Web\IdentityServer.Web.csproj", "{1965C6B1-692E-4172-AD65-10ACBA297D57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CFB3C9A2-F63E-45BB-B98C-F3282563CFA3}"
-ProjectSection(SolutionItems) = preProject
-	global.json = global.json
-	nuget.config = nuget.config
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		nuget.config = nuget.config
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Infrastructure", "src\IdentityServer.Infrastructure\IdentityServer.Infrastructure.csproj", "{CD186B7A-9C83-4B2E-AFCB-F57D60B747C5}"
 EndProject
@@ -22,6 +23,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Application", "src\IdentityServer.Application\IdentityServer.Application.csproj", "{B0FCBD01-0F4E-4C6D-B471-C679671205FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Domain.Common", "src\IdentityServer.Domain.Common\IdentityServer.Domain.Common.csproj", "{2E593E05-AAE0-491D-97B0-CFFDA04E92B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{60C1BC21-0268-45DD-BCA2-BA4741A21A71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Domain.Test", "tests\IdentityServer.Domain.Test\IdentityServer.Domain.Test.csproj", "{0B3E865A-D687-4E9C-A192-D004B88F2C49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer.Application.Test", "tests\IdentityServer.Application.Test\IdentityServer.Application.Test.csproj", "{7827936A-5F07-43B8-A6B2-3356E7A277AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +115,30 @@ Global
 		{2E593E05-AAE0-491D-97B0-CFFDA04E92B3}.Release|x64.Build.0 = Release|Any CPU
 		{2E593E05-AAE0-491D-97B0-CFFDA04E92B3}.Release|x86.ActiveCfg = Release|Any CPU
 		{2E593E05-AAE0-491D-97B0-CFFDA04E92B3}.Release|x86.Build.0 = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|x64.Build.0 = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Debug|x86.Build.0 = Debug|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|x64.Build.0 = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49}.Release|x86.Build.0 = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|x64.Build.0 = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|x64.ActiveCfg = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|x64.Build.0 = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1965C6B1-692E-4172-AD65-10ACBA297D57} = {5873970B-29B0-4444-814F-66260B1C5161}
@@ -116,5 +147,7 @@ Global
 		{409EE5C2-21B0-4BD1-8436-87A976568AD6} = {5873970B-29B0-4444-814F-66260B1C5161}
 		{B0FCBD01-0F4E-4C6D-B471-C679671205FB} = {5873970B-29B0-4444-814F-66260B1C5161}
 		{2E593E05-AAE0-491D-97B0-CFFDA04E92B3} = {5873970B-29B0-4444-814F-66260B1C5161}
+		{0B3E865A-D687-4E9C-A192-D004B88F2C49} = {60C1BC21-0268-45DD-BCA2-BA4741A21A71}
+		{7827936A-5F07-43B8-A6B2-3356E7A277AB} = {60C1BC21-0268-45DD-BCA2-BA4741A21A71}
 	EndGlobalSection
 EndGlobal

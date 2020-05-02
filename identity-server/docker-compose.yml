@@ -1,0 +1,39 @@
+version: "3"
+volumes:
+  identity-volume:
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: postgres-book-store
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: "BookStore@123"
+  consul:
+    image: consul
+    container_name: consul-book-store
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    ports:
+      - 8500:8500
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    container_name: kibana-book-store
+    environment: 
+      ELASTICSEARCH_HOSTS: http://elastic-search:9200
+    ports: 
+      - 7000:5601
+    depends_on: 
+      - elastic-search
+    volumes: 
+      - "kibana-volume:/usr/share/kibana/"
+  elastic-search:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    container_name: elastic-search-book-store
+    environment: 
+      - discovery.type=single-node
+    ports: 
+      - 7200:9200
+      - 7300:9300
+    volumes: 
+      - "elastic-search-volume:/usr/share/elasticsearch/data"

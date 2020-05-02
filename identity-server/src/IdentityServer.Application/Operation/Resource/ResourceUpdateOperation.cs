@@ -32,7 +32,7 @@ namespace IdentityServer.Application.Operation.Resource
                 if (root == null)
                 {
                     _logger.LogInformation("Resource not found. [Resource: {resourceId}]", request.Id);
-                    return DomainError.PermissionError.NotFound;
+                    return DomainError.ResourceError.NotFound;
                 }
                 
                 var result = root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable);

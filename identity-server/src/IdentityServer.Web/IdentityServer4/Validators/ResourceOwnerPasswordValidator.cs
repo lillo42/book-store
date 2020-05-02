@@ -11,7 +11,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer.Web.Validators
+namespace IdentityServer.Web.IdentityServer4.Validators
 {
     public class ResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

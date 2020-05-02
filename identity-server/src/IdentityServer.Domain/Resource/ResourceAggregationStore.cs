@@ -11,12 +11,12 @@ namespace IdentityServer.Domain.Resource
 {
     public class ResourceAggregationStore : IResourceAggregationStore
     {
-        private readonly IUnitOfWork<IResourceRepository> _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RoleAggregationStore> _logger;
         
-        public ResourceAggregationStore(IUnitOfWork<IResourceRepository> repository, 
+        public ResourceAggregationStore(IUnitOfWork repository, 
             IEventRepository eventRepository, 
             ILoggerFactory loggerFactory)
         {
@@ -36,7 +36,7 @@ namespace IdentityServer.Domain.Resource
         public async Task<IResourceAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get role. [RoleId: {roleId}]", id);
-            var resource = await _unitOfWork.Repository.GetByIdAsync(id, cancellation)
+            var resource = await _unitOfWork.ResourceRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return resource == null ? null : CreateNew(resource);
@@ -54,20 +54,21 @@ namespace IdentityServer.Domain.Resource
             using (_unitOfWork.BeginTransaction())
             {
                 var resource = (Common.Resource) aggregate.State;
+                var repository = _unitOfWork.ResourceRepository;
 
                 if (resource.Id == Guid.Empty)
                 {
-                    await _unitOfWork.Repository.CreateAsync(resource, cancellation)
+                    await repository.CreateAsync(resource, cancellation)
                         .ConfigureAwait(false);
                 }
                 else
                 {
-                    await _unitOfWork.Repository.CreateAsync(resource, cancellation)
+                    await repository.CreateAsync(resource, cancellation)
                         .ConfigureAwait(false);
                 }
 
                 _logger.LogDebug("Going to save changes");
-                await _unitOfWork.SaveAsync(cancellation)
+                await _unitOfWork.CommitAsync(cancellation)
                     .ConfigureAwait(false);
             }
 

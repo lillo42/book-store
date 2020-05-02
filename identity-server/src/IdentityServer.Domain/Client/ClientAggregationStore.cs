@@ -5,34 +5,25 @@ using IdentityServer.Domain.Abstractions.Client;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
-using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.Client
 {
     public class ClientAggregationStore : IClientAggregationStore
     {
-        private readonly IUnitOfWork<IClientRepository> _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<ClientAggregationStore> _logger;
-        
-        private readonly IReadOnlyRoleRepository _roleRepository;
-        private readonly IReadOnlyPermissionRepository _permissionRepository;
-        private readonly IReadOnlyResourceRepository _resourceRepository;
 
-        public ClientAggregationStore(IUnitOfWork<IClientRepository> unitOfWork, 
+        public ClientAggregationStore(IUnitOfWork unitOfWork, 
             IEventRepository eventRepository, ILoggerFactory loggerFactory, 
-            ILogger<ClientAggregationStore> logger, IReadOnlyRoleRepository roleRepository, 
-            IReadOnlyPermissionRepository permissionRepository, IReadOnlyResourceRepository resourceRepository)
+            ILogger<ClientAggregationStore> logger)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
-            _resourceRepository = resourceRepository;
         }
 
         public IClientAggregationRoot Create()
@@ -44,7 +35,7 @@ namespace IdentityServer.Domain.Client
         public async Task<IClientAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get user. [UserId: {roleId}]", id);
-            var role = await _unitOfWork.Repository.GetByIdAsync(id, cancellation)
+            var role = await _unitOfWork.ClientRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return role == null ? null : CreateNew(role);
@@ -54,7 +45,8 @@ namespace IdentityServer.Domain.Client
         {
             return new ClientAggregationRoot(new ClientState(entity),
                 _loggerFactory.CreateLogger<ClientAggregationRoot>(),
-                _permissionRepository, _roleRepository, _resourceRepository);
+                _unitOfWork.PermissionRepository, _unitOfWork.RoleRepository,
+                _unitOfWork.ResourceRepository);
         }
 
         public async Task SaveAsync(IClientAggregationRoot aggregate, CancellationToken cancellation = default)
@@ -63,7 +55,7 @@ namespace IdentityServer.Domain.Client
             using (_unitOfWork.BeginTransaction())
             {
                 var entity = (Common.Client) aggregate.State;
-                var repository = _unitOfWork.Repository;
+                var repository = _unitOfWork.ClientRepository;
                 
                 if (entity.Id == Guid.Empty)
                 {
@@ -122,7 +114,7 @@ namespace IdentityServer.Domain.Client
                 }
 
                 _logger.LogDebug("Going to save changes");
-                await _unitOfWork.SaveAsync(cancellation)
+                await _unitOfWork.CommitAsync(cancellation)
                     .ConfigureAwait(false);
             }
             

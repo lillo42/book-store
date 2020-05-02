@@ -1,15 +1,22 @@
 using Autofac;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
+using IdentityServer.Web.IdentityServer4;
+using IdentityServer.Web.IdentityServer4.Store;
+using IdentityServer.Web.IdentityServer4.Validators;
+using IdentityServer.Web.Middleware;
 using IdentityServer.Web.Modules;
 using IdentityServer.Web.Services;
-using IdentityServer.Web.Store;
-using IdentityServer.Web.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using StackExchange.Profiling.SqlFormatters;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Endpoint.Health;
 
 namespace IdentityServer.Web
 {
@@ -25,8 +32,23 @@ namespace IdentityServer.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers();
+            services.AddControllers();
+
+            services.AddGrpc();
+            services.AddMemoryCache(opt =>
+            {
+                var cache = Configuration.GetSection("Cache").Get<MemoryCacheOptions>();
+                opt.ExpirationScanFrequency = cache.ExpirationScanFrequency;
+                opt.CompactionPercentage = cache.CompactionPercentage;
+                opt.SizeLimit = cache.SizeLimit;
+            });
+
+            services.AddMiniProfiler(options =>
+            {
+                var mini = Configuration.GetSection("Profiler").Get<Profiler>();
+                options.RouteBasePath = mini.Route;
+                options.SqlFormatter = new InlineFormatter();
+            });
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
@@ -34,6 +56,9 @@ namespace IdentityServer.Web
                 .AddResourceStore<ResourceStore>()
                 .AddProfileService<ProfileService>()
                 .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddDiscoveryClient(Configuration);
         }
         
         // ConfigureContainer is where you can register things directly
@@ -44,7 +69,8 @@ namespace IdentityServer.Web
         {
             builder.RegisterModule<RepositoryModule>()
                 .RegisterModule<AggregationModule>()
-                .RegisterModule<ApplicationModule>();
+                .RegisterModule<ApplicationModule>()
+                .RegisterModule<MapperModule>();
 
             builder.RegisterType<SHA256Algorithm>()
                 .As<IHashAlgorithm>()
@@ -59,14 +85,26 @@ namespace IdentityServer.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseMiniProfiler();
+
+            app.UseCorrelationId();
+            app.UseSerilogRequestLogging(opt =>
+            {
+                opt.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+            });
+            
+            //app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseIdentityServer();
+            
+            app.UseHealthActuator();
+            app.UseDiscoveryClient();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<ResourceService>();
             });
         }
     }

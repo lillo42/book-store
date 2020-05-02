@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -13,9 +14,9 @@ namespace IdentityServer.Infrastructure.Repositories
 {
     public class RoleRepository : IRoleRepository
     {
-        private readonly NpgsqlConnection _connection;
+        private readonly DbConnection _connection;
 
-        public RoleRepository(NpgsqlConnection connection)
+        public RoleRepository(DbConnection connection)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }

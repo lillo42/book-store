@@ -10,8 +10,4 @@
       <ProjectReference Include="..\IdentityServer.Infrastructure\IdentityServer.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="CastForm" Version="0.0.4" />
-    </ItemGroup>
-
 </Project>
