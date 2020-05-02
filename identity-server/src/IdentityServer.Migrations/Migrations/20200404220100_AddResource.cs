@@ -14,10 +14,6 @@ namespace IdentityServer.Migrations.Migrations
                 .WithColumn("description").AsString(250)
                 .WithColumn("is_active").AsBoolean().NotNullable();
 
-            Create.Index("IX_Resources_Id")
-                .OnTable("Resources")
-                .OnColumn("id").Unique();
-            
             #region Client
             Create.Table("ClientsResources")
                 .WithColumn("client_id").AsGuid()

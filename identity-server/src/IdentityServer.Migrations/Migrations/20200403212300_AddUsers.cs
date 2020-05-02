@@ -17,10 +17,6 @@ namespace IdentityServer.Migrations.Migrations
                 .OnTable("Users")
                 .OnColumn("mail").Ascending()
                 .OnColumn("password").Ascending();
-
-            Create.Index("IX_Users_Id")
-                .OnTable("Users")
-                .OnColumn("id").Unique();
         }
 
         public override void Down()

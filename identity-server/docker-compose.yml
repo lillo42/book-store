@@ -25,8 +25,6 @@ services:
       - 7000:5601
     depends_on: 
       - elastic-search
-    volumes: 
-      - "kibana-volume:/usr/share/kibana/"
   elastic-search:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
     container_name: elastic-search-book-store
@@ -35,5 +33,3 @@ services:
     ports: 
       - 7200:9200
       - 7300:9300
-    volumes: 
-      - "elastic-search-volume:/usr/share/elasticsearch/data"

@@ -13,10 +13,6 @@ namespace IdentityServer.Migrations.Migrations
                 .WithColumn("display_name").AsString().NotNullable()
                 .WithColumn("description").AsString(250);
 
-            Create.Index("IX_Roles_Id")
-                .OnTable("Roles")
-                .OnColumn("id").Unique();
-
             #region Client
 
             Create.Table("ClientsRoles")
