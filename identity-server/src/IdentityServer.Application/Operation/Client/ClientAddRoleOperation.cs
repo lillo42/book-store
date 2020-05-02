@@ -2,11 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Application.Request.Client;
-using IdentityServer.Application.Request.User;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Client;
-using IdentityServer.Domain.Abstractions.User;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Application.Operation.Client

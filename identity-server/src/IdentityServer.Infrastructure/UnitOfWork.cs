@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
-using Npgsql;
 
 namespace IdentityServer.Infrastructure
 {

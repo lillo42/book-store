@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Application.Request.Client;
-using IdentityServer.Application.Request.User;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
-using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 

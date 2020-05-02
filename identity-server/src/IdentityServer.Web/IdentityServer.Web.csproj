@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos/identity.proto" Link="Proto/identity.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos/resource.proto" Link="Proto/resource.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

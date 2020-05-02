@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Dapper;
 using IdentityServer.Domain.Common;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
-using Npgsql;
 
 namespace IdentityServer.Infrastructure.Repositories
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityServer.Application.Request.Role;
 using IdentityServer.Application.Request.User;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;

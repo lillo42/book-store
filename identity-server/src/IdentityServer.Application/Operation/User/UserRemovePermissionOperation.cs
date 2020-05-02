@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using IdentityServer.Application.Request.User;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
-using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Domain.Abstractions.User;
 using Microsoft.Extensions.Logging;
 

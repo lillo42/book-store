@@ -33,3 +33,36 @@ services:
     ports: 
       - 7200:9200
       - 7300:9300
+  identity-migrations:
+    build:
+      context: ./src
+      dockerfile: ./IdentityServer.Migrations/Dockerfile
+    container_name: identity-migrations-book-store
+    environment:
+      ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityMigration;"
+    volumes:
+      - "identity-volume:/var/output"
+    entrypoint: /bin/sh -c "rm -f /var/output/migrator.txt && dockerize -wait tcp://postgres:5432 sh /docker-entrypoint.sh"
+    depends_on:
+      - postgres
+  users:
+      build:
+        context: ./src
+        dockerfile: ./IdentityServer.Web/Dockerfile
+      container_name: identity-book-store
+      entrypoint: /bin/sh -c "dockerize -wait file:///var/output/migrator.txt -timeout 100s && dockerize -wait tcp://consul:8500  -timeout 100s && dockerize -wait tcp://elastic-search:9200 -timeout 100s && dotnet /app/Users.Web.dll"
+      environment:
+        ASPNETCORE_ENVIRONMENT: "Development"
+        ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityServer;"
+        Consul__Host: "consul"
+        Consul__Discovery__Hostname: "identity"
+        Serilog__WriteTo__1__Args__nodeUris: http://elastic-search:9200
+      ports:
+        - '5110:5110'
+      volumes:
+        - "identity-volume:/var/output"
+      depends_on:
+        - postgres
+        - consul
+        - elastic-search
+        - identity-migrations

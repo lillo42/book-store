@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using IdentityServer.Domain.Abstractions.User.Events;
 using IdentityServer.Infrastructure;
 
