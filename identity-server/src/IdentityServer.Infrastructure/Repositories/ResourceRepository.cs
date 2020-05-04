@@ -59,6 +59,12 @@ namespace IdentityServer.Infrastructure.Repositories
                     new { id =  resourceId })
                 .ConfigureAwait(false);
 
+        public async Task<bool> ExistAsync(string resourceName, CancellationToken cancellationToken = default) 
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Permissions\" where \"name\" = :resourceName LIMIT 1;",
+                    new { resourceName })
+                .ConfigureAwait(false);
+
         public async Task CreateAsync(Resource entity, CancellationToken cancellationToken = default)
         {
             entity.Id = Guid.NewGuid();

@@ -33,6 +33,14 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
                 .When(x => x.WhenIRequestUpdateWithName(Fixture.CreateWithLength(21)))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
         }
+        
+        [Fact]
+        public void NotCreateResourceWhenNameAlreadyExist()
+        {
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithName(_resource.Name))
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NameAlreadyExist));
+        }
 
         [Theory]
         [InlineData(null)]
@@ -65,6 +73,14 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithValidResource())
+                .Then(x => x.ThenIShouldGetOk());
+        }
+        
+        [Fact]
+        public void CreateResourceWhenEverythingIsFineAndNotChangeName()
+        {
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithValidResourceAndNotChangeName())
                 .Then(x => x.ThenIShouldGetOk());
         }
         
@@ -119,6 +135,16 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
             _request = Fixture.Build<UpdateResourceRequest>()
                 .With(x => x.Id, _resource.Id)
                 .With(x => x.Name, Fixture.CreateWithLength(20))
+                .Create();
+            
+            ExecuteRequest();
+        }
+        
+        private void WhenIRequestUpdateWithValidResourceAndNotChangeName()
+        {
+            _request = Fixture.Build<UpdateResourceRequest>()
+                .With(x => x.Id, _resource.Id)
+                .With(x => x.Name, _resource.Name)
                 .Create();
             
             ExecuteRequest();

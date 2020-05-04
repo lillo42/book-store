@@ -35,7 +35,9 @@ namespace IdentityServer.Application.Operation.Resource
                     return DomainError.ResourceError.NotFound;
                 }
                 
-                var result = root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                var result = await root
+                    .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (result is ErrorResult error)
                 {

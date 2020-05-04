@@ -45,6 +45,7 @@ namespace IdentityServer.Domain.Resource
         private ResourceAggregationRoot CreateNew(Common.Resource role)
         {
             return new ResourceAggregationRoot(new ResourceState(role),
+                _unitOfWork.ResourceRepository,
                 _loggerFactory.CreateLogger<ResourceAggregationRoot>());
         }
 

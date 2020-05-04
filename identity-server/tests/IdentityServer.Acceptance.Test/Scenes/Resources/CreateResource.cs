@@ -12,6 +12,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
 {
     public class CreateResource : BaseScene
     {
+        private Resource _resource;
         private CreateResourceRequest _request;
         private CreateResourceReplay _replay;
         
@@ -32,15 +33,22 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
                 .When(x => x.WhenCreateResourceIsRequested())
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
         }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void NotCreateResourceWhenDisplayIsMissing(string name)
+        
+        [Fact]
+        public void NotCreateResourceWhenNameAlreadyExist()
         {
-            this.Given(x => x.GivenUserWithDisplayName(name))
+            this.Given(x => x.GivenResourceWithName(Fixture.CreateWithLength(21)))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingDisplayName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
+        }
+
+        [Fact]
+        public void NotCreateResourceWhenDisplayIsMissing()
+        {
+            this.Given(x => x.GivenACreatedResource())
+                    .And(x=> x.GivenResourceWithName(_resource.Name))
+                .When(x => x.WhenCreateResourceIsRequested())
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NameAlreadyExist));
         }
         
         [Fact]
@@ -72,6 +80,21 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
             _request = Fixture.Build<CreateResourceRequest>()
                 .With(x => x.Name, name)
                 .Create();
+        }
+        
+        private void GivenACreatedResource()
+        {
+            var request = Fixture.Build<CreateResourceRequest>()
+                .With(x => x.Name, Fixture.CreateWithLength(20))
+                .Create();
+            
+            var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
+            var replay = client.CreateResource(_request);
+
+            replay.Should().NotBeNull();
+            replay.IsSuccess.Should().BeTrue();
+
+            _resource = _replay.Value;
         }
         
         private void GivenUserWithDisplayName(string displayName)

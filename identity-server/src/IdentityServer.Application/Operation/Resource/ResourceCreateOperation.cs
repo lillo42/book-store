@@ -27,7 +27,9 @@ namespace IdentityServer.Application.Operation.Resource
             {
                 var root = _aggregationStore.Create();
                 
-                var result = root.Create(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                var result = await root
+                    .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable, cancellationToken)
+                    .ConfigureAwait(false);
                 
                 if (result is ErrorResult error)
                 {

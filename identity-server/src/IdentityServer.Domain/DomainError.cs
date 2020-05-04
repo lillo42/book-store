@@ -73,6 +73,7 @@ namespace IdentityServer.Domain
             public static ErrorResult NotFound { get; } = Fail("RSC005", "Resource not found");
             
             public static ErrorResult InvalidId { get; } = Fail("RSC006", "Invalid Id");
+            public static ErrorResult NameAlreadyExist { get; } = Fail("RSC007", "Name already exist");
         }
         
         public static class ClientError

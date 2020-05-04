@@ -40,7 +40,7 @@ namespace IdentityServer.Application.Test.Operation
             
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(error);
             
             _store.GetAsync(request.Id)
@@ -58,7 +58,7 @@ namespace IdentityServer.Application.Test.Operation
 
             root
                 .Received(1)
-                .Update(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
         }
 
         
@@ -70,7 +70,7 @@ namespace IdentityServer.Application.Test.Operation
             
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(error);
             
             _store.GetAsync(request.Id)
@@ -88,7 +88,7 @@ namespace IdentityServer.Application.Test.Operation
 
             root
                 .Received(1)
-                .Update(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
         }
         
         [Fact]
@@ -97,7 +97,7 @@ namespace IdentityServer.Application.Test.Operation
             var request = _fixture.Create<ResourceUpdate>();
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(Result.Ok());
 
             _store.GetAsync(request.Id)
@@ -123,7 +123,7 @@ namespace IdentityServer.Application.Test.Operation
 
             root
                 .Received(1)
-                .Update(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
             var _ =_store
                 .Received(1)
@@ -137,7 +137,7 @@ namespace IdentityServer.Application.Test.Operation
             
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.Update(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(Result.Ok());
 
             var resource = _fixture.Create<Resource>();
@@ -161,7 +161,7 @@ namespace IdentityServer.Application.Test.Operation
             
             root
                 .Received(1)
-                .Update(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
             var _ =root
                 .Received(1)
