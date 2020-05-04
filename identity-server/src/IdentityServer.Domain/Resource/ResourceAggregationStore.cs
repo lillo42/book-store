@@ -64,7 +64,7 @@ namespace IdentityServer.Domain.Resource
                 }
                 else
                 {
-                    await repository.CreateAsync(resource, cancellation)
+                    await repository.UpdateAsync(resource, cancellation)
                         .ConfigureAwait(false);
                 }
 

@@ -8,14 +8,14 @@ namespace IdentityServer.Web.Mapper
         {
             if (source == null)
             {
-                return null;
+                return new Resource();
             }
             
             return new Resource
             {
                 Id = source.Id.ToString(),
                 Name = source.Name,
-                Description = source.Description,
+                Description = source.Description ?? string.Empty,
                 DisplayName = source.DisplayName,
                 IsEnable = source.IsEnable
             };

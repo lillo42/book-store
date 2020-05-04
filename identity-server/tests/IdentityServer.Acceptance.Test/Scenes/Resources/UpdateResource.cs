@@ -17,13 +17,13 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         private UpdateResourceReplay _replay;
         
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         public void NotCreateResourceWhenNameIsMissing(string name)
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithName(name))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingName))
+                .BDDfy();
         }
         
         [Fact]
@@ -31,7 +31,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithName(Fixture.CreateWithLength(21)))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName))
+                .BDDfy();
         }
         
         [Fact]
@@ -43,13 +44,13 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         public void NotCreateResourceWhenDisplayIsMissing(string displayName)
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithDisplayName(displayName))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingDisplayName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingDisplayName))
+                .BDDfy();
         }
         
         [Fact]
@@ -57,7 +58,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithDisplayName(Fixture.CreateWithLength(51)))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDisplayName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDisplayName))
+                .BDDfy();
         }
         
         [Fact]
@@ -65,7 +67,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithDescription(Fixture.CreateWithLength(251)))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDescription));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDescription))
+                .BDDfy();
         }
         
         [Fact]
@@ -73,7 +76,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithValidResource())
-                .Then(x => x.ThenIShouldGetOk());
+                .Then(x => x.ThenIShouldGetOk())
+                .BDDfy();
         }
         
         [Fact]
@@ -81,7 +85,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestUpdateWithValidResourceAndNotChangeName())
-                .Then(x => x.ThenIShouldGetOk());
+                .Then(x => x.ThenIShouldGetOk())
+                .BDDfy();
         }
         
         private void GivenAResource()

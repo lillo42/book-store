@@ -17,15 +17,26 @@ namespace IdentityServer.Web.Modules
         protected override void Load(ContainerBuilder builder)
         {
 
-            builder.Register(ctx => new ProfiledDbConnection(
-                    new NpgsqlConnection(ctx.Resolve<IConfiguration>().GetConnectionString("Postgres")),
-                    MiniProfiler.Current))
+            builder.Register(ctx =>
+                {
+                    var connection = new ProfiledDbConnection(
+                        new NpgsqlConnection(ctx.Resolve<IConfiguration>().GetConnectionString("Postgres")),
+                        MiniProfiler.Current);
+                    
+                    connection.Open();
+
+                    return connection;
+                })
                 .As<DbConnection>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
             
             builder.RegisterType<UnitOfWork>()
                 .As<IUnitOfWork>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<EventRepository>()
+                .As<IEventRepository>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<RoleRepository>()

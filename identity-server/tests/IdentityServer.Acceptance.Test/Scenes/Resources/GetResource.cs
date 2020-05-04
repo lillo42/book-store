@@ -17,14 +17,14 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         private GetResourceByIeReplay _replay;
         
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData("ABC")]
         public void GetResource_Should_ReturnInvalid_When_IdIsInvalid(string id)
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestGetResource(id))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidId));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidId))
+                .BDDfy();
         }
         
         [Fact]
@@ -32,7 +32,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestGetResource(Fixture.Create<Guid>().ToString()))
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NotFound));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NotFound))
+                .BDDfy();
         }
         
         [Fact]
@@ -40,7 +41,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource())
                 .When(x => x.WhenIRequestGetResource(_resource.Id))
-                .Then(x => x.ThenIShouldGetOk());
+                .Then(x => x.ThenIShouldGetOk())
+                .BDDfy();
         }
         
         private void GivenAResource()

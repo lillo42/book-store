@@ -17,13 +17,13 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         private CreateResourceReplay _replay;
         
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         public void NotCreateResourceWhenNameIsMissing(string name)
         {
             this.Given(x => x.GivenResourceWithName(name))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingName))
+                .BDDfy();
         }
         
         [Fact]
@@ -31,24 +31,27 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenResourceWithName(Fixture.CreateWithLength(21)))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName))
+                .BDDfy();
         }
         
         [Fact]
-        public void NotCreateResourceWhenNameAlreadyExist()
+        public void NotCreateResourceWhenDisplayIsMissing()
         {
             this.Given(x => x.GivenResourceWithName(Fixture.CreateWithLength(21)))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName))
+                .BDDfy();
         }
 
         [Fact]
-        public void NotCreateResourceWhenDisplayIsMissing()
+        public void NotCreateResourceWhenNameAlreadyExist()
         {
             this.Given(x => x.GivenACreatedResource())
                     .And(x=> x.GivenResourceWithName(_resource.Name))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NameAlreadyExist));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.NameAlreadyExist))
+                .BDDfy();
         }
         
         [Fact]
@@ -56,7 +59,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenUserWithDisplayName(Fixture.CreateWithLength(51)))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDisplayName));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDisplayName))
+                .BDDfy();
         }
         
         [Fact]
@@ -64,7 +68,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenUserWithDescription(Fixture.CreateWithLength(251)))
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDescription));
+                .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDescription))
+                .BDDfy();
         }
         
         [Fact]
@@ -72,7 +77,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAnValidResource())
                 .When(x => x.WhenCreateResourceIsRequested())
-                .Then(x => x.ThenIShouldGetOk());
+                .Then(x => x.ThenIShouldGetOk())
+                .BDDfy();
         }
         
         private void GivenResourceWithName(string name)
@@ -89,12 +95,12 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
                 .Create();
             
             var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
-            var replay = client.CreateResource(_request);
+            var replay = client.CreateResource(request);
 
             replay.Should().NotBeNull();
             replay.IsSuccess.Should().BeTrue();
 
-            _resource = _replay.Value;
+            _resource = replay.Value;
         }
         
         private void GivenUserWithDisplayName(string displayName)

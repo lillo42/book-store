@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -13,7 +15,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
 {
     public class GetAllResource : BaseScene
     {
-        private Queue<Resource> _resources;
+        private List<Resource> _resources;
         private AsyncServerStreamingCall<Resource> _replay;
         
         [Theory]
@@ -23,13 +25,14 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         {
             this.Given(x => x.GivenAResource(length))
                 .When(x => x.WhenIRequestGetAllResource())
-                .Then(x => x.ThenIShouldGetAllCreatedResource());
+                .Then(x => x.ThenIShouldGetAllCreatedResource())
+                .BDDfy();
         }
         
         private void GivenAResource(int length)
         {
             var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
-            _resources = new Queue<Resource>();
+            _resources = new List<Resource>(length);
 
             for (var i = 0; i < length; i++)
             {
@@ -42,7 +45,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
                 replay.Should().NotBeNull();
                 replay.IsSuccess.Should().BeTrue();
                 
-                _resources.Enqueue(replay.Value);
+                _resources.Add(replay.Value);
             }
         }
         
@@ -59,13 +62,20 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
             
             await foreach (var resource in stream.ReadAllAsync())
             {
-                _resources.TryDequeue(out var valid).Should().BeTrue();
+                var compared = _resources.FirstOrDefault(x => x.Id.Equals(resource.Id, StringComparison.InvariantCultureIgnoreCase));
+
+                if (compared == null)
+                {
+                    continue;
+                }
                 
-                resource.Id.Should().Be(valid.Id);
-                resource.Name.Should().Be(valid.Name);
-                resource.DisplayName.Should().Be(valid.DisplayName);
-                resource.Description.Should().Be(valid.Description);
-                resource.IsEnable.Should().Be(valid.IsEnable);
+                resource.Id.Should().Be(compared.Id);
+                resource.Name.Should().Be(compared.Name);
+                resource.DisplayName.Should().Be(compared.DisplayName);
+                resource.Description.Should().Be(compared.Description);
+                resource.IsEnable.Should().Be(compared.IsEnable);
+                
+                _resources.Remove(compared);
             }
 
             _resources.Should().BeEmpty();

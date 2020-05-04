@@ -19,8 +19,8 @@ namespace IdentityServer.Web.Mapper
             return new GetResourceByIeReplay
             {
                 IsSuccess = source.IsSuccess,
-                ErrorCode = source.ErrorCode,
-                Description = source.Description,
+                ErrorCode = source.ErrorCode ?? string.Empty,
+                Description = source.Description ?? string.Empty,
                 Value = _resource.Map((Domain.Common.Resource)source.Value)
             };
         }

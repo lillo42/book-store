@@ -21,13 +21,13 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default)
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"id\" = @id",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"id\" = @id",
                     new {id})
                 .ConfigureAwait(false);
 
         public async Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await _connection.QueryFirstOrDefaultAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" = @name",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" = @name",
                     new {name})
                 .ConfigureAwait(false);
 
@@ -48,20 +48,20 @@ namespace IdentityServer.Infrastructure.Repositories
         public async Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default)
         {
             return await _connection.QueryAsync<Resource>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" IN @names",
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description, \"is_active\" AS IsEnable  FROM public.\"Resources\" WHERE \"name\" IN @names",
                     new {names})
                 .ConfigureAwait(false);
         } 
 
         public async Task<bool> ExistAsync(Guid resourceId, CancellationToken cancellationToken = default) 
             => await _connection.ExecuteScalarAsync<bool>(
-                    "SELECT TRUE FROM public.\"Permissions\" where \"id\" = :id LIMIT 1;",
+                    "SELECT TRUE FROM public.\"Resources\" where \"id\" = :id LIMIT 1;",
                     new { id =  resourceId })
                 .ConfigureAwait(false);
 
         public async Task<bool> ExistAsync(string resourceName, CancellationToken cancellationToken = default) 
             => await _connection.ExecuteScalarAsync<bool>(
-                    "SELECT TRUE FROM public.\"Permissions\" where \"name\" = :resourceName LIMIT 1;",
+                    "SELECT TRUE FROM public.\"Resources\" where \"name\" = :resourceName LIMIT 1;",
                     new { resourceName })
                 .ConfigureAwait(false);
 
