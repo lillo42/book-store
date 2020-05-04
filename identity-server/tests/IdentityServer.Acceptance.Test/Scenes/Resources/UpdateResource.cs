@@ -10,97 +10,124 @@ using Xunit;
 
 namespace IdentityServer.Acceptance.Test.Scenes.Resources
 {
-    public class CreateResource : BaseScene
+    public class UpdateResource : BaseScene
     {
-        private CreateResourceRequest _request;
-        private CreateResourceReplay _replay;
+        private Resource _resource;
+        private UpdateResourceRequest _request;
+        private UpdateResourceReplay _replay;
         
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         public void NotCreateResourceWhenNameIsMissing(string name)
         {
-            this.Given(x => x.GivenResourceWithName(name))
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithName(name))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingName));
         }
         
         [Fact]
         public void NotCreateResourceWhenNameIsInvalid()
         {
-            this.Given(x => x.GivenResourceWithName(Fixture.CreateWithLength(21)))
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithName(Fixture.CreateWithLength(21)))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidName));
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void NotCreateResourceWhenDisplayIsMissing(string name)
+        public void NotCreateResourceWhenDisplayIsMissing(string displayName)
         {
-            this.Given(x => x.GivenUserWithDisplayName(name))
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithDisplayName(displayName))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.MissingDisplayName));
         }
         
         [Fact]
         public void NotCreateResourceWhenDisplayIsInvalid()
         {
-            this.Given(x => x.GivenUserWithDisplayName(Fixture.CreateWithLength(51)))
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithDisplayName(Fixture.CreateWithLength(51)))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDisplayName));
         }
         
         [Fact]
         public void NotCreateResourceWhenDescriptionIsInvalid()
         {
-            this.Given(x => x.GivenUserWithDescription(Fixture.CreateWithLength(251)))
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithDescription(Fixture.CreateWithLength(251)))
                 .Then(x => x.ThenIShouldGetError(DomainError.ResourceError.InvalidDescription));
         }
         
         [Fact]
         public void CreateResourceWhenEverythingIsFine()
         {
-            this.Given(x => x.GivenAnValidResource())
-                .When(x => x.WhenCreateResourceIsRequested())
+            this.Given(x => x.GivenAResource())
+                .When(x => x.WhenIRequestUpdateWithValidResource())
                 .Then(x => x.ThenIShouldGetOk());
         }
         
-        private void GivenResourceWithName(string name)
+        private void GivenAResource()
         {
-            _request = Fixture.Build<CreateResourceRequest>()
+            var request = Fixture.Build<CreateResourceRequest>()
+                .With(x => x.Name, Fixture.CreateWithLength(20))
+                .Create();
+            
+            var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
+            var replay = client.CreateResource(request);
+
+            replay.Should().NotBeNull();
+            replay.IsSuccess.Should().BeTrue();
+            _resource = replay.Value;
+        }
+
+        private void WhenIRequestUpdateWithName(string name)
+        {
+            _request = Fixture.Build<UpdateResourceRequest>()
+                .With(x => x.Id, _resource.Id)
                 .With(x => x.Name, name)
                 .Create();
+            
+            ExecuteRequest();
         }
         
-        private void GivenUserWithDisplayName(string displayName)
+        private void WhenIRequestUpdateWithDisplayName(string displayName)
         {
-            _request = Fixture.Build<CreateResourceRequest>()
+            _request = Fixture.Build<UpdateResourceRequest>()
+                .With(x => x.Id, _resource.Id)
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .With(x => x.DisplayName, displayName)
                 .Create();
+            
+            ExecuteRequest();
         }
         
-        private void GivenUserWithDescription(string description)
+        private void WhenIRequestUpdateWithDescription(string description)
         {
-            _request = Fixture.Build<CreateResourceRequest>()
+            _request = Fixture.Build<UpdateResourceRequest>()
+                .With(x => x.Id, _resource.Id)
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .With(x => x.Description, description)
                 .Create();
+            
+            ExecuteRequest();
         }
         
-        private void GivenAnValidResource()
+        private void WhenIRequestUpdateWithValidResource()
         {
-            _request = Fixture.Build<CreateResourceRequest>()
+            _request = Fixture.Build<UpdateResourceRequest>()
+                .With(x => x.Id, _resource.Id)
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .Create();
+            
+            ExecuteRequest();
         }
         
-        private void WhenCreateResourceIsRequested()
+        private void ExecuteRequest()
         {
             var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
-            _replay = client.CreateResource(_request);
+            _replay = client.UpdateResource(_request);
         }
 
         private void ThenIShouldGetError(ErrorResult error)

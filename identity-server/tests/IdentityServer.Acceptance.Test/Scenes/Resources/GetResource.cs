@@ -49,7 +49,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .Create();
             
-            var client = this.Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
+            var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
             var replay = client.CreateResource(request);
 
             replay.Should().NotBeNull();
@@ -59,7 +59,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
         
         private void WhenIRequestGetResource(string id)
         {
-            var client = this.Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
+            var client = Provider.GetRequiredService<Web.Proto.Resources.ResourcesClient>();
             _replay = client.GetResourceById(new GetResourceByIdRequest
             {
                 Id = id

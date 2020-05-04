@@ -22,7 +22,7 @@ namespace IdentityServer.Acceptance.Test
                 .AddSingleton(configure);
             
             var channel = new Channel(configure.GetValue<string>("Host"), ChannelCredentials.Insecure);
-            collection.AddScoped(p => new IdentityServer.Web.Proto.Resources.ResourcesClient(channel));
+            collection.AddScoped(p => new Web.Proto.Resources.ResourcesClient(channel));
 
             Provider = collection.BuildServiceProvider();
         }

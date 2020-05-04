@@ -21,6 +21,9 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.GetResourceByIeReplay>>()
                 .SingleInstance();
             
+            builder.RegisterType<ResultToUpdateResourceReplay>()
+                .As<IMapper<Result, Proto.UpdateResourceReplay>>()
+                .SingleInstance();
             #endregion
         }
     }
