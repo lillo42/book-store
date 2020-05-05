@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -64,10 +65,19 @@ namespace IdentityServer.Infrastructure.Repositories
                     new { id })
                 .ConfigureAwait(false);
 
-        public async Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default) 
-            => await _connection.QueryAsync<Permission>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\"")
+        public async IAsyncEnumerable<Permission>GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var reader = await _connection
+                .ExecuteReaderAsync("SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\"")
                 .ConfigureAwait(false);
+            var parser = reader.GetRowParser<Permission>();
+
+            while (await reader.ReadAsync(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                yield return parser(reader);
+            }
+        }
 
         public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default) 
             => await _connection.ExecuteScalarAsync<bool>(

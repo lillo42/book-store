@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Common;
@@ -10,7 +11,7 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
     {
         Task<Resource> GetByIdAsync(Guid id, CancellationToken cancellation = default);
         Task<Resource> GetByNameAsync(string name, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<Resource> GetAllAsync(CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Resource> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default);
         Task<IEnumerable<Resource>> GetByNamesAsync(IEnumerable<string> names, CancellationToken cancellationToken = default);
         Task<bool> ExistAsync(Guid resourceId, CancellationToken cancellationToken = default);
         Task<bool> ExistAsync(string resourceName, CancellationToken cancellationToken = default);

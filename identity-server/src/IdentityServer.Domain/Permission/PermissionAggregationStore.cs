@@ -64,7 +64,7 @@ namespace IdentityServer.Domain.Permission
                 else
                 {
                     _logger.LogDebug("Going to update permission.");
-                    await repository.CreateAsync(permission, cancellation)
+                    await repository.UpdateAsync(permission, cancellation)
                         .ConfigureAwait(false);
                 }
 

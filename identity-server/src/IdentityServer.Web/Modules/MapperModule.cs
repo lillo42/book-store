@@ -33,7 +33,7 @@ namespace IdentityServer.Web.Modules
                 .SingleInstance();
             
             builder.RegisterType<ResultToCreatePermissionReplay>()
-                .As<IMapper<Result, Proto.Permission>>()
+                .As<IMapper<Result, Proto.CreatePermissionReplay>>()
                 .SingleInstance();
             
             builder.RegisterType<ResultToUpdatePermissionReplay>()

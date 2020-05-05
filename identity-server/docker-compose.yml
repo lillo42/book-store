@@ -69,7 +69,7 @@ services:
         context: ./src
         dockerfile: ./IdentityServer.Web/Dockerfile
       container_name: identity-book-store
-      entrypoint: /bin/sh -c "dockerize -wait file:///var/output/migrator.txt -timeout 100s && dockerize -wait tcp://consul:8500  -timeout 100s && dockerize -wait tcp://elastic-search:9200 -timeout 100s && dotnet /app/IdentityServer.Web.dll"
+      entrypoint: /bin/sh -c "dockerize -wait file:///var/output/migrator.txt -timeout 100s && dockerize -wait tcp://consul:8500  -timeout 100s && dockerize -wait tcp://elastic-search:9200 -timeout 100s && dockerize -wait tcp://zipkin:9411 -timeout 100s && dotnet /app/IdentityServer.Web.dll"
       environment:
         ASPNETCORE_ENVIRONMENT: "Development"
         ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityServer;"

@@ -25,10 +25,7 @@ namespace IdentityServer.Application.Operation.Permission
             _logger.LogInformation("Going to get all permission");
             try
             {
-                var permission = await _permissionRepository.GetAllAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                return Result.Ok(permission);
+                return Result.Ok(_permissionRepository.GetAllAsync(cancellationToken));
             }
             catch (Exception e)
             {
