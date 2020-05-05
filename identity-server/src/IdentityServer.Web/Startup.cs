@@ -1,6 +1,7 @@
 using Autofac;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
+using IdentityServer.Web.Configuration;
 using IdentityServer.Web.IdentityServer4;
 using IdentityServer.Web.IdentityServer4.Store;
 using IdentityServer.Web.IdentityServer4.Validators;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using StackExchange.Profiling.SqlFormatters;
+using StackExchange.Profiling.Storage;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Management.Endpoint.Health;
 
@@ -48,6 +50,7 @@ namespace IdentityServer.Web
                 var mini = Configuration.GetSection("Profiler").Get<Profiler>();
                 options.RouteBasePath = mini.Route;
                 options.SqlFormatter = new InlineFormatter();
+                options.Storage = new PostgreSqlStorage(Configuration.GetConnectionString("Postgres"));
             });
 
             services.AddIdentityServer()
@@ -59,6 +62,11 @@ namespace IdentityServer.Web
             
             services.AddHealthActuator(Configuration);
             services.AddDiscoveryClient(Configuration);
+            
+            services.AddScoped(_ =>
+                Configuration.GetSection("ConnectionStrings")
+                    .GetSection("RavenDb")
+                    .Get<RavenDbConfiguration>());
         }
         
         // ConfigureContainer is where you can register things directly

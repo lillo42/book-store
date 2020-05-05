@@ -4,6 +4,7 @@ namespace IdentityServer.Domain.Common
 {
     public abstract class Event
     {
-        public DateTime OccurredOn { get; } = DateTime.UtcNow;
+        public string Id { get; set; }
+        public DateTime OccurredOn { get; set; } = DateTime.UtcNow;
     }
 }

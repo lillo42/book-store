@@ -5,8 +5,12 @@ using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
+using IdentityServer.Web.Configuration;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Conventions;
+using Raven.Client.Documents.Session;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Data;
 
@@ -29,6 +33,27 @@ namespace IdentityServer.Web.Modules
                 })
                 .As<DbConnection>()
                 .AsSelf()
+                .InstancePerLifetimeScope();
+
+            builder.Register(ctx =>
+                {
+                    var configuration = ctx.Resolve<RavenDbConfiguration>();
+                    var store =  new DocumentStore()
+                    {
+                        Urls = configuration.Urls,
+                        Database = configuration.Database,
+                    };
+
+                    store.Initialize();
+
+                    return store;
+                })
+                .AsSelf()
+                .As<IDocumentStore>()
+                .InstancePerLifetimeScope();
+
+            builder.Register(ctx => ctx.Resolve<IDocumentStore>().OpenAsyncSession())
+                .As<IAsyncDocumentSession>()
                 .InstancePerLifetimeScope();
             
             builder.RegisterType<UnitOfWork>()

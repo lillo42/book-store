@@ -2,6 +2,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Generators.Postgres;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Migrations.Migrations;
@@ -141,6 +142,8 @@ namespace IdentityServer.Migrations
                         provider.GetRequiredService<IConfiguration>().GetConnectionString("Postgres"))
                     // Define the assembly containing the migrations
                     .ScanIn(typeof(AddClient).Assembly).For.Migrations());
+            
+            service.AddScoped<PostgresQuoter, CustomQuote>();
             
             var container = new ContainerBuilder();
             container.Populate(service);

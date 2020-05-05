@@ -1,4 +1,4 @@
-namespace IdentityServer.Web
+namespace IdentityServer.Web.Configuration
 {
     public class Profiler
     {

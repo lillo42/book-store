@@ -9,6 +9,15 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: "BookStore@123"
+  raven:
+    image: ravendb/ravendb
+    container_name: raven-book-store
+    ports:
+    - 8600:8080
+    environment:
+      RAVEN_ARGS: '--Setup.Mode=None'
+      RAVEN_License_Eula_Accepted: 'true'
+      RAVEN_Security_UnsecuredAccessAllowed: 'PrivateNetwork'
   consul:
     image: consul
     container_name: consul-book-store
@@ -45,7 +54,7 @@ services:
     entrypoint: /bin/sh -c "rm -f /var/output/migrator.txt && dockerize -wait tcp://postgres:5432 sh /docker-entrypoint.sh"
     depends_on:
       - postgres
-  users:
+  identity:
       build:
         context: ./src
         dockerfile: ./IdentityServer.Web/Dockerfile
@@ -54,6 +63,7 @@ services:
       environment:
         ASPNETCORE_ENVIRONMENT: "Development"
         ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityServer;"
+        ConnectionStrings__RavenDb__Urls__0: "http://raven:8080"
         Consul__Host: "consul"
         Consul__Discovery__Hostname: "identity"
         Serilog__WriteTo__1__Args__nodeUris: http://elastic-search:9200
