@@ -39,8 +39,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Permissions
                 var request = Fixture.Build<CreatePermissionRequest>()
                     .With(x => x.Name, Fixture.CreateWithLength(20))
                     .Create();
-            
-            
+
                 var replay = client.CreatePermission(request);
                 replay.Should().NotBeNull();
                 replay.IsSuccess.Should().BeTrue();

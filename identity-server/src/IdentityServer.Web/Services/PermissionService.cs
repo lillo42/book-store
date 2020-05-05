@@ -109,10 +109,10 @@ namespace IdentityServer.Web.Services
 
         public override async Task GetPermissions(GetPermissionsRequest request, IServerStreamWriter<Permission> responseStream, ServerCallContext context)
         {
-            _logger.LogInformation($"Going to execute {nameof(ResourceGetAllOperation)}");
+            _logger.LogInformation($"Going to execute {nameof(PermissionGetAllOperation)}");
                     
-            var operation = _provider.GetRequiredService<ResourceGetAllOperation>();
-            var result = await operation.ExecuteAsync(new ResourceGetAll())
+            var operation = _provider.GetRequiredService<PermissionGetAllOperation>();
+            var result = await operation.ExecuteAsync(new PermissionGetAll())
                 .ConfigureAwait(false);
 
             var mapper = _provider.GetRequiredService<IMapper<Domain.Common.Permission, Permission>>();
