@@ -2,42 +2,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using IdentityServer.Application.Operation.Resource;
-using IdentityServer.Application.Request.Resource;
-using IdentityServer.Domain.Common;
+using IdentityServer.Application.Operation.Permission;
+using IdentityServer.Application.Request.Permission;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
+using static IdentityServer.Domain.DomainError.PermissionError;
 
-using static IdentityServer.Domain.DomainError.ResourceError;
-
-namespace IdentityServer.Application.Test.Operation
+namespace IdentityServer.Application.Test.Operation.Permission
 {
-    public class ResourceGetOperationTest
+    public class PermissionGetOperationTest
     {
-        private readonly IReadOnlyResourceRepository _repository;
-        private readonly ILogger<ResourceGetOperation> _logger;
-        private readonly ResourceGetOperation _operation;
+        private readonly IReadOnlyPermissionRepository _repository;
+        private readonly ILogger<PermissionGetOperation> _logger;
+        private readonly PermissionGetOperation _operation;
         private readonly Fixture _fixture;
 
-        public ResourceGetOperationTest()
+        public PermissionGetOperationTest()
         {
             _fixture = new Fixture();
             
-            _repository = Substitute.For<IReadOnlyResourceRepository>();
-            _logger = Substitute.For<ILogger<ResourceGetOperation>>();
+            _repository = Substitute.For<IReadOnlyPermissionRepository>();
+            _logger = Substitute.For<ILogger<PermissionGetOperation>>();
             
-            _operation = new ResourceGetOperation(_repository, _logger);
+            _operation = new PermissionGetOperation(_repository, _logger);
         }
 
         [Fact]
         public async Task Execute_Should_ReturnError_When_NotFound()
         {
-            var request = _fixture.Create<ResourceGetById>();
+            var request = _fixture.Create<PermissionGetById>();
             
             _repository.GetByIdAsync(request.Id, Arg.Any<CancellationToken>())
-                .Returns(Task.FromResult<Resource>(null));
+                .Returns(Task.FromResult<Domain.Common.Permission>(null));
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
 
@@ -53,8 +51,8 @@ namespace IdentityServer.Application.Test.Operation
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<ResourceGetById>();
-            var entity = _fixture.Create<Resource>();
+            var request = _fixture.Create<PermissionGetById>();
+            var entity = _fixture.Create<Domain.Common.Permission>();
 
             _repository.GetByIdAsync(request.Id, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(entity));

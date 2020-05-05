@@ -2,18 +2,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Application.Request.Permission;
+using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Application.Operation.Permission
 {
     public class PermissionGetOperation : IOperation<PermissionGetById>
     {
-        private readonly IPermissionRepository _permissionRepository;
+        private readonly IReadOnlyPermissionRepository _permissionRepository;
         private readonly ILogger<PermissionGetOperation> _logger;
 
-        public PermissionGetOperation(IPermissionRepository permissionRepository, 
+        public PermissionGetOperation(IReadOnlyPermissionRepository permissionRepository, 
             ILogger<PermissionGetOperation> logger)
         {
             _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
@@ -28,6 +30,11 @@ namespace IdentityServer.Application.Operation.Permission
             {
                 var permissions = await _permissionRepository.GetByIdAsync(request.Id, cancellationToken)
                     .ConfigureAwait(false);
+
+                if (permissions == null)
+                {
+                    return DomainError.PermissionError.NotFound;
+                }
                 
                 return Result.Ok(permissions);
             }

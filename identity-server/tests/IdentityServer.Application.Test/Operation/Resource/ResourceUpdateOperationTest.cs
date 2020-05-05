@@ -7,43 +7,42 @@ using IdentityServer.Application.Operation.Resource;
 using IdentityServer.Application.Request.Resource;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Resource;
-using IdentityServer.Domain.Common;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace IdentityServer.Application.Test.Operation
+namespace IdentityServer.Application.Test.Operation.Resource
 {
-    public class ResourceCreateOperationTest
+    public class ResourceUpdateOperationTest
     {
         private readonly IResourceAggregationStore _store;
-        private readonly ILogger<ResourceCreateOperation> _logger;
-        private readonly ResourceCreateOperation _operation;
+        private readonly ILogger<ResourceUpdateOperation> _logger;
+        private readonly ResourceUpdateOperation _operation;
         private readonly Fixture _fixture;
 
-        public ResourceCreateOperationTest()
+        public ResourceUpdateOperationTest()
         {
             _fixture = new Fixture();
             
             _store = Substitute.For<IResourceAggregationStore>();
-            _logger = Substitute.For<ILogger<ResourceCreateOperation>>();
+            _logger = Substitute.For<ILogger<ResourceUpdateOperation>>();
             
-            _operation = new ResourceCreateOperation(_store, _logger);
+            _operation = new ResourceUpdateOperation(_store, _logger);
         }
 
         [Fact]
-        public async Task Execute_Should_ReturnError_When_CreateReturnError()
+        public async Task Execute_Should_ReturnError_When_ResourceNotFound()
         {
-            var request = _fixture.Create<ResourceCreate>();
+            var request = _fixture.Create<ResourceUpdate>();
             var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
             
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(error);
             
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
@@ -52,25 +51,55 @@ namespace IdentityServer.Application.Test.Operation
             result.IsSuccess.Should().BeFalse();
             result.Should().Be(error);
             
-            _store
+            var __ = _store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
 
             root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
+        }
+
+        
+        [Fact]
+        public async Task Execute_Should_ReturnError_When_UpdateReturnError()
+        {
+            var request = _fixture.Create<ResourceUpdate>();
+            var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
+            
+            var root = Substitute.For<IResourceAggregationRoot>();
+
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
+                .Returns(error);
+            
+            _store.GetAsync(request.Id)
+                .Returns(root);
+
+            var result = await _operation.ExecuteAsync(request, CancellationToken.None);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse();
+            result.Should().Be(error);
+            
+            var __ = _store
+                .Received(1)
+                .GetAsync(request.Id);
+
+            root
+                .Received(1)
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
         }
         
         [Fact]
         public async Task Execute_Should_ReturnError_When_Throw()
         {
-            var request = _fixture.Create<ResourceCreate>();
+            var request = _fixture.Create<ResourceUpdate>();
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(Result.Ok());
 
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var exception = new Exception(_fixture.Create<string>())
@@ -87,13 +116,13 @@ namespace IdentityServer.Application.Test.Operation
             result.IsSuccess.Should().BeFalse();
             result.Should().BeEquivalentTo(Result.Fail(exception));
             
-            _store
+            var __ =_store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
 
             root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
             var _ =_store
                 .Received(1)
@@ -103,19 +132,19 @@ namespace IdentityServer.Application.Test.Operation
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<ResourceCreate>();
+            var request = _fixture.Create<ResourceUpdate>();
             
             var root = Substitute.For<IResourceAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
+            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
                 .Returns(Result.Ok());
 
-            var resource = _fixture.Create<Resource>();
+            var resource = _fixture.Create<Domain.Common.Resource>();
             
             root.State
                 .Returns(new ResourceState(resource));
             
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
@@ -125,13 +154,13 @@ namespace IdentityServer.Application.Test.Operation
             result.Value.Should().NotBeNull();
             result.Value.Should().Be(resource);
 
-            _store
+            var __ =_store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
             
             root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
+                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
             var _ =root
                 .Received(1)
