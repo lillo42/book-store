@@ -9,7 +9,7 @@ service Permissions {
     rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionReplay) {}
     rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionReplay) {}
 
-    rpc GetPermissionById (GetPermissionByIdRequest) returns (GetPermissionsByIeReplay) {}
+    rpc GetPermissionById (GetPermissionByIdRequest) returns (GetPermissionByIeReplay) {}
     rpc GetPermissions (GetPermissionsRequest) returns (stream Permission) {}
 }
 
@@ -55,7 +55,7 @@ message GetPermissionByIdRequest {
     string id = 1;
 }
 
-message GetPermissionsByIeReplay {
+message GetPermissionByIeReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

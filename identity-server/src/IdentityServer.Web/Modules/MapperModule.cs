@@ -41,7 +41,7 @@ namespace IdentityServer.Web.Modules
                 .SingleInstance();
             
             builder.RegisterType<ResultToGetPermissionByIeReplay>()
-                .As<IMapper<Result, Proto.GetPermissionsByIeReplay>>()
+                .As<IMapper<Result, Proto.GetPermissionByIeReplay>>()
                 .SingleInstance();
             #endregion
         }

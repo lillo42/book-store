@@ -5,7 +5,7 @@ using Resource = IdentityServer.Domain.Common.Resource;
 
 namespace IdentityServer.Web.Mapper
 {
-    public class ResultToGetPermissionByIeReplay : IMapper<Result, Proto.GetPermissionsByIeReplay>
+    public class ResultToGetPermissionByIeReplay : IMapper<Result, Proto.GetPermissionByIeReplay>
     {
         private readonly IMapper<Domain.Common.Permission, Proto.Permission> _mapper;
 
@@ -14,9 +14,9 @@ namespace IdentityServer.Web.Mapper
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public GetPermissionsByIeReplay Map(Result source)
+        public GetPermissionByIeReplay Map(Result source)
         {
-            return new GetPermissionsByIeReplay
+            return new GetPermissionByIeReplay
             {
                 IsSuccess = source.IsSuccess,
                 ErrorCode = source.ErrorCode ?? string.Empty,

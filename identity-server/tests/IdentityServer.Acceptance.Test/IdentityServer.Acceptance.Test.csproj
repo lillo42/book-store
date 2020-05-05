@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Protobuf Include="../../src/IdentityServer.Web/Protos/resource.proto" Link="Proto/resource.proto" GrpcServices="Client" />
+    <Protobuf Include="../../src/IdentityServer.Web/Protos/permission.proto" Link="Proto/permission.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>

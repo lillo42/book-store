@@ -78,7 +78,7 @@ namespace IdentityServer.Web.Services
             }
         }
 
-        public override async Task<GetPermissionsByIeReplay> GetPermissionById(GetPermissionByIdRequest request, ServerCallContext context)
+        public override async Task<GetPermissionByIeReplay> GetPermissionById(GetPermissionByIdRequest request, ServerCallContext context)
         {
             using (MiniProfiler.Current.Step(nameof(GetPermissionById)))
             {
@@ -102,7 +102,7 @@ namespace IdentityServer.Web.Services
                     result = DomainError.PermissionError.InvalidId;
                 }
 
-                return _provider.GetService<IMapper<Result, GetPermissionsByIeReplay>>()
+                return _provider.GetService<IMapper<Result, GetPermissionByIeReplay>>()
                     .Map(result);
             }
         }
