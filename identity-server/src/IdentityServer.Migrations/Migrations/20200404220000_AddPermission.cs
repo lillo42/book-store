@@ -9,7 +9,7 @@ namespace IdentityServer.Migrations.Migrations
         {
             Create.Table("Permissions")
                 .WithColumn("id").AsGuid().PrimaryKey()
-                .WithColumn("name").AsString(20).NotNullable()
+                .WithColumn("name").AsString(20).NotNullable().Unique()
                 .WithColumn("display_name").AsString(50).NotNullable()
                 .WithColumn("description").AsString(250);
 

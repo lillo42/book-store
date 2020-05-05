@@ -1,12 +1,15 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Domain.Abstractions.Permission
 {
     public interface IPermissionAggregationRoot : IAggregateRoot<PermissionState, Guid>
     {
-        Result Create(string name, string displayName, string description);
+        Task<Result> CreateAsync(string name, string displayName, string description, CancellationToken cancellationToken = default);
         
-        Result Update(string name, string displayName, string description);
+        Task<Result> UpdateAsync(string name, string displayName, string description,
+            CancellationToken cancellationToken = default);
         
     }
 }

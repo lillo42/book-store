@@ -1,8 +1,11 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Permission;
 using IdentityServer.Domain.Abstractions.Permission.Events;
 using IdentityServer.Domain.Extensions;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 using static IdentityServer.Domain.DomainError;
@@ -11,13 +14,16 @@ namespace IdentityServer.Domain.Permission
 {
     public class PermissionAggregationRoot : AggregateRoot<PermissionState, Guid>, IPermissionAggregationRoot
     {
-        public PermissionAggregationRoot(PermissionState state, 
+        private readonly IReadOnlyPermissionRepository _repository;
+        public PermissionAggregationRoot(PermissionState state,
+            IReadOnlyPermissionRepository repository,
             ILogger<PermissionAggregationRoot> logger) 
             : base(state, logger)
         {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
         
-        public Result Create(string name, string displayName, string description)
+        public async Task<Result> CreateAsync(string name, string displayName, string description, CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -29,6 +35,12 @@ namespace IdentityServer.Domain.Permission
                 return PermissionError.InvalidName;
             }
             
+            if (await _repository.ExistAsync(name, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return PermissionError.NameAlreadyExist;
+            }
+
             if (displayName.IsMissing())
             {
                 return PermissionError.MissingDisplayName;
@@ -48,7 +60,8 @@ namespace IdentityServer.Domain.Permission
             return Result.Ok();
         }
         
-        public Result Update(string name, string displayName, string description)
+        public async Task<Result> UpdateAsync(string name, string displayName, string description,
+            CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -58,6 +71,12 @@ namespace IdentityServer.Domain.Permission
             if (name.Length > 20)
             {
                 return PermissionError.InvalidName;
+            }
+            
+            if (State.Name != name && await _repository.ExistAsync(name, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return PermissionError.NameAlreadyExist;
             }
             
             if (displayName.IsMissing())

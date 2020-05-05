@@ -25,6 +25,25 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.UpdateResourceReplay>>()
                 .SingleInstance();
             #endregion
+
+            #region Permission
+            
+            builder.RegisterType<PermissionMapper>()
+                .As<IMapper<Domain.Common.Permission, Proto.Permission>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToCreatePermissionReplay>()
+                .As<IMapper<Result, Proto.Permission>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToUpdatePermissionReplay>()
+                .As<IMapper<Result, Proto.UpdatePermissionReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToGetPermissionByIeReplay>()
+                .As<IMapper<Result, Proto.GetPermissionsByIeReplay>>()
+                .SingleInstance();
+            #endregion
         }
     }
 }

@@ -1,0 +1,68 @@
+syntax="proto3";
+
+option csharp_namespace = "IdentityServer.Web.Proto";
+
+//import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Permissions {
+    rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionReplay) {}
+    rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionReplay) {}
+
+    rpc GetPermissionById (GetPermissionByIdRequest) returns (GetPermissionsByIeReplay) {}
+    rpc GetPermissions (GetPermissionsRequest) returns (stream Permission) {}
+}
+
+/*
+###### Permission  ######
+*/
+
+message Permission {
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+}
+
+message CreatePermissionRequest {
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+}
+
+message CreatePermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
+}
+
+message UpdatePermissionRequest {
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+}
+
+message UpdatePermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
+}
+
+message GetPermissionByIdRequest {
+    string id = 1;
+}
+
+message GetPermissionsByIeReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
+}
+
+message GetPermissionsRequest {
+    google.protobuf.Int32Value skip = 1;
+    google.protobuf.Int32Value take = 2;
+}

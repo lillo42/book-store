@@ -74,5 +74,11 @@ namespace IdentityServer.Infrastructure.Repositories
                     "SELECT TRUE FROM public.\"Permissions\" where \"id\" = :id",
                     new {id})
                 .ConfigureAwait(false);
+
+        public async Task<bool> ExistAsync(string permissionName, CancellationToken cancellationToken = default) 
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Permissions\" where \"name\" = :permissionName",
+                    new {permissionName})
+                .ConfigureAwait(false);
     }
 }

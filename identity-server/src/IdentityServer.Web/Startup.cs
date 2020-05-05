@@ -15,15 +15,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenCensus.Trace.Sampler;
 using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Trace.Samplers;
 using Serilog;
 using StackExchange.Profiling.SqlFormatters;
 using StackExchange.Profiling.Storage;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
 
 namespace IdentityServer.Web
 {
@@ -131,6 +128,7 @@ namespace IdentityServer.Web
             {
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<ResourceService>();
+                endpoints.MapGrpcService<PermissionService>();
             });
         }
     }

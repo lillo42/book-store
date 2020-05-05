@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <Protobuf Include="Protos/resource.proto" Link="Proto/resource.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos/permission.proto" Link="Proto/permission.proto" GrpcServices="Server" />
   </ItemGroup>
   
   

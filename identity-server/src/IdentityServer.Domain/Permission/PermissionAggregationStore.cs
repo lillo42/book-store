@@ -43,6 +43,7 @@ namespace IdentityServer.Domain.Permission
         private PermissionAggregationRoot CreateNew(Common.Permission permission)
         {
             return  new PermissionAggregationRoot(new PermissionState(permission), 
+                _unitOfWork.PermissionRepository,
                 _loggerFactory.CreateLogger<PermissionAggregationRoot>());
         }
 

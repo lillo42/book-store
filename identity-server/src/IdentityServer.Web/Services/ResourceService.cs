@@ -54,15 +54,18 @@ namespace IdentityServer.Web.Services
                     _logger.LogInformation($"Going to execute {nameof(ResourceUpdateOperation)}");
                     
                     var operation = _provider.GetRequiredService<ResourceUpdateOperation>();
-                    result = await operation.ExecuteAsync(new ResourceUpdate
-                        {
-                            Id = id,
-                            Name = request.Name,
-                            DisplayName = request.DisplayName,
-                            Description = request.Description,
-                            IsEnable = request.IsEnable
-                        })
-                        .ConfigureAwait(false);
+                    using (MiniProfiler.Current.Step(nameof(ResourceUpdateOperation)))
+                    {
+                        result = await operation.ExecuteAsync(new ResourceUpdate
+                            {
+                                Id = id,
+                                Name = request.Name,
+                                DisplayName = request.DisplayName,
+                                Description = request.Description,
+                                IsEnable = request.IsEnable
+                            })
+                            .ConfigureAwait(false);
+                    }
                 }
                 else
                 {
@@ -105,11 +108,15 @@ namespace IdentityServer.Web.Services
                     _logger.LogInformation($"Going to execute {nameof(ResourceGetOperation)}");
                     
                     var operation = _provider.GetRequiredService<ResourceGetOperation>();
-                    result = await operation.ExecuteAsync(new ResourceGetById
-                        {
-                            Id = id
-                        })
-                        .ConfigureAwait(false);
+                    
+                    using (MiniProfiler.Current.Step(nameof(ResourceGetOperation)))
+                    {
+                        result = await operation.ExecuteAsync(new ResourceGetById
+                            {
+                                Id = id
+                            })
+                            .ConfigureAwait(false);
+                    }
                 }
                 else
                 {

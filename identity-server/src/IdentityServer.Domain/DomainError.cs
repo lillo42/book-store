@@ -34,8 +34,10 @@ namespace IdentityServer.Domain
             public static ErrorResult InvalidDisplayName { get; } = Fail("PRM003", "Invalid display name");
             
             public static ErrorResult InvalidDescription { get; } = Fail("PRM004", "Invalid description");
-            
             public static ErrorResult NotFound { get; } = Fail("PRM005", "Permission not found");
+            
+            public static ErrorResult InvalidId { get; } = Fail("PRM006", "Invalid Id");
+            public static ErrorResult NameAlreadyExist { get; } = Fail("PRM007", "Name already exist");
         }
         
         public static class UserError

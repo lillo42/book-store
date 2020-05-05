@@ -35,7 +35,8 @@ namespace IdentityServer.Application.Operation.Permission
                     return DomainError.PermissionError.NotFound;
                 }
                 
-                var result = root.Update(request.Name, request.DisplayName, request.Description);
+                var result = await root.UpdateAsync(request.Name, request.DisplayName, request.Description, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (result is ErrorResult error)
                 {

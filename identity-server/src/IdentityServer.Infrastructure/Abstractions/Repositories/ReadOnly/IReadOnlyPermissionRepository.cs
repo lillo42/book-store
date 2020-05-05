@@ -13,5 +13,8 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
         Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default);
         
         Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default);
+        
+        
+        Task<bool> ExistAsync(string permissionName, CancellationToken cancellationToken = default);
     }
 }
