@@ -42,6 +42,16 @@ services:
     ports: 
       - 7200:9200
       - 7300:9300
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipink-book-store
+    ports:
+    - 8700:9411
+    environment:
+      STORAGE_TYPE: elasticsearch
+      ES_HOSTS: http://elastic-search:9200
+    depends_on:
+      - elastic-search
   identity-migrations:
     build:
       context: ./src
@@ -63,9 +73,10 @@ services:
       environment:
         ASPNETCORE_ENVIRONMENT: "Development"
         ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityServer;"
-        ConnectionStrings__RavenDb__Urls__0: "http://raven:8080"
+        ConnectionStrings__RavenDb__Urls__0: http://raven:8080
         Consul__Host: "consul"
         Consul__Discovery__Hostname: "identity"
+        Tracing__Host: http://zipkin:9411
         Serilog__WriteTo__1__Args__nodeUris: http://elastic-search:9200
       ports:
         - '5110:5110'
@@ -76,3 +87,4 @@ services:
         - consul
         - elastic-search
         - identity-migrations
+        - zipkin

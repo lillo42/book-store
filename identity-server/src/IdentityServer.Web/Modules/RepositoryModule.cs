@@ -10,7 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
+using Raven.Client.Documents.Operations;
 using Raven.Client.Documents.Session;
+using Raven.Client.Exceptions;
+using Raven.Client.Exceptions.Database;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Data;
 
@@ -46,11 +51,27 @@ namespace IdentityServer.Web.Modules
 
                     store.Initialize();
 
+                    try
+                    {
+                        store.Maintenance.ForDatabase(configuration.Database).Send(new GetStatisticsOperation());
+                    }
+                    catch (DatabaseDoesNotExistException)
+                    {
+                        try
+                        {
+                            store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(configuration.Database)));
+                        }
+                        catch (ConcurrencyException)
+                        {
+                            // The database was already created before calling CreateDatabaseOperation
+                        }
+                    }
+
                     return store;
                 })
                 .AsSelf()
                 .As<IDocumentStore>()
-                .InstancePerLifetimeScope();
+                .SingleInstance();
 
             builder.Register(ctx => ctx.Resolve<IDocumentStore>().OpenAsyncSession())
                 .As<IAsyncDocumentSession>()

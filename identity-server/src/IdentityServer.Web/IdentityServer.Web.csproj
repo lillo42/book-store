@@ -15,6 +15,11 @@
     <PackageReference Include="Grpc.Tools" Version="2.28.1" PrivateAssets="All" />
     <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
     <PackageReference Include="MiniProfiler.Providers.PostgreSql" Version="4.1.0" />
+    <PackageReference Include="OpenTelemetry" Version="0.2.0-alpha.179" />
+    <PackageReference Include="OpenTelemetry.Collector.AspNetCore" Version="0.2.0-alpha.179" />
+    <PackageReference Include="OpenTelemetry.Collector.Dependencies" Version="0.2.0-alpha.179" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="0.2.0-alpha.179" />
+    <PackageReference Include="OpenTelemetry.Hosting" Version="0.2.0-alpha.179" />
     <PackageReference Include="RavenDB.Client" Version="4.2.102" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
