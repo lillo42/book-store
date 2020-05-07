@@ -5,7 +5,6 @@ using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Resource;
 using IdentityServer.Domain.Abstractions.Resource.Events;
 using IdentityServer.Domain.Extensions;
-using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 

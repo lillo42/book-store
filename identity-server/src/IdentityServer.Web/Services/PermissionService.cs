@@ -5,7 +5,6 @@ using Grpc.Core;
 using IdentityServer.Application.Operation.Permission;
 using IdentityServer.Application.Operation.Resource;
 using IdentityServer.Application.Request.Permission;
-using IdentityServer.Application.Request.Resource;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Mapper;
@@ -32,7 +31,7 @@ namespace IdentityServer.Web.Services
         {
             using (MiniProfiler.Current.Step(nameof(CreatePermission)))
             {
-                _logger.LogInformation($"Going to execute {nameof(ResourceCreateOperation)}");
+                _logger.LogInformation($"Going to execute {nameof(PermissionCreateOperation)}");
                 var operation = _provider.GetRequiredService<PermissionCreateOperation>();
                 var result = await operation.ExecuteAsync(new PermissionCreate
                 {

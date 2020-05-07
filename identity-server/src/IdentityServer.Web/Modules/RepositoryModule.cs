@@ -9,7 +9,6 @@ using IdentityServer.Web.Configuration;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Documents.Session;
 using Raven.Client.Exceptions;

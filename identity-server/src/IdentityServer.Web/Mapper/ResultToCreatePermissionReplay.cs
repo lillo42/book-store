@@ -1,7 +1,6 @@
 using System;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Proto;
-using Resource = IdentityServer.Domain.Common.Resource;
 
 namespace IdentityServer.Web.Mapper
 {

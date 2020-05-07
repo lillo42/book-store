@@ -1,9 +1,4 @@
-﻿using System;
-using FluentMigrator;
-using FluentMigrator.Builders.Delete;
-using FluentMigrator.Builders.Insert;
-using Raven.Client.Documents.Linq;
-using StackExchange.Profiling.Storage;
+﻿using FluentMigrator;
 
 namespace IdentityServer.Migrations.Migrations
 {

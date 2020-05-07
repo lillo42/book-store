@@ -44,6 +44,14 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.GetPermissionByIeReplay>>()
                 .SingleInstance();
             #endregion
+
+            #region Role
+            
+            builder.RegisterType<RoleMapper>()
+                .As<IMapper<Domain.Common.Role, Proto.Role>>()
+                .SingleInstance();
+
+            #endregion
         }
     }
 }
