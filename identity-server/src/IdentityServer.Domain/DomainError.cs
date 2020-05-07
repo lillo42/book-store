@@ -21,8 +21,10 @@ namespace IdentityServer.Domain
             
             public static ErrorResult NotContainsPermission { get; } = Fail("ROL007", "Role does not have this permission");
             
-            
             public static ErrorResult NotFound { get; } = Fail("ROL008", "Role not found");
+            public static ErrorResult NameAlreadyExist { get; } = Fail("ROL009", "Name already exist");
+            public static ErrorResult InvalidId { get; } = Fail("ROL010", "Invalid Id");
+
         }
         
         public static class PermissionError

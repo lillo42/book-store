@@ -31,15 +31,16 @@ namespace IdentityServer.Application.Operation.Role
 
                 if (root == null)
                 {
-                    _logger.LogInformation("Role not found. [Permission: {permissionName}]", request.Id);
+                    _logger.LogInformation("Role not found. [Role: {roleId}]", request.Id);
                     return DomainError.PermissionError.NotFound;
                 }
                 
-                var result = root.Update(request.Name, request.DisplayName, request.Description);
+                var result = await root.UpdateAsync(request.Name, request.DisplayName, request.Description, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (result is ErrorResult error)
                 {
-                    _logger.LogInformation("Invalid information. [ErrorCode: {errorCode}]", error.ErrorCode);
+                    _logger.LogInformation("Invalid information. [ErrorCode: {errorCode}][Role: {roleId}]", error.ErrorCode, request.Id);
                     return error;
                 }
 
@@ -52,7 +53,7 @@ namespace IdentityServer.Application.Operation.Role
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to update role.");
+                _logger.LogError(e, "Error to update role. [Role: {roleId}]", request.Id);
                 return Result.Fail(e);
             }
         }

@@ -44,8 +44,9 @@ namespace IdentityServer.Domain.Role
         private RoleAggregationRoot CreateNew(Common.Role role)
         {
             return  new RoleAggregationRoot(new RoleState(role),
-                _loggerFactory.CreateLogger<RoleAggregationRoot>(),
-                _unitOfWork.PermissionRepository);
+                _unitOfWork.RoleRepository,
+                _unitOfWork.PermissionRepository,
+                _loggerFactory.CreateLogger<RoleAggregationRoot>());
         }
 
         public async Task SaveAsync(IRoleAggregationRoot aggregate, CancellationToken cancellation = default)
@@ -63,7 +64,7 @@ namespace IdentityServer.Domain.Role
                 }
                 else
                 {
-                    await repository.CreateAsync(role, cancellation)
+                    await repository.UpdateAsync(role, cancellation)
                         .ConfigureAwait(false);
                 }
 
@@ -72,7 +73,7 @@ namespace IdentityServer.Domain.Role
                     switch (trace.State)
                     {
                         case State.Added:
-                           await repository.AddPermissionAsync(role, trace.Value, cancellation)
+                            await repository.AddPermissionAsync(role, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
                         case State.Removed when !trace.IsNew:

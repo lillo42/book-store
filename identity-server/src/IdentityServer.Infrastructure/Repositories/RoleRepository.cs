@@ -103,6 +103,12 @@ namespace IdentityServer.Infrastructure.Repositories
                     new {id})
                 .ConfigureAwait(false);
 
+        public async Task<bool> ExistAsync(string name, CancellationToken cancellationToken = default)
+            => await _connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Roles\" where \"name\" = :name",
+                    new {name})
+                .ConfigureAwait(false);
+
         public async IAsyncEnumerable<Role> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var reader = await _connection.ExecuteReaderAsync($@"

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Role;
@@ -12,17 +13,20 @@ namespace IdentityServer.Domain.Role
 {
     public class RoleAggregationRoot : AggregateRoot<RoleState, Guid>, IRoleAggregationRoot
     {
-        private readonly IReadOnlyPermissionRepository _permissions;
+        private readonly IReadOnlyRoleRepository _roleRepository;
+        private readonly IReadOnlyPermissionRepository _permissionsRepository;
         
-        public RoleAggregationRoot(RoleState state, 
-            ILogger<RoleAggregationRoot> logger, 
-            IReadOnlyPermissionRepository permissions) 
+        public RoleAggregationRoot(RoleState state,
+            IReadOnlyRoleRepository roleRepository,
+            IReadOnlyPermissionRepository permissionsRepository,
+            ILogger<RoleAggregationRoot> logger) 
             : base(state, logger)
         {
-            _permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
+            _permissionsRepository = permissionsRepository ?? throw new ArgumentNullException(nameof(permissionsRepository));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
         }
 
-        public Result Create(string name, string displayName, string description)
+        public async Task<Result> CreateAsync(string name, string displayName, string description, CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -33,12 +37,18 @@ namespace IdentityServer.Domain.Role
             {
                 return RoleError.InvalidName;
             }
+
+            if (await _roleRepository.ExistAsync(name, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return RoleError.NameAlreadyExist;
+            }
             
             if (displayName.IsMissing())
             {
                 return RoleError.MissingDisplayName;
             }
-            
+
             if (displayName.Length > 50)
             {
                 return RoleError.InvalidDisplayName;
@@ -53,7 +63,7 @@ namespace IdentityServer.Domain.Role
             return Result.Ok();
         }
         
-        public Result Update(string name, string displayName, string description)
+        public async Task<Result> UpdateAsync(string name, string displayName, string description, CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -63,6 +73,11 @@ namespace IdentityServer.Domain.Role
             if (name.Length > 20)
             {
                 return RoleError.InvalidName;
+            }
+
+            if (State.Name != name && await _roleRepository.ExistAsync(name).ConfigureAwait(false))
+            {
+                return RoleError.NameAlreadyExist;
             }
             
             if (displayName.IsMissing())
@@ -91,7 +106,7 @@ namespace IdentityServer.Domain.Role
                 return RoleError.InvalidPermission;
             }
             
-            if (!await _permissions.ExistAsync(permission.Id)
+            if (!await _permissionsRepository.ExistAsync(permission.Id)
                 .ConfigureAwait(false))
             {
                 return UserError.InvalidPermission;

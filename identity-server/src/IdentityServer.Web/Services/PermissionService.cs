@@ -29,81 +29,77 @@ namespace IdentityServer.Web.Services
 
         public override async Task<CreatePermissionReplay> CreatePermission(CreatePermissionRequest request, ServerCallContext context)
         {
+            _logger.LogInformation($"Going to execute {nameof(PermissionCreateOperation)}");
+            var operation = _provider.GetRequiredService<PermissionCreateOperation>();
+
+            Result result;
             using (MiniProfiler.Current.Step(nameof(CreatePermission)))
             {
-                _logger.LogInformation($"Going to execute {nameof(PermissionCreateOperation)}");
-                var operation = _provider.GetRequiredService<PermissionCreateOperation>();
-                var result = await operation.ExecuteAsync(new PermissionCreate
+                result = await operation.ExecuteAsync(new PermissionCreate
                 {
                     Name = request.Name,
                     Description = request.Description,
                     DisplayName = request.DisplayName,
                 }).ConfigureAwait(false);
-
-                return _provider.GetService<IMapper<Result, CreatePermissionReplay>>()
-                    .Map(result);
             }
+            
+            return _provider.GetService<IMapper<Result, CreatePermissionReplay>>()
+                .Map(result);
         }
 
         public override async Task<UpdatePermissionReplay> UpdatePermission(UpdatePermissionRequest request, ServerCallContext context)
         {
-            using (MiniProfiler.Current.Step(nameof(UpdatePermission)))
+            Result result;
+            if (Guid.TryParse(request.Id, out var id))
             {
-                Result result;
-                if (Guid.TryParse(request.Id, out var id))
-                {
-                    _logger.LogInformation($"Going to execute {nameof(PermissionUpdateOperation)}");
+                _logger.LogInformation($"Going to execute {nameof(PermissionUpdateOperation)}");
                     
-                    var operation = _provider.GetRequiredService<PermissionUpdateOperation>();
-                    using (MiniProfiler.Current.Step(nameof(PermissionUpdateOperation)))
-                    {
-                        result = await operation.ExecuteAsync(new PermissionUpdate
-                            {
-                                Id = id,
-                                Name = request.Name,
-                                DisplayName = request.DisplayName,
-                                Description = request.Description
-                            })
-                            .ConfigureAwait(false);
-                    }
-                }
-                else
+                var operation = _provider.GetRequiredService<PermissionUpdateOperation>();
+                using (MiniProfiler.Current.Step(nameof(PermissionUpdateOperation)))
                 {
-                    result = DomainError.PermissionError.InvalidId;
+                    result = await operation.ExecuteAsync(new PermissionUpdate
+                        {
+                            Id = id,
+                            Name = request.Name,
+                            DisplayName = request.DisplayName,
+                            Description = request.Description
+                        })
+                        .ConfigureAwait(false);
                 }
-                
-                return _provider.GetService<IMapper<Result, UpdatePermissionReplay>>()
-                    .Map(result);
             }
+            else
+            {
+                result = DomainError.PermissionError.InvalidId;
+            }
+                
+            return _provider.GetService<IMapper<Result, UpdatePermissionReplay>>()
+                .Map(result);
         }
 
         public override async Task<GetPermissionByIeReplay> GetPermissionById(GetPermissionByIdRequest request, ServerCallContext context)
         {
-            using (MiniProfiler.Current.Step(nameof(GetPermissionById)))
+            Result result;
+            if (Guid.TryParse(request.Id, out var id))
             {
-                Result result;
-                if (Guid.TryParse(request.Id, out var id))
-                {
-                    _logger.LogInformation($"Going to execute {nameof(PermissionGetOperation)}");
+                _logger.LogInformation($"Going to execute {nameof(PermissionGetOperation)}");
                     
-                    var operation = _provider.GetRequiredService<PermissionGetOperation>();
-                    using (MiniProfiler.Current.Step(nameof(PermissionGetOperation)))
-                    {
-                        result = await operation.ExecuteAsync(new PermissionGetById
-                            {
-                                Id = id
-                            })
-                            .ConfigureAwait(false);
-                    }
-                }
-                else
+                var operation = _provider.GetRequiredService<PermissionGetOperation>();
+                using (MiniProfiler.Current.Step(nameof(PermissionGetOperation)))
                 {
-                    result = DomainError.PermissionError.InvalidId;
+                    result = await operation.ExecuteAsync(new PermissionGetById
+                        {
+                            Id = id
+                        })
+                        .ConfigureAwait(false);
                 }
-
-                return _provider.GetService<IMapper<Result, GetPermissionByIeReplay>>()
-                    .Map(result);
             }
+            else
+            {
+                result = DomainError.PermissionError.InvalidId;
+            }
+
+            return _provider.GetService<IMapper<Result, GetPermissionByIeReplay>>()
+                .Map(result);
         }
 
         public override async Task GetPermissions(GetPermissionsRequest request, IServerStreamWriter<Permission> responseStream, ServerCallContext context)

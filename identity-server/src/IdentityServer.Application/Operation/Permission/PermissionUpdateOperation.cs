@@ -54,7 +54,7 @@ namespace IdentityServer.Application.Operation.Permission
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to update permission.");
+                _logger.LogError(e, "Error to update permission. [Permission: {permissionId}]", request.Id);
                 return Result.Fail(e);
             }
         }

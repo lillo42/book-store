@@ -50,6 +50,18 @@ namespace IdentityServer.Web.Modules
             builder.RegisterType<RoleMapper>()
                 .As<IMapper<Domain.Common.Role, Proto.Role>>()
                 .SingleInstance();
+            
+            builder.RegisterType<ResultToCreateRoleReplay>()
+                .As<IMapper<Result, Proto.CreateRoleReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToUpdateRoleReplay>()
+                .As<IMapper<Result, Proto.UpdateRoleReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToGetRoleByIeReplay>()
+                .As<IMapper<Result, Proto.GetRoleByIeReplay>>()
+                .SingleInstance();
 
             #endregion
         }

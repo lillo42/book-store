@@ -29,7 +29,7 @@ namespace IdentityServer.Application.Operation.Resource
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to execute get all permission");
+                _logger.LogError(e, "Error to execute get all resource");
                 return Result.Fail(e);
             }
         }

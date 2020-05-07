@@ -22,12 +22,13 @@ namespace IdentityServer.Application.Operation.Role
 
         public async Task<Result> ExecuteAsync(RoleCreate request, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Going to create new role. [Permission: {permissionName}]", request.Name);
+            _logger.LogInformation("Going to create new role. [Role: {roleName}]", request.Name);
             try
             {
                 var root = _aggregationStore.Create();
                 
-                var result = root.Create(request.Name, request.DisplayName, request.Description);
+                var result = await root.CreateAsync(request.Name, request.DisplayName, request.Description, cancellationToken)
+                    .ConfigureAwait(false);
                 
                 if (result is ErrorResult error)
                 {
@@ -38,13 +39,13 @@ namespace IdentityServer.Application.Operation.Role
                 await _aggregationStore.SaveAsync(root, cancellationToken)
                     .ConfigureAwait(false);
                
-                _logger.LogInformation("Role create with success. [Permission: {permissionName}]", request.Name);
+                _logger.LogInformation("Role create with success. [Role: {roleName}]", request.Name);
                 
                 return Result.Ok((Domain.Common.Role)root.State);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to create role.");
+                _logger.LogError(e, "Error to create role. [Role: {roleName}]", request.Name);
                 return Result.Fail(e);
             }
         }

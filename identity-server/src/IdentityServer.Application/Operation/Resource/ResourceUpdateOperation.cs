@@ -55,7 +55,7 @@ namespace IdentityServer.Application.Operation.Resource
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to update resource.");
+                _logger.LogError(e, "Error to update resource. [Resource: {resourceId}]", request.Id);
                 return Result.Fail(e);
             }
         }

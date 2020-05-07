@@ -27,54 +27,53 @@ namespace IdentityServer.Web.Services
         
         public override async Task<CreateResourceReplay> CreateResource(CreateResourceRequest request, ServerCallContext context)
         {
+            _logger.LogInformation($"Going to execute {nameof(ResourceCreateOperation)}");
+            var operation = _provider.GetRequiredService<ResourceCreateOperation>();
+
+            Result result;
             using (MiniProfiler.Current.Step(nameof(CreateResource)))
             {
-                _logger.LogInformation($"Going to execute {nameof(ResourceCreateOperation)}");
-                var operation = _provider.GetRequiredService<ResourceCreateOperation>();
-                var result = await operation.ExecuteAsync(new ResourceCreate
+                result = await operation.ExecuteAsync(new ResourceCreate
                 {
                     Name = request.Name,
                     Description = request.Description,
                     DisplayName = request.DisplayName,
                     IsEnable = request.IsEnable
                 }).ConfigureAwait(false);
-
-                return _provider.GetService<IMapper<Result, CreateResourceReplay>>()
-                    .Map(result);
             }
+            
+            return _provider.GetService<IMapper<Result, CreateResourceReplay>>()
+                .Map(result);
         }
 
         public override async Task<UpdateResourceReplay> UpdateResource(UpdateResourceRequest request, ServerCallContext context)
         {
-            using (MiniProfiler.Current.Step(nameof(UpdateResource)))
+            Result result;
+            if (Guid.TryParse(request.Id, out var id))
             {
-                Result result;
-                if (Guid.TryParse(request.Id, out var id))
-                {
-                    _logger.LogInformation($"Going to execute {nameof(ResourceUpdateOperation)}");
+                _logger.LogInformation($"Going to execute {nameof(ResourceUpdateOperation)}");
                     
-                    var operation = _provider.GetRequiredService<ResourceUpdateOperation>();
-                    using (MiniProfiler.Current.Step(nameof(ResourceUpdateOperation)))
-                    {
-                        result = await operation.ExecuteAsync(new ResourceUpdate
-                            {
-                                Id = id,
-                                Name = request.Name,
-                                DisplayName = request.DisplayName,
-                                Description = request.Description,
-                                IsEnable = request.IsEnable
-                            })
-                            .ConfigureAwait(false);
-                    }
-                }
-                else
+                var operation = _provider.GetRequiredService<ResourceUpdateOperation>();
+                using (MiniProfiler.Current.Step(nameof(ResourceUpdateOperation)))
                 {
-                    result = DomainError.ResourceError.InvalidId;
+                    result = await operation.ExecuteAsync(new ResourceUpdate
+                        {
+                            Id = id,
+                            Name = request.Name,
+                            DisplayName = request.DisplayName,
+                            Description = request.Description,
+                            IsEnable = request.IsEnable
+                        })
+                        .ConfigureAwait(false);
                 }
-                
-                return _provider.GetService<IMapper<Result, UpdateResourceReplay>>()
-                    .Map(result);
             }
+            else
+            {
+                result = DomainError.ResourceError.InvalidId;
+            }
+                
+            return _provider.GetService<IMapper<Result, UpdateResourceReplay>>()
+                .Map(result);
         }
 
         public override async Task GetResources(GetResourcesRequest request, IServerStreamWriter<Resource> responseStream, ServerCallContext context)
