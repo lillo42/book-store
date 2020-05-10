@@ -282,7 +282,7 @@ namespace IdentityServer.Domain.Test.Role
         [Fact]
         public async Task AddPermission_Should_ReturnInvalidPermission_When_PermissionIsNull()
         {
-            var result = await _aggregation.AddPermission(null);
+            var result = await _aggregation.AddPermissionAsync(null);
             result.Should().NotBeNull();
             result.Should().Be(InvalidPermission);
         }
@@ -295,7 +295,7 @@ namespace IdentityServer.Domain.Test.Role
             _permissionRepository.ExistAsync(permission.Id, Arg.Any<CancellationToken>())
                 .Returns(false);
             
-            var result = await _aggregation.AddPermission(permission);
+            var result = await _aggregation.AddPermissionAsync(permission);
             result.Should().NotBeNull();
             result.Should().Be(InvalidPermission);
 
@@ -314,7 +314,7 @@ namespace IdentityServer.Domain.Test.Role
 
             _entity.Permissions.Add(permission);
             
-            var result = await _aggregation.AddPermission(permission);
+            var result = await _aggregation.AddPermissionAsync(permission);
             result.Should().NotBeNull();
             result.Should().Be(PermissionAlreadyExist);
 
@@ -331,7 +331,7 @@ namespace IdentityServer.Domain.Test.Role
             _permissionRepository.ExistAsync(permission.Id, Arg.Any<CancellationToken>())
                 .Returns(true);
 
-            var result =  await _aggregation.AddPermission(permission);
+            var result =  await _aggregation.AddPermissionAsync(permission);
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
 

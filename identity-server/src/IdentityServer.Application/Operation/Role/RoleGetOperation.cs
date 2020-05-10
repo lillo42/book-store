@@ -5,16 +5,17 @@ using IdentityServer.Application.Request.Role;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Application.Operation.Role
 {
     public class RoleGetOperation : IOperation<RoleGetById>
     {
-        private readonly IRoleRepository _repository;
+        private readonly IReadOnlyRoleRepository _repository;
         private readonly ILogger<RoleGetOperation> _logger;
 
-        public RoleGetOperation(IRoleRepository permissionRepository, 
+        public RoleGetOperation(IReadOnlyRoleRepository permissionRepository, 
             ILogger<RoleGetOperation> logger)
         {
             _repository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));

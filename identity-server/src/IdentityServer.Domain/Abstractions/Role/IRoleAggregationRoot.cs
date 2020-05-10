@@ -10,7 +10,7 @@ namespace IdentityServer.Domain.Abstractions.Role
         
         Task<Result> UpdateAsync(string name, string displayName, string description, CancellationToken cancellationToken = default);
 
-        Task<Result> AddPermission(Common.Permission permission);
+        Task<Result> AddPermissionAsync(Common.Permission permission);
         
         Result RemovePermission(Common.Permission permission);
     }

@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using IdentityServer.Application.Operation.Resource;
 using IdentityServer.Application.Request.Resource;
+using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Resource;
 using Microsoft.Extensions.Logging;
@@ -35,29 +36,19 @@ namespace IdentityServer.Application.Test.Operation.Resource
         public async Task Execute_Should_ReturnError_When_ResourceNotFound()
         {
             var request = _fixture.Create<ResourceUpdate>();
-            var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
-            
-            var root = Substitute.For<IResourceAggregationRoot>();
-
-            root.UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable)
-                .Returns(error);
             
             _store.GetAsync(request.Id)
-                .Returns(root);
+                .Returns(Task.FromResult<IResourceAggregationRoot>(null));
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
 
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
-            result.Should().Be(error);
+            result.Should().Be(DomainError.ResourceError.NotFound);
             
             var __ = _store
                 .Received(1)
                 .GetAsync(request.Id);
-
-            root
-                .Received(1)
-                .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
         }
 
         
@@ -85,7 +76,7 @@ namespace IdentityServer.Application.Test.Operation.Resource
                 .Received(1)
                 .GetAsync(request.Id);
 
-            root
+            var ___ = root
                 .Received(1)
                 .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
         }
@@ -120,7 +111,7 @@ namespace IdentityServer.Application.Test.Operation.Resource
                 .Received(1)
                 .GetAsync(request.Id);
 
-            root
+            var ___ = root
                 .Received(1)
                 .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
@@ -158,7 +149,7 @@ namespace IdentityServer.Application.Test.Operation.Resource
                 .Received(1)
                 .GetAsync(request.Id);
             
-            root
+            var ___ = root
                 .Received(1)
                 .UpdateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 

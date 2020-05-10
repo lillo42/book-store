@@ -99,7 +99,7 @@ namespace IdentityServer.Domain.Role
             return Result.Ok();
         }
 
-        public async Task<Result> AddPermission(Common.Permission permission)
+        public async Task<Result> AddPermissionAsync(Common.Permission permission)
         {
             if (permission == null)
             {

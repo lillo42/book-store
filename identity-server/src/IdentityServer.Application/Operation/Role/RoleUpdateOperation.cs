@@ -32,7 +32,7 @@ namespace IdentityServer.Application.Operation.Role
                 if (root == null)
                 {
                     _logger.LogInformation("Role not found. [Role: {roleId}]", request.Id);
-                    return DomainError.PermissionError.NotFound;
+                    return DomainError.RoleError.NotFound;
                 }
                 
                 var result = await root.UpdateAsync(request.Name, request.DisplayName, request.Description, cancellationToken)

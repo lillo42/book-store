@@ -3,61 +3,64 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using IdentityServer.Application.Operation.Permission;
-using IdentityServer.Application.Request.Permission;
+using IdentityServer.Application.Operation.Role;
+using IdentityServer.Application.Request.Role;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
-using IdentityServer.Domain.Abstractions.Permission;
+using IdentityServer.Domain.Abstractions.Role;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace IdentityServer.Application.Test.Operation.Permission
+namespace IdentityServer.Application.Test.Operation.Role
 {
-    public class PermissionUpdateOperationTest
+    public class RoleUpdateOperationTest
     {
-        private readonly IPermissionAggregationStore _store;
-        private readonly ILogger<PermissionUpdateOperation> _logger;
-        private readonly PermissionUpdateOperation _operation;
+        private readonly IRoleAggregationStore _store;
+        private readonly ILogger<RoleUpdateOperation> _logger;
+        private readonly RoleUpdateOperation _operation;
         private readonly Fixture _fixture;
 
-        public PermissionUpdateOperationTest()
+        public RoleUpdateOperationTest()
         {
             _fixture = new Fixture();
             
-            _store = Substitute.For<IPermissionAggregationStore>();
-            _logger = Substitute.For<ILogger<PermissionUpdateOperation>>();
+            _store = Substitute.For<IRoleAggregationStore>();
+            _logger = Substitute.For<ILogger<RoleUpdateOperation>>();
             
-            _operation = new PermissionUpdateOperation(_store, _logger);
+            _operation = new RoleUpdateOperation(_store, _logger);
         }
 
         [Fact]
-        public async Task Execute_Should_ReturnError_When_PermissionNotFound()
+        public async Task Execute_Should_ReturnError_When_RoleNotFound()
         {
-            var request = _fixture.Create<PermissionUpdate>();
+            var request = _fixture.Create<RoleUpdate>();
+            
+            var root = Substitute.For<IRoleAggregationRoot>();
 
             _store.GetAsync(request.Id)
-                .Returns(Task.FromResult<IPermissionAggregationRoot>(null));
+                .Returns(Task.FromResult<IRoleAggregationRoot>(null));
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
 
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
-            result.Should().Be(DomainError.PermissionError.NotFound);
+            result.Should().Be(DomainError.RoleError.NotFound);
             
             var _ = _store
                 .Received(1)
                 .GetAsync(request.Id);
         }
 
+        
         [Fact]
         public async Task Execute_Should_ReturnError_When_UpdateReturnError()
         {
-            var request = _fixture.Create<PermissionUpdate>();
+            var request = _fixture.Create<RoleUpdate>();
             var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
             
-            var root = Substitute.For<IPermissionAggregationRoot>();
+            var root = Substitute.For<IRoleAggregationRoot>();
 
             root.UpdateAsync(request.Name, request.DisplayName, request.Description)
                 .Returns(error);
@@ -83,8 +86,8 @@ namespace IdentityServer.Application.Test.Operation.Permission
         [Fact]
         public async Task Execute_Should_ReturnError_When_Throw()
         {
-            var request = _fixture.Create<PermissionUpdate>();
-            var root = Substitute.For<IPermissionAggregationRoot>();
+            var request = _fixture.Create<RoleUpdate>();
+            var root = Substitute.For<IRoleAggregationRoot>();
 
             root.UpdateAsync(request.Name, request.DisplayName, request.Description)
                 .Returns(Result.Ok());
@@ -122,17 +125,17 @@ namespace IdentityServer.Application.Test.Operation.Permission
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<PermissionUpdate>();
+            var request = _fixture.Create<RoleUpdate>();
             
-            var root = Substitute.For<IPermissionAggregationRoot>();
+            var root = Substitute.For<IRoleAggregationRoot>();
 
             root.UpdateAsync(request.Name, request.DisplayName, request.Description)
                 .Returns(Result.Ok());
 
-            var permission = _fixture.Create<Domain.Common.Permission>();
+            var Role = _fixture.Create<Domain.Common.Role>();
             
             root.State
-                .Returns(new PermissionState(permission));
+                .Returns(new RoleState(Role));
             
             _store.GetAsync(request.Id)
                 .Returns(root);
@@ -142,7 +145,7 @@ namespace IdentityServer.Application.Test.Operation.Permission
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
-            result.Value.Should().Be(permission);
+            result.Value.Should().Be(Role);
 
             var _ =_store
                 .Received(1)
