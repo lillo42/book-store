@@ -75,14 +75,14 @@ message GetRolesRequest {
 }
 
 message AddPermissionRequest {
-    bool is_success = 1;
-    string error_code = 2;
-    string description = 3;
+    string id = 1;
+    string permission_id = 2;
 }
 
 message AddPermissionReplay {
-    string id = 1;
-    string permission_id = 2;
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
 }
 
 message RemovePermissionRequest {
