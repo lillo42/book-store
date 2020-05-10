@@ -1,0 +1,71 @@
+syntax="proto3";
+
+option csharp_namespace = "IdentityServer.Web.Proto";
+
+//import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Resources {
+    rpc CreateResource(CreateResourceRequest) returns(CreateResourceReplay) {}
+    rpc UpdateResource(UpdateResourceRequest) returns(UpdateResourceReplay) {}
+
+    rpc GetResourceById(GetResourceByIdRequest) returns(GetResourceByIeReplay) {}
+    rpc GetResources(GetResourcesRequest) returns(stream Resource) {}
+}
+
+/*
+###### Resource  ######
+*/
+
+message Resource {
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+    bool is_enable = 5;
+}
+
+message CreateResourceRequest {
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+    bool is_enable = 5;
+}
+
+message CreateResourceReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Resource value = 4;
+}
+
+message UpdateResourceRequest {
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
+    bool is_enable = 5;
+}
+
+message UpdateResourceReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Resource value = 4;
+}
+
+message GetResourceByIdRequest {
+    string id = 1;
+}
+
+message GetResourceByIeReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Resource value = 4;
+}
+
+message GetResourcesRequest {
+    google.protobuf.Int32Value skip = 1;
+    google.protobuf.Int32Value take = 2;
+}

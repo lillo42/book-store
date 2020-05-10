@@ -41,12 +41,12 @@ namespace IdentityServer.Domain.Abstractions.Role
 
         public void Apply(AddPermissionEvent @event)
         {
-            _role.Permissions.Add(@event.Permission);
+            Permissions.Add(@event.Permission);
         }
 
         public void Apply(RemovePermissionEvent @event)
         {
-            _role.Permissions.Remove(@event.Permission);
+            Permissions.Remove(@event.Permission);
         }
         
         public static explicit operator Common.Role(RoleState state)

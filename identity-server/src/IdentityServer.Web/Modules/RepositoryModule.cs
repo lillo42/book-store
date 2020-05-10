@@ -6,6 +6,7 @@ using IdentityServer.Infrastructure.Abstractions.Repositories;
 using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
 using IdentityServer.Web.Configuration;
+using IdentityServer.Web.Factory;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Raven.Client.Documents;
@@ -24,19 +25,12 @@ namespace IdentityServer.Web.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-
-            builder.Register(ctx =>
-                {
-                    var connection = new ProfiledDbConnection(
-                        new NpgsqlConnection(ctx.Resolve<IConfiguration>().GetConnectionString("Postgres")),
-                        MiniProfiler.Current);
-                    
-                    connection.Open();
-
-                    return connection;
-                })
+            builder.RegisterType<PostgresDbFactory>()
+                .As<IDbFactory>()
+                .SingleInstance();
+            
+            builder.Register(ctx => ctx.Resolve<IDbFactory>().Create())
                 .As<DbConnection>()
-                .AsSelf()
                 .InstancePerLifetimeScope();
 
             builder.Register(ctx =>

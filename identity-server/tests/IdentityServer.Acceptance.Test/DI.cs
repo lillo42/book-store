@@ -24,6 +24,7 @@ namespace IdentityServer.Acceptance.Test
             var channel = new Channel(configure.GetValue<string>("Host"), ChannelCredentials.Insecure);
             collection.AddScoped(p => new Web.Proto.Resources.ResourcesClient(channel));
             collection.AddScoped(p => new Web.Proto.Permissions.PermissionsClient(channel));
+            collection.AddScoped(p => new Web.Proto.Roles.RolesClient(channel));
 
             Provider = collection.BuildServiceProvider();
         }

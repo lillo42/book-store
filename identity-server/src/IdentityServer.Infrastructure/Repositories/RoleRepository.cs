@@ -13,11 +13,13 @@ namespace IdentityServer.Infrastructure.Repositories
 {
     public class RoleRepository : IRoleRepository
     {
+        private readonly IDbFactory _factory;
         private readonly DbConnection _connection;
 
-        public RoleRepository(DbConnection connection)
+        public RoleRepository(IDbFactory factory)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _connection = _factory.Create();
         }
         
         public async Task CreateAsync(Role entity, CancellationToken cancellationToken = default)
@@ -66,17 +68,19 @@ namespace IdentityServer.Infrastructure.Repositories
                 P.""description"" AS Description
             FROM public.""RolesPermissions"" RP
             INNER JOIN public.""Permissions"" P ON  P.""id"" = RP.""permission_id""
-            WHERE RP.""role_id"" = :id;",
-                    new {id})
-            .ConfigureAwait(false);
+            WHERE RP.""role_id"" = :id;", 
+                new {id}).ConfigureAwait(false);
 
             var role = await multi.ReadFirstOrDefaultAsync<Role>()
                 .ConfigureAwait(false);
 
             var permissions = await multi.ReadAsync<Permission>()
                 .ConfigureAwait(false);
-            
-            role.Permissions = permissions.ToHashSet();
+
+            if (role != null)
+            {
+                role.Permissions = permissions.ToHashSet();
+            }
             
             return role;
         }
@@ -111,6 +115,7 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<Role> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            var connection = _factory.Create();
             var reader = await _connection.ExecuteReaderAsync($@"
             SELECT
                 R.""id"" AS Id,
@@ -118,12 +123,13 @@ namespace IdentityServer.Infrastructure.Repositories
                 R.""display_name"" AS DisplayName,
                 R.""description"" AS Description
             FROM public.""Roles"" R");
-            
+
             var parse = reader.GetRowParser<Role>();
-            while (await reader.ReadAsync(cancellationToken))
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 var role = parse(reader);
-                var permissions = await _connection.QueryAsync<Permission>($@"
+                
+                var permissions = await connection.QueryAsync<Permission>($@"
                 SELECT
                     P.""id"" As Id,
                     P.""name"" AS ""Name"",
@@ -131,7 +137,7 @@ namespace IdentityServer.Infrastructure.Repositories
                     P.""description"" AS Description
                 FROM public.""RolesPermissions"" RP
                 INNER JOIN public.""Permissions"" P ON  P.""id"" = RP.""permission_id""
-                WHERE RP.""role_id"" = :id", new { id = role.Id});
+                WHERE RP.""role_id"" = :id", new { id = role.Id}).ConfigureAwait(false);
 
                 foreach (var permission in permissions)
                 {

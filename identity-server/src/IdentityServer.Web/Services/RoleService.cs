@@ -93,7 +93,7 @@ namespace IdentityServer.Web.Services
             }
             else
             {
-                result = DomainError.PermissionError.InvalidId;
+                result = DomainError.RoleError.InvalidId;
             }
 
             return _provider.GetService<IMapper<Result, GetRoleByIeReplay>>()
@@ -141,7 +141,7 @@ namespace IdentityServer.Web.Services
             }
             else
             {
-                result = DomainError.PermissionError.InvalidId;
+                result = DomainError.RoleError.InvalidId;
             }
             
             
@@ -169,7 +169,7 @@ namespace IdentityServer.Web.Services
             }
             else
             {
-                result = DomainError.PermissionError.InvalidId;
+                result = DomainError.RoleError.InvalidId;
             }
             
             

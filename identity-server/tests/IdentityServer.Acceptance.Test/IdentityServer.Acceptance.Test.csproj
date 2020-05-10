@@ -27,8 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../src/IdentityServer.Web/Protos/resource.proto" Link="Proto/resource.proto" GrpcServices="Client" />
-    <Protobuf Include="../../src/IdentityServer.Web/Protos/permission.proto" Link="Proto/permission.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/resource.proto" Link="Protos/resource.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/permission.proto" Link="Protos/permission.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/role.proto" Link="Protos/role.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\IdentityServer.Domain\IdentityServer.Domain.csproj" />
+    <ProjectReference Include="..\..\src\IdentityServer.Web\IdentityServer.Web.csproj" />
   </ItemGroup>
 
 </Project>
