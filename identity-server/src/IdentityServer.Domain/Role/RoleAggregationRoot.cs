@@ -109,7 +109,7 @@ namespace IdentityServer.Domain.Role
             if (!await _permissionsRepository.ExistAsync(permission.Id)
                 .ConfigureAwait(false))
             {
-                return UserError.InvalidPermission;
+                return RoleError.InvalidPermission;
             }
 
             if (State.Permissions.Contains(permission))
