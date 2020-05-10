@@ -46,7 +46,6 @@ namespace IdentityServer.Web.Modules
             #endregion
 
             #region Role
-            
             builder.RegisterType<RoleMapper>()
                 .As<IMapper<Domain.Common.Role, Proto.Role>>()
                 .SingleInstance();
@@ -62,7 +61,14 @@ namespace IdentityServer.Web.Modules
             builder.RegisterType<ResultToGetRoleByIeReplay>()
                 .As<IMapper<Result, Proto.GetRoleByIeReplay>>()
                 .SingleInstance();
+            
+            builder.RegisterType<ResultToAddPermissionReplay>()
+                .As<IMapper<Result, Proto.AddPermissionReplay>>()
+                .SingleInstance();
 
+            builder.RegisterType<ResultToRemovePermissionReplay>()
+                .As<IMapper<Result, Proto.RemovePermissionReplay>>()
+                .SingleInstance();
             #endregion
         }
     }

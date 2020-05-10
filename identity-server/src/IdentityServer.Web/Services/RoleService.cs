@@ -120,5 +120,61 @@ namespace IdentityServer.Web.Services
                 }
             }
         }
+
+        public override async Task<AddPermissionReplay> AddPermission(AddPermissionRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var roleId) 
+               && Guid.TryParse(request.PermissionId, out var permissionId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(RoleAddPermissionOperation)}");
+                var operation = _provider.GetRequiredService<RoleAddPermissionOperation>();
+                using (MiniProfiler.Current.Step(nameof(RoleAddPermissionOperation)))
+                {
+                    result = await operation.ExecuteAsync(new RoleAddPermission
+                    {
+                        Id = roleId,
+                        PermissionId = permissionId
+                    })
+                    .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.PermissionError.InvalidId;
+            }
+            
+            
+            return _provider.GetService<IMapper<Result, AddPermissionReplay>>()
+                .Map(result);
+        }
+
+        public override async Task<RemovePermissionReplay> RemovePermission(RemovePermissionRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var roleId) 
+               && Guid.TryParse(request.PermissionId, out var permissionId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(RoleRemovePermissionOperation)}");
+                var operation = _provider.GetRequiredService<RoleRemovePermissionOperation>();
+                using (MiniProfiler.Current.Step(nameof(RoleRemovePermissionOperation)))
+                {
+                    result = await operation.ExecuteAsync(new RoleRemovePermission
+                        {
+                            Id = roleId,
+                            PermissionId = permissionId
+                        })
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.PermissionError.InvalidId;
+            }
+            
+            
+            return _provider.GetService<IMapper<Result, RemovePermissionReplay>>()
+                .Map(result);
+        }
     }
 }
