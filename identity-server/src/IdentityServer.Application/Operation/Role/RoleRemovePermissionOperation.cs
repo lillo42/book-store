@@ -33,7 +33,7 @@ namespace IdentityServer.Application.Operation.Role
                 if (root == null)
                 {
                     _logger.LogInformation("Role not found. [Permission: {permissionName}]", request.Id);
-                    return DomainError.PermissionError.NotFound;
+                    return DomainError.RoleError.NotFound;
                 }
                 
                 var result = root.RemovePermission(new Domain.Common.Permission(request.PermissionId));

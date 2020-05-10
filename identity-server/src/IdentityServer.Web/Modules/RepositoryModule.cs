@@ -31,6 +31,7 @@ namespace IdentityServer.Web.Modules
             
             builder.Register(ctx => ctx.Resolve<IDbFactory>().Create())
                 .As<DbConnection>()
+                .OnRelease(x => x.Dispose())
                 .InstancePerLifetimeScope();
 
             builder.Register(ctx =>

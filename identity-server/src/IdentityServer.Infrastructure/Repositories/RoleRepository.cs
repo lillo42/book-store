@@ -115,7 +115,7 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<Role> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var connection = _factory.Create();
+            await using var connection = _factory.Create();
             var reader = await _connection.ExecuteReaderAsync($@"
             SELECT
                 R.""id"" AS Id,
