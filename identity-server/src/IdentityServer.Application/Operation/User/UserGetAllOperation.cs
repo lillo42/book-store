@@ -20,17 +20,17 @@ namespace IdentityServer.Application.Operation.User
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<Result> ExecuteAsync(UserGetAll request, CancellationToken cancellationToken = default)
+        public Task<Result> ExecuteAsync(UserGetAll request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Going to get all user");
             try
             {
-                return Result.Ok(_repository.GetAllAsync(cancellationToken));
+                return Task.FromResult<Result>(Result.Ok(_repository.GetAllAsync(cancellationToken)));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error to execute get all user");
-                return Result.Fail(e);
+                return Task.FromResult<Result>(Result.Fail(e));
             }
         }
     }

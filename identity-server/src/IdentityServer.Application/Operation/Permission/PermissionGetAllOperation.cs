@@ -20,17 +20,17 @@ namespace IdentityServer.Application.Operation.Permission
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<Result> ExecuteAsync(PermissionGetAll request, CancellationToken cancellationToken = default)
+        public Task<Result> ExecuteAsync(PermissionGetAll request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Going to get all permission");
             try
             {
-                return Result.Ok(_permissionRepository.GetAllAsync(cancellationToken));
+                return Task.FromResult<Result>(Result.Ok(_permissionRepository.GetAllAsync(cancellationToken)));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error to execute get all permission");
-                return Result.Fail(e);
+                return Task.FromResult<Result>(Result.Fail(e));
             }
         }
     }
