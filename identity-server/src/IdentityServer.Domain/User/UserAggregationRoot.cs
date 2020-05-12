@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.User;
@@ -16,36 +17,45 @@ namespace IdentityServer.Domain.User
     public class UserAggregationRoot : AggregateRoot<UserState,Guid>, IUserAggregationRoot
     {
         private readonly IHashAlgorithm _hash;
-        private readonly IReadOnlyPermissionRepository _permissions;
-        private readonly IReadOnlyRoleRepository _role;
+        private readonly IReadOnlyUserRepository _userRepository;
+        private readonly IReadOnlyPermissionRepository _permissionRepository;
+        private readonly IReadOnlyRoleRepository _roleRepository;
         
-        public UserAggregationRoot(UserState state, 
-            ILogger<UserAggregationRoot> logger, 
+        public UserAggregationRoot(
+            UserState state, 
             IHashAlgorithm hash, 
-            IReadOnlyPermissionRepository permissions, 
-            IReadOnlyRoleRepository role) 
+            IReadOnlyUserRepository userRepository,
+            IReadOnlyPermissionRepository permissionsRepository, 
+            IReadOnlyRoleRepository roleRepository,
+            ILogger<UserAggregationRoot> logger) 
             : base(state, logger)
         {
             _hash = hash ?? throw new ArgumentNullException(nameof(hash));
-            _permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
-            _role = role ?? throw new ArgumentNullException(nameof(role));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _permissionRepository = permissionsRepository ?? throw new ArgumentNullException(nameof(permissionsRepository));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
         }
         
-        public Result Create(string mail, string password, bool isEnable)
+        public async Task<Result> CreateAsync(string mail, string password, bool isEnable, CancellationToken cancellationToken = default)
         {
             if (mail.IsMissing())
             {
                 return UserError.MissingMail;
             }
             
-            if(!Regex.IsMatch(mail, @"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"))
+            if (mail.Length > 100)
             {
                 return UserError.InvalidMail;
             }
             
-            if (mail.Length > 100)
+            if(!Regex.IsMatch(mail, @"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"))
             {
                 return UserError.InvalidMail;
+            }
+
+            if (await _userRepository.ExistAsync(mail, cancellationToken).ConfigureAwait(false))
+            {
+                return UserError.MailAlreadyExist;
             }
 
             if (password.IsMissing())
@@ -62,11 +72,16 @@ namespace IdentityServer.Domain.User
             return Result.Ok();
         }
 
-        public Result Update(string mail, bool isEnable)
+        public async Task<Result> UpdateAsync(string mail, bool isEnable, CancellationToken cancellationToken = default)
         {
             if (mail.IsMissing())
             {
                 return UserError.MissingMail;
+            }
+            
+            if (mail.Length > 100)
+            {
+                return UserError.InvalidMail;
             }
             
             if(!Regex.IsMatch(mail, @"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"))
@@ -74,9 +89,9 @@ namespace IdentityServer.Domain.User
                 return UserError.InvalidMail;
             }
             
-            if (mail.Length > 100)
+            if (State.Mail != mail && await _userRepository.ExistAsync(mail, cancellationToken).ConfigureAwait(false))
             {
-                return UserError.InvalidMail;
+                return UserError.MailAlreadyExist;
             }
 
             Apply(new UpdateUserEvent(mail, isEnable));
@@ -90,7 +105,7 @@ namespace IdentityServer.Domain.User
                 return UserError.InvalidPermission;
             }
 
-            if (!await _permissions.ExistAsync(permission.Id)
+            if (!await _permissionRepository.ExistAsync(permission.Id)
                 .ConfigureAwait(false))
             {
                 return UserError.InvalidPermission;
@@ -128,7 +143,7 @@ namespace IdentityServer.Domain.User
                 return UserError.InvalidRole;
             }
             
-            if (!await _role.ExistAsync(role.Id)
+            if (!await _roleRepository.ExistAsync(role.Id)
                 .ConfigureAwait(false))
             {
                 return UserError.InvalidRole;

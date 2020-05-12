@@ -27,7 +27,8 @@ namespace IdentityServer.Application.Operation.User
             {
                 var root = _aggregationStore.Create();
                 
-                var result = root.Create(request.Mail, request.Password, request.IsEnable);
+                var result = await root.CreateAsync(request.Mail, request.Password, request.IsEnable, cancellationToken)
+                    .ConfigureAwait(false);
                 
                 if (result is ErrorResult error)
                 {

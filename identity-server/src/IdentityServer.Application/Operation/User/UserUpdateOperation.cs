@@ -35,7 +35,8 @@ namespace IdentityServer.Application.Operation.User
                     return DomainError.UserError.NotFound;
                 }
                 
-                var result = root.Update(request.Mail, request.IsEnable);
+                var result = await root.UpdateAsync(request.Mail, request.IsEnable, cancellationToken)
+                    .ConfigureAwait(false);
 
                 if (result is ErrorResult error)
                 {

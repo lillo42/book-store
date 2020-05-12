@@ -15,5 +15,7 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
         Task<User> GetByMailAndPasswordAsync(string mail, string password, CancellationToken cancellationToken = default);
 
         Task<bool> IsEnableAsync(Guid id, CancellationToken cancellationToken = default);
+        
+        Task<bool> ExistAsync(string mail, CancellationToken cancellationToken = default);
     }
 }

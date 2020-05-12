@@ -1,13 +1,14 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Domain.Abstractions.User
 {
     public interface IUserAggregationRoot : IAggregateRoot<UserState, Guid>
     {
-        Result Create(string mail, string password, bool isEnable);
+        Task<Result> CreateAsync(string mail, string password, bool isEnable, CancellationToken cancellationToken = default);
         
-        Result Update(string mail, bool isEnable);
+        Task<Result> UpdateAsync(string mail, bool isEnable, CancellationToken cancellationToken = default);
         
         Task<Result> AddPermissionAsync(Common.Permission permission);
         

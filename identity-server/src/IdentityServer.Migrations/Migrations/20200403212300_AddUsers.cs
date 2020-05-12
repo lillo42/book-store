@@ -9,7 +9,7 @@ namespace IdentityServer.Migrations.Migrations
         {
             Create.Table("Users")
                 .WithColumn("id").AsGuid().PrimaryKey("PK_Users")
-                .WithColumn("mail").AsString(100).NotNullable()
+                .WithColumn("mail").AsString(100).NotNullable().Unique()
                 .WithColumn("password").AsCustom("text").NotNullable()
                 .WithColumn("is_active").AsBoolean().NotNullable();
 

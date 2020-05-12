@@ -57,8 +57,8 @@ namespace IdentityServer.Domain.User
         private UserAggregationRoot CreateNew(Common.User role)
         {
             return new UserAggregationRoot(new UserState(role),
-                _loggerFactory.CreateLogger<UserAggregationRoot>(),
-                _hash, _permissionRepository, _roleRepository);
+                _hash, _userRepository, _permissionRepository, _roleRepository,
+                _loggerFactory.CreateLogger<UserAggregationRoot>());
         }
 
         public async Task SaveAsync(IUserAggregationRoot aggregate, CancellationToken cancellation = default)

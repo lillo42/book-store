@@ -197,6 +197,15 @@ namespace IdentityServer.Infrastructure.Repositories
                 .ConfigureAwait(false);
         }
 
+        public async Task<bool> ExistAsync(string mail, CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Users\" where \"mail\" = :mail",
+                    new {mail})
+                .ConfigureAwait(false);
+        }
+
         public async Task AddPermissionAsync(User entity, Permission permission, CancellationToken cancellationToken = default)
         {
             var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
