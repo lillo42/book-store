@@ -63,11 +63,11 @@ namespace IdentityServer.Web.Modules
                 .SingleInstance();
             
             builder.RegisterType<ResultToAddPermissionReplay>()
-                .As<IMapper<Result, Proto.AddPermissionReplay>>()
+                .As<IMapper<Result, Proto.AddRolePermissionReplay>>()
                 .SingleInstance();
 
             builder.RegisterType<ResultToRemovePermissionReplay>()
-                .As<IMapper<Result, Proto.RemovePermissionReplay>>()
+                .As<IMapper<Result, Proto.RemoveRolePermissionReplay>>()
                 .SingleInstance();
             #endregion
         }

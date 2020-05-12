@@ -121,7 +121,7 @@ namespace IdentityServer.Web.Services
             }
         }
 
-        public override async Task<AddPermissionReplay> AddPermission(AddPermissionRequest request, ServerCallContext context)
+        public override async Task<AddRolePermissionReplay> AddPermission(AddRolePermissionRequest request, ServerCallContext context)
         {
             Result result;
             if(Guid.TryParse(request.Id, out var roleId) 
@@ -145,11 +145,11 @@ namespace IdentityServer.Web.Services
             }
             
             
-            return _provider.GetService<IMapper<Result, AddPermissionReplay>>()
+            return _provider.GetService<IMapper<Result, AddRolePermissionReplay>>()
                 .Map(result);
         }
 
-        public override async Task<RemovePermissionReplay> RemovePermission(RemovePermissionRequest request, ServerCallContext context)
+        public override async Task<RemoveRolePermissionReplay> RemovePermission(RemoveRolePermissionRequest request, ServerCallContext context)
         {
             Result result;
             if(Guid.TryParse(request.Id, out var roleId) 
@@ -173,7 +173,7 @@ namespace IdentityServer.Web.Services
             }
             
             
-            return _provider.GetService<IMapper<Result, RemovePermissionReplay>>()
+            return _provider.GetService<IMapper<Result, RemoveRolePermissionReplay>>()
                 .Map(result);
         }
     }

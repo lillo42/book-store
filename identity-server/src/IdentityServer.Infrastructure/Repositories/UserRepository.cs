@@ -96,11 +96,12 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<User> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            await using var eagerLoadConnection = await _unitOfWork.CreateUnsafeConnection(cancellationToken).ConfigureAwait(false);
             var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             var reader = await connection.ExecuteReaderAsync($@"SELECT 
-                            ""id"" AS Id,
-                            ""mail"" AS Mail,
-                            ""is_active"" AS active,
+                            ""id"" AS ""Id"",
+                            ""mail"" AS ""Mail"",
+                            ""is_active"" AS ""IsEnable"",
                         FROM public.""Users""")
                 .ConfigureAwait(false);
 
@@ -110,24 +111,23 @@ namespace IdentityServer.Infrastructure.Repositories
                 .ConfigureAwait(false))
             {
                 var user = parse(reader);
-                var multi = await connection.QueryMultipleAsync($@"
+                var multi = await eagerLoadConnection.QueryMultipleAsync($@"
                         SELECT
-                            R.""id"" AS Id,
-                            R.""name"" AS Name,
-                            R.""display_name"" AS DisplayName,
-                             R.""description"" AS Description
+                            R.""id"" As ""Id"",
+                            R.""name"" AS ""Name"",
+                            R.""display_name"" AS ""DisplayName"",
+                            R.""description"" AS ""Description""
                         FROM public.""Roles"" R
                         INNER JOIN public.""UsersRoles"" UR ON R.""id"" = UR.""role_id""
                         WHERE UR.""user_id"" = :id;
                         SELECT
-                            P.""id"" AS Id,
-                            P.""name"" AS Name,
-                            P.""display_name"" AS DisplayName,
-                            P.""description"" AS Description
+                            P.""id"" As ""Id"",
+                            P.""name"" AS ""Name"",
+                            P.""display_name"" AS ""DisplayName"",
+                            P.""description"" AS ""Description""
                         FROM public.""Permissions"" P
                         INNER JOIN public.""UsersPermissions"" UP ON P.""id"" = UP.""permission_id""
-                        WHERE UR.""user_id"" = :id;
-", new {id = user.Id}).ConfigureAwait(false);
+                        WHERE UR.""user_id"" = :id;", new {id = user.Id}).ConfigureAwait(false);
 
                 var roles = await multi.ReadAsync<Role>()
                     .ConfigureAwait(false);
@@ -147,9 +147,9 @@ namespace IdentityServer.Infrastructure.Repositories
             var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             var user = await connection.QueryFirstOrDefaultAsync<User>($@"
                         SELECT 
-                            ""id"" AS Id,
-                            ""mail"" AS Mail,
-                            ""is_active"" AS active,
+                            ""id"" AS ""Id"",
+                            ""mail"" AS ""Mail"",
+                            ""is_active"" AS ""IsEnable"",
                         FROM public.""Users"" 
                         WHERE ""mail"" = :mail AND password = :password 
                         LIMIT 1;", new { mail, password})
@@ -162,18 +162,21 @@ namespace IdentityServer.Infrastructure.Repositories
             
             var multi = await connection.QueryMultipleAsync(
                     $@"SELECT
-                            R.""id"" AS Id,
-                            R.""name"" AS Name,
+                            R.""id"" As ""Id"",
+                            R.""name"" AS ""Name"",
+                            R.""display_name"" AS ""DisplayName"",
+                            R.""description"" AS ""Description""
                         FROM public.""Roles"" R
                         INNER JOIN public.""UsersRoles"" UR ON R.""id"" = UR.""role_id""
                         WHERE UR.""user_id"" = :id;
                         SELECT
-                            P.""id"" AS Id,
-                            P.""name"" AS Name,
+                            P.""id"" As ""Id"",
+                            P.""name"" AS ""Name"",
+                            P.""display_name"" AS ""DisplayName"",
+                            P.""description"" AS ""Description""
                         FROM public.""Permissions"" P
                         INNER JOIN public.""UsersPermissions"" UP ON P.""id"" = UP.""permission_id""
-                        WHERE UR.""user_id"" = :id;
-",
+                        WHERE UR.""user_id"" = :id;",
                     new {id = user.Id})
                 .ConfigureAwait(false);
             

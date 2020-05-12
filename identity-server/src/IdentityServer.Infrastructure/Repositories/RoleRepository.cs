@@ -57,10 +57,10 @@ namespace IdentityServer.Infrastructure.Repositories
             var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             var multi = await connection.QueryMultipleAsync($@"
             SELECT
-                R.""id"" AS Id,
-                R.""name"" AS Name,
-                R.""display_name"" AS DisplayName,
-                R.""description"" AS Description
+                R.""id"" AS ""Id"",
+                R.""name"" AS ""Name"",
+                R.""display_name"" AS ""DisplayName"",
+                R.""description"" AS ""Description""
             FROM public.""Roles"" R
             WHERE  R.""id"" = :id
             LIMIT 1;
@@ -136,10 +136,10 @@ namespace IdentityServer.Infrastructure.Repositories
             
             var reader = await connection.ExecuteReaderAsync($@"
             SELECT
-                R.""id"" AS Id,
-                R.""name"" AS Name,
-                R.""display_name"" AS DisplayName,
-                R.""description"" AS Description
+                R.""id"" AS ""Id"",
+                R.""name"" AS ""Name"",
+                R.""display_name"" AS ""DisplayName"",
+                R.""description"" AS ""Description""
             FROM public.""Roles"" R");
 
             var parse = reader.GetRowParser<Role>();
@@ -149,10 +149,10 @@ namespace IdentityServer.Infrastructure.Repositories
                 
                 var permissions = await permissionConnection.QueryAsync<Permission>($@"
                 SELECT
-                    P.""id"" As Id,
+                    P.""id"" As ""Id"",
                     P.""name"" AS ""Name"",
-                    P.""display_name"" AS DisplayName,
-                    P.""description"" AS Description
+                    P.""display_name"" AS ""DisplayName"",
+                    P.""description"" AS ""Description""
                 FROM public.""RolesPermissions"" RP
                 INNER JOIN public.""Permissions"" P ON  P.""id"" = RP.""permission_id""
                 WHERE RP.""role_id"" = :id", new { id = role.Id}).ConfigureAwait(false);

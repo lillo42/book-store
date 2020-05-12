@@ -6,91 +6,91 @@ option csharp_namespace = "IdentityServer.Web.Proto";
 import "google/protobuf/wrappers.proto";
 import "Protos/permission.proto";
 
-service Roles {
-    rpc CreateRole (CreateRoleRequest) returns (CreateRoleReplay) {}
-    rpc UpdateRole (UpdateRoleRequest) returns (UpdateRoleReplay) {}
+service Users {
+    rpc CreateUser (CreateUserRequest) returns (CreateUserReplay) {}
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReplay) {}
 
 
-    rpc AddPermission (AddRolePermissionRequest) returns (AddRolePermissionReplay) {}
-    rpc RemovePermission (RemoveRolePermissionRequest) returns (RemoveRolePermissionReplay) {}
+    rpc AddPermission (AddUserPermissionRequest) returns (AddUserPermissionReplay) {}
+    rpc RemovePermission (RemoveUserPermissionRequest) returns (RemoveUserPermissionReplay) {}
+    
 
-
-    rpc GetRoleById (GetRoleByIdRequest) returns (GetRoleByIeReplay) {}
-    rpc GetRoles (GetRolesRequest) returns (stream Role) {}
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIeReplay) {}
+    rpc GetUsers (GetUsersRequest) returns (stream User) {}
 }
 
 /*
-###### Role  ######
+###### User  ######
 */
 
-message Role {
+message User {
     string id = 1;
-    string name = 2;
-    string display_name = 3;
-    string description = 4;
+    string mail = 2;
+    string password = 3;
+    string is_enable = 4;
     repeated Permission permission = 5;
 }
 
-message CreateRoleRequest {
+message CreateUserRequest {
     string name = 2;
     string display_name = 3;
     string description = 4;
 }
 
-message CreateRoleReplay {
+message CreateUserReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
-    Role value = 4;
+    User value = 4;
 }
 
-message UpdateRoleRequest {
+message UpdateUserRequest {
     string id = 1;
     string name = 2;
     string display_name = 3;
     string description = 4;
 }
 
-message UpdateRoleReplay {
+message UpdateUserReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
-    Role value = 4;
+    User value = 4;
 }
 
-message GetRoleByIdRequest {
+message GetUserByIdRequest {
     string id = 1;
 }
 
-message GetRoleByIeReplay {
+message GetUserByIeReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
-    Role value = 4;
+    User value = 4;
 }
 
-message GetRolesRequest {
+message GetUsersRequest {
     google.protobuf.Int32Value skip = 1;
     google.protobuf.Int32Value take = 2;
 }
 
-message AddRolePermissionRequest {
+message AddUserPermissionRequest {
     string id = 1;
     string permission_id = 2;
 }
 
-message AddRolePermissionReplay {
+message AddUserPermissionReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
 }
 
-message RemoveRolePermissionRequest {
+message RemoveUserPermissionRequest {
     string id = 1;
     string permission_id = 2;
 }
 
-message RemoveRolePermissionReplay {
+message RemoveUserPermissionReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
