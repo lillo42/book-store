@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using IdentityServer.Application.Operation.Role;
 using IdentityServer.Application.Request.Role;
+using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Role;
 using Microsoft.Extensions.Logging;
@@ -14,35 +15,52 @@ using Xunit;
 
 namespace IdentityServer.Application.Test.Operation.Role
 {
-    public class RoleCreateOperationTest
+    public class RoleRemovePermissionOperationTest
     {
+        private readonly ILogger<RoleRemovePermissionOperation> _logger;
         private readonly IRoleAggregationStore _store;
-        private readonly ILogger<RoleCreateOperation> _logger;
-        private readonly RoleCreateOperation _operation;
+        private readonly RoleRemovePermissionOperation _operation;
         private readonly Fixture _fixture;
 
-        public RoleCreateOperationTest()
+        public RoleRemovePermissionOperationTest()
         {
             _fixture = new Fixture();
-            
             _store = Substitute.For<IRoleAggregationStore>();
-            _logger = Substitute.For<ILogger<RoleCreateOperation>>();
+            _logger = Substitute.For<ILogger<RoleRemovePermissionOperation>>();
             
-            _operation = new RoleCreateOperation(_store, _logger);
+            _operation = new RoleRemovePermissionOperation(_store, _logger);
         }
 
         [Fact]
-        public async Task Execute_Should_ReturnError_When_CreateReturnError()
+        public async Task Execute_Should_ReturnError_When_RoleNotFound()
         {
-            var request = _fixture.Create<RoleCreate>();
+            var request = _fixture.Create<RoleRemovePermission>();
+            
+            _store.GetAsync(request.Id, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IRoleAggregationRoot>(null));
+            
+            var result = await _operation.ExecuteAsync(request, CancellationToken.None);
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse();
+            result.Should().Be(DomainError.RoleError.NotFound);
+            
+            var _ = _store
+                .Received(1)
+                .GetAsync(request.Id);
+        }
+        
+        [Fact]
+        public async Task Execute_Should_ReturnError_When_UpdateReturnError()
+        {
+            var request = _fixture.Create<RoleRemovePermission>();
             var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
             
             var root = Substitute.For<IRoleAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.RemovePermission(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(error);
             
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
@@ -51,25 +69,25 @@ namespace IdentityServer.Application.Test.Operation.Role
             result.IsSuccess.Should().BeFalse();
             result.Should().Be(error);
             
-            _store
+            var _ = _store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
 
-            var _ = root
+            var __ =root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
+                .RemovePermission(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
         }
         
         [Fact]
         public async Task Execute_Should_ReturnError_When_Throw()
         {
-            var request = _fixture.Create<RoleCreate>();
+            var request = _fixture.Create<RoleRemovePermission>();
             var root = Substitute.For<IRoleAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.RemovePermission(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(Result.Ok());
 
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var exception = new Exception(_fixture.Create<string>())
@@ -86,15 +104,15 @@ namespace IdentityServer.Application.Test.Operation.Role
             result.IsSuccess.Should().BeFalse();
             result.Should().BeEquivalentTo(Result.Fail(exception));
             
-            _store
+            var _ =_store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
 
-            var _ = root
+            var __ =root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
+                .RemovePermission(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
 
-            var __ =_store
+            var ___ =_store
                 .Received(1)
                 .SaveAsync(root, Arg.Any<CancellationToken>());
         }
@@ -102,11 +120,11 @@ namespace IdentityServer.Application.Test.Operation.Role
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<RoleCreate>();
+            var request = _fixture.Create<RoleRemovePermission>();
             
             var root = Substitute.For<IRoleAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(Result.Ok());
 
             var role = _fixture.Create<Domain.Common.Role>();
@@ -114,7 +132,7 @@ namespace IdentityServer.Application.Test.Operation.Role
             root.State
                 .Returns(new RoleState(role));
             
-            _store.Create()
+            _store.GetAsync(request.Id)
                 .Returns(root);
 
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
@@ -124,15 +142,15 @@ namespace IdentityServer.Application.Test.Operation.Role
             result.Value.Should().NotBeNull();
             result.Value.Should().Be(role);
 
-            _store
+            var _ =_store
                 .Received(1)
-                .Create();
+                .GetAsync(request.Id);
             
-            var _ = root
-                .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
-
             var __ =root
+                .Received(1)
+                .RemovePermission(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
+
+            var ___ =root
                 .Received(1)
                 .State;
         }

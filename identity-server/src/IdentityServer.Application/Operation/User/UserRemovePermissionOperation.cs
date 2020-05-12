@@ -33,7 +33,7 @@ namespace IdentityServer.Application.Operation.User
                 if (root == null)
                 {
                     _logger.LogInformation("User not found. [User: {userId}]", request.Id);
-                    return DomainError.PermissionError.NotFound;
+                    return DomainError.UserError.NotFound;
                 }
                 
                 var result = root.RemovePermission(new Domain.Common.Permission(request.PermissionId));

@@ -3,66 +3,61 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using IdentityServer.Application.Operation.Role;
-using IdentityServer.Application.Request.Role;
+using IdentityServer.Application.Operation.User;
+using IdentityServer.Application.Request.User;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
-using IdentityServer.Domain.Abstractions.Role;
+using IdentityServer.Domain.Abstractions.User;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace IdentityServer.Application.Test.Operation.Role
+namespace IdentityServer.Application.Test.Operation.User
 {
-    public class RoleUpdateOperationTest
+    public class UserAddPermissionOperationTest
     {
-        private readonly IRoleAggregationStore _store;
-        private readonly ILogger<RoleUpdateOperation> _logger;
-        private readonly RoleUpdateOperation _operation;
+        private readonly ILogger<UserAddPermissionOperation> _logger;
+        private readonly IUserAggregationStore _store;
+        private readonly UserAddPermissionOperation _operation;
         private readonly Fixture _fixture;
 
-        public RoleUpdateOperationTest()
+        public UserAddPermissionOperationTest()
         {
             _fixture = new Fixture();
+            _store = Substitute.For<IUserAggregationStore>();
+            _logger = Substitute.For<ILogger<UserAddPermissionOperation>>();
             
-            _store = Substitute.For<IRoleAggregationStore>();
-            _logger = Substitute.For<ILogger<RoleUpdateOperation>>();
-            
-            _operation = new RoleUpdateOperation(_store, _logger);
+            _operation = new UserAddPermissionOperation(_store, _logger);
         }
 
         [Fact]
-        public async Task Execute_Should_ReturnError_When_RoleNotFound()
+        public async Task Execute_Should_ReturnError_When_UserNotFound()
         {
-            var request = _fixture.Create<RoleUpdate>();
+            var request = _fixture.Create<UserAddPermission>();
             
-            var root = Substitute.For<IRoleAggregationRoot>();
-
-            _store.GetAsync(request.Id)
-                .Returns(Task.FromResult<IRoleAggregationRoot>(null));
-
+            _store.GetAsync(request.Id, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IUserAggregationRoot>(null));
+            
             var result = await _operation.ExecuteAsync(request, CancellationToken.None);
-
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
-            result.Should().Be(DomainError.RoleError.NotFound);
+            result.Should().Be(DomainError.UserError.NotFound);
             
             var _ = _store
                 .Received(1)
                 .GetAsync(request.Id);
         }
-
         
         [Fact]
         public async Task Execute_Should_ReturnError_When_UpdateReturnError()
         {
-            var request = _fixture.Create<RoleUpdate>();
+            var request = _fixture.Create<UserAddPermission>();
             var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
             
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.UpdateAsync(request.Name, request.DisplayName, request.Description)
+            root.AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(error);
             
             _store.GetAsync(request.Id)
@@ -80,16 +75,16 @@ namespace IdentityServer.Application.Test.Operation.Role
 
             var __ =root
                 .Received(1)
-                .UpdateAsync(request.Name, request.DisplayName, request.Description);
+                .AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
         }
         
         [Fact]
         public async Task Execute_Should_ReturnError_When_Throw()
         {
-            var request = _fixture.Create<RoleUpdate>();
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var request = _fixture.Create<UserAddPermission>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.UpdateAsync(request.Name, request.DisplayName, request.Description)
+            root.AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(Result.Ok());
 
             _store.GetAsync(request.Id)
@@ -115,7 +110,7 @@ namespace IdentityServer.Application.Test.Operation.Role
 
             var __ =root
                 .Received(1)
-                .UpdateAsync(request.Name, request.DisplayName, request.Description);
+                .AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
 
             var ___ =_store
                 .Received(1)
@@ -125,17 +120,17 @@ namespace IdentityServer.Application.Test.Operation.Role
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<RoleUpdate>();
+            var request = _fixture.Create<UserAddPermission>();
             
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.UpdateAsync(request.Name, request.DisplayName, request.Description)
+            root.AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId))
                 .Returns(Result.Ok());
 
-            var role = _fixture.Create<Domain.Common.Role>();
+            var user = _fixture.Create<Domain.Common.User>();
             
             root.State
-                .Returns(new RoleState(role));
+                .Returns(new UserState(user));
             
             _store.GetAsync(request.Id)
                 .Returns(root);
@@ -145,7 +140,7 @@ namespace IdentityServer.Application.Test.Operation.Role
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
-            result.Value.Should().Be(role);
+            result.Value.Should().Be(user);
 
             var _ =_store
                 .Received(1)
@@ -153,7 +148,7 @@ namespace IdentityServer.Application.Test.Operation.Role
             
             var __ =root
                 .Received(1)
-                .UpdateAsync(request.Name, request.DisplayName, request.Description);
+                .AddPermissionAsync(Arg.Is<Domain.Common.Permission>(x => x.Id == request.PermissionId));
 
             var ___ =root
                 .Received(1)

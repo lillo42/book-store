@@ -3,43 +3,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using IdentityServer.Application.Operation.Role;
-using IdentityServer.Application.Request.Role;
+using IdentityServer.Application.Operation.User;
+using IdentityServer.Application.Request.User;
 using IdentityServer.Domain.Abstractions;
-using IdentityServer.Domain.Abstractions.Role;
+using IdentityServer.Domain.Abstractions.User;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
 
-namespace IdentityServer.Application.Test.Operation.Role
+namespace IdentityServer.Application.Test.Operation.User
 {
-    public class RoleCreateOperationTest
+    public class UserCreateOperationTest
     {
-        private readonly IRoleAggregationStore _store;
-        private readonly ILogger<RoleCreateOperation> _logger;
-        private readonly RoleCreateOperation _operation;
+        private readonly IUserAggregationStore _store;
+        private readonly ILogger<UserCreateOperation> _logger;
+        private readonly UserCreateOperation _operation;
         private readonly Fixture _fixture;
 
-        public RoleCreateOperationTest()
+        public UserCreateOperationTest()
         {
             _fixture = new Fixture();
             
-            _store = Substitute.For<IRoleAggregationStore>();
-            _logger = Substitute.For<ILogger<RoleCreateOperation>>();
+            _store = Substitute.For<IUserAggregationStore>();
+            _logger = Substitute.For<ILogger<UserCreateOperation>>();
             
-            _operation = new RoleCreateOperation(_store, _logger);
+            _operation = new UserCreateOperation(_store, _logger);
         }
 
         [Fact]
         public async Task Execute_Should_ReturnError_When_CreateReturnError()
         {
-            var request = _fixture.Create<RoleCreate>();
+            var request = _fixture.Create<UserCreate>();
             var error = Result.Fail(_fixture.Create<string>(), _fixture.Create<string>());
             
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.CreateAsync(request.Mail, request.Password, request.IsEnable)
                 .Returns(error);
             
             _store.Create()
@@ -57,16 +57,16 @@ namespace IdentityServer.Application.Test.Operation.Role
 
             var _ = root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
+                .CreateAsync(request.Mail, request.Password, request.IsEnable);
         }
         
         [Fact]
         public async Task Execute_Should_ReturnError_When_Throw()
         {
-            var request = _fixture.Create<RoleCreate>();
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var request = _fixture.Create<UserCreate>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.CreateAsync(request.Mail, request.Password, request.IsEnable)
                 .Returns(Result.Ok());
 
             _store.Create()
@@ -92,7 +92,7 @@ namespace IdentityServer.Application.Test.Operation.Role
 
             var _ = root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
+                .CreateAsync(request.Mail, request.Password, request.IsEnable);
 
             var __ =_store
                 .Received(1)
@@ -102,17 +102,17 @@ namespace IdentityServer.Application.Test.Operation.Role
         [Fact]
         public async Task Execute_Should_ReturnOK()
         {
-            var request = _fixture.Create<RoleCreate>();
+            var request = _fixture.Create<UserCreate>();
             
-            var root = Substitute.For<IRoleAggregationRoot>();
+            var root = Substitute.For<IUserAggregationRoot>();
 
-            root.CreateAsync(request.Name, request.DisplayName, request.Description)
+            root.CreateAsync(request.Mail, request.Password, request.IsEnable)
                 .Returns(Result.Ok());
 
-            var role = _fixture.Create<Domain.Common.Role>();
+            var user = _fixture.Create<Domain.Common.User>();
             
             root.State
-                .Returns(new RoleState(role));
+                .Returns(new UserState(user));
             
             _store.Create()
                 .Returns(root);
@@ -122,7 +122,7 @@ namespace IdentityServer.Application.Test.Operation.Role
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
-            result.Value.Should().Be(role);
+            result.Value.Should().Be(user);
 
             _store
                 .Received(1)
@@ -130,7 +130,7 @@ namespace IdentityServer.Application.Test.Operation.Role
             
             var _ = root
                 .Received(1)
-                .CreateAsync(request.Name, request.DisplayName, request.Description);
+                .CreateAsync(request.Mail, request.Password, request.IsEnable);
 
             var __ =root
                 .Received(1)
