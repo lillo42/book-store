@@ -7,23 +7,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using IdentityServer.Domain.Common;
+using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DbConnection _connection;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserRepository(DbConnection connection)
+        public UserRepository(IUnitOfWork unitOfWork)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task CreateAsync(User entity, CancellationToken cancellationToken = default)
         {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             entity.Id = Guid.NewGuid();
-            await _connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"Users\" (\"id\", \"mail\", \"password\", \"is_active\") VALUES (:id, :mail, :password, :is_active)",
                     new { id = entity.Id, mail = entity.Mail, password = entity.Password, is_active = entity.IsEnable})
                 .ConfigureAwait(false);
@@ -31,7 +33,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task UpdateAsync(User entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "UPDATE public.\"Users\" SET  \"mail\" = @mail, \"is_active\" = :is_active WHERE \"id\" = :id",
                     new { id = entity.Id, mail = entity.Mail, is_active = entity.IsEnable})
                 .ConfigureAwait(false);
@@ -39,7 +42,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task DeleteAsync(User entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"Users\" WHERE \"id\" = :id",
                     new { id = entity.Id})
                 .ConfigureAwait(false);
@@ -47,7 +51,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var multi = await _connection.QueryMultipleAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var multi = await connection.QueryMultipleAsync(
                     $@"SELECT 
                             ""id"" AS Id,
                             ""mail"" AS Mail,
@@ -92,7 +97,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<User> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var reader = await _connection.ExecuteReaderAsync($@"SELECT 
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var reader = await connection.ExecuteReaderAsync($@"SELECT 
                             ""id"" AS Id,
                             ""mail"" AS Mail,
                             ""is_active"" AS active,
@@ -105,7 +111,7 @@ namespace IdentityServer.Infrastructure.Repositories
                 .ConfigureAwait(false))
             {
                 var user = parse(reader);
-                var multi = await _connection.QueryMultipleAsync($@"
+                var multi = await connection.QueryMultipleAsync($@"
                         SELECT
                             R.""id"" AS Id,
                             R.""name"" AS Name,
@@ -139,7 +145,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<User> GetByMailAndPasswordAsync(string mail, string password, CancellationToken cancellationToken = default)
         {
-            var user = await _connection.QueryFirstOrDefaultAsync<User>($@"
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var user = await connection.QueryFirstOrDefaultAsync<User>($@"
                         SELECT 
                             ""id"" AS Id,
                             ""mail"" AS Mail,
@@ -154,7 +161,7 @@ namespace IdentityServer.Infrastructure.Repositories
                 return null;
             }
             
-            var multi = await _connection.QueryMultipleAsync(
+            var multi = await connection.QueryMultipleAsync(
                     $@"SELECT
                             R.""id"" AS Id,
                             R.""name"" AS Name,
@@ -185,14 +192,16 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<bool> IsEnableAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _connection.ExecuteScalarAsync<bool>("SELECT \"is_active\" FROM  public.\"Users\" WHERE id = :id LIMIT 1",
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>("SELECT \"is_active\" FROM  public.\"Users\" WHERE id = :id LIMIT 1",
                     new {id})
                 .ConfigureAwait(false);
         }
 
         public async Task AddPermissionAsync(User entity, Permission permission, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"UsersPermissions\" (\"user_id\", \"permission_id\") VALUES (:user_id, :permission_id);",
                     new { user_id = entity.Id, permission_id = permission.Id })
                 .ConfigureAwait(false);
@@ -200,7 +209,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task RemovePermissionAsync(User entity, Permission permission, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"UsersPermissions\" WHERE \"user_id\" = :user_id AND  \"permission_id\" = :permission_id",
                     new { user_id = entity.Id, permission_id = permission.Id})
                 .ConfigureAwait(false);
@@ -208,7 +218,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task AddRoleAsync(User entity, Role role, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"UsersRoles\" (\"user_id\", \"role_id\") VALUES (:user_id, :role_id);",
                     new { user_id = entity.Id, role_id = role.Id })
                 .ConfigureAwait(false);   
@@ -216,7 +227,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task RemoveRoleAsync(User entity, Role role, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"UsersRoles\" WHERE \"user_id\" = :user_id AND  \"role_id\" = :role_id",
                     new { user_id = entity.Id, role_id = role.Id})
                 .ConfigureAwait(false);

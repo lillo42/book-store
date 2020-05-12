@@ -12,17 +12,20 @@ namespace IdentityServer.Domain.Resource
     public class ResourceAggregationStore : IResourceAggregationStore
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IResourceRepository _resourceRepository;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RoleAggregationStore> _logger;
         
-        public ResourceAggregationStore(IUnitOfWork repository, 
+        public ResourceAggregationStore(IUnitOfWork unitOfWork,
+            IResourceRepository resourceRepository,
             IEventRepository eventRepository, 
             ILoggerFactory loggerFactory)
         {
-            _unitOfWork = repository ?? throw new ArgumentNullException(nameof(repository));
-            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _resourceRepository = resourceRepository ?? throw new ArgumentNullException(nameof(resourceRepository));
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger<RoleAggregationStore>();
         }
 
@@ -36,7 +39,7 @@ namespace IdentityServer.Domain.Resource
         public async Task<IResourceAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get role. [RoleId: {roleId}]", id);
-            var resource = await _unitOfWork.ResourceRepository.GetByIdAsync(id, cancellation)
+            var resource = await _resourceRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return resource == null ? null : CreateNew(resource);
@@ -45,17 +48,17 @@ namespace IdentityServer.Domain.Resource
         private ResourceAggregationRoot CreateNew(Common.Resource role)
         {
             return new ResourceAggregationRoot(new ResourceState(role),
-                _unitOfWork.ResourceRepository,
+                _resourceRepository,
                 _loggerFactory.CreateLogger<ResourceAggregationRoot>());
         }
 
         public async Task SaveAsync(IResourceAggregationRoot aggregate, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going being transaction");
-            using (_unitOfWork.BeginTransaction())
+            using (_unitOfWork.BeginTransactionAsync())
             {
                 var resource = (Common.Resource) aggregate.State;
-                var repository = _unitOfWork.ResourceRepository;
+                var repository = _resourceRepository;
 
                 if (resource.Id == Guid.Empty)
                 {

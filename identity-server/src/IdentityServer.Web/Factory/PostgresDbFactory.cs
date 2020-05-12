@@ -3,6 +3,7 @@ using System.Data.Common;
 using IdentityServer.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Npgsql.Logging;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Data;
 
@@ -15,15 +16,14 @@ namespace IdentityServer.Web.Factory
         public PostgresDbFactory(IConfiguration configuration)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Debug, true, true);
         }
 
         public DbConnection Create()
         {
-            var connection = new ProfiledDbConnection(new NpgsqlConnection(_configuration.GetConnectionString("Postgres")), MiniProfiler.Current);
-
-            connection.Open();
-
-            return connection;
+            return new ProfiledDbConnection(
+                new NpgsqlConnection(_configuration.GetConnectionString("Postgres")), 
+                MiniProfiler.Current);
         }
     }
 }

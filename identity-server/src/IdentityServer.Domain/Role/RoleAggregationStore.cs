@@ -5,6 +5,7 @@ using IdentityServer.Domain.Abstractions.Role;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.Role
@@ -12,15 +13,21 @@ namespace IdentityServer.Domain.Role
     public class RoleAggregationStore : IRoleAggregationStore
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IReadOnlyPermissionRepository _permissionRepository;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RoleAggregationStore> _logger;
 
-        public RoleAggregationStore(IUnitOfWork repository, 
+        public RoleAggregationStore(IUnitOfWork unitOfWork,
+            IRoleRepository roleRepository,
+            IReadOnlyPermissionRepository permissionRepository,
             IEventRepository eventRepository, 
             ILoggerFactory loggerFactory)
         {
-            _unitOfWork = repository ?? throw new ArgumentNullException(nameof(repository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
+            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _logger = _loggerFactory.CreateLogger<RoleAggregationStore>();
@@ -35,7 +42,7 @@ namespace IdentityServer.Domain.Role
         public async Task<IRoleAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going to get role. [RoleId: {roleId}]", id);
-            var role = await _unitOfWork.RoleRepository.GetByIdAsync(id, cancellation)
+            var role = await _roleRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return role == null ? null : CreateNew(role);
@@ -44,18 +51,18 @@ namespace IdentityServer.Domain.Role
         private RoleAggregationRoot CreateNew(Common.Role role)
         {
             return  new RoleAggregationRoot(new RoleState(role),
-                _unitOfWork.RoleRepository,
-                _unitOfWork.PermissionRepository,
+                _roleRepository,
+                _permissionRepository,
                 _loggerFactory.CreateLogger<RoleAggregationRoot>());
         }
 
         public async Task SaveAsync(IRoleAggregationRoot aggregate, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going being transaction");
-            using (_unitOfWork.BeginTransaction())
+            using (_unitOfWork.BeginTransactionAsync())
             {
                 var role = (Common.Role) aggregate.State;
-                var repository = _unitOfWork.RoleRepository;
+                var repository = _roleRepository;
 
                 if (role.Id == Guid.Empty)
                 {

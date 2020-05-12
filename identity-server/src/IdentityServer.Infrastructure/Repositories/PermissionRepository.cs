@@ -6,69 +6,87 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using IdentityServer.Domain.Common;
+using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
     public class PermissionRepository : IPermissionRepository
     {
-        private readonly DbConnection _connection;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PermissionRepository(DbConnection connection)
+        public PermissionRepository(IUnitOfWork unitOfWork)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task CreateAsync(Permission entity, CancellationToken cancellationToken = default)
         {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             entity.Id = Guid.NewGuid();
-            await _connection.ExecuteAsync(
-                    "INSERT INTO public.\"Permissions\" (\"id\", \"name\", \"display_name\", \"description\") VALUES (:id, :name, :display_name, :description)", 
-                    new { id = entity.Id, name = entity.Name,  display_name = entity.DisplayName, description = entity.Description })
+            await connection.ExecuteAsync(
+                    "INSERT INTO public.\"Permissions\" (\"id\", \"name\", \"display_name\", \"description\") VALUES (:id, :name, :display_name, :description)",
+                    new
+                    {
+                        id = entity.Id, name = entity.Name, display_name = entity.DisplayName,
+                        description = entity.Description
+                    })
                 .ConfigureAwait(false);
         }
 
         public async Task UpdateAsync(Permission entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "UPDATE public.\"Permissions\" SET  \"name\" = :name, \"display_name\" = :display_name, \"description\" = :description WHERE \"id\" = :id",
-                    new { id = entity.Id, name = entity.Name,  display_name = entity.DisplayName, description = entity.Description })
+                    new
+                    {
+                        id = entity.Id, name = entity.Name, display_name = entity.DisplayName,
+                        description = entity.Description
+                    })
                 .ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(Permission entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
-                    "DELETE FROM public.\"RolesPermissions\" WHERE \"permission_id\" = :permission_id", 
-                    new { permission_id = entity.Id })
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                    "DELETE FROM public.\"RolesPermissions\" WHERE \"permission_id\" = :permission_id",
+                    new {permission_id = entity.Id})
                 .ConfigureAwait(false);
-            
-            await _connection.ExecuteAsync(
-                    "DELETE FROM public.\"ClientsPermissions\" WHERE \"permission_id\" = :permission_id", 
-                    new { permission_id = entity.Id })
+
+            await connection.ExecuteAsync(
+                    "DELETE FROM public.\"ClientsPermissions\" WHERE \"permission_id\" = :permission_id",
+                    new {permission_id = entity.Id})
                 .ConfigureAwait(false);
-            
-            await _connection.ExecuteAsync(
-                    "DELETE FROM public.\"UsersPermissions\" WHERE \"permission_id\" = :permission_id", 
-                    new { permission_id = entity.Id })
+
+            await connection.ExecuteAsync(
+                    "DELETE FROM public.\"UsersPermissions\" WHERE \"permission_id\" = :permission_id",
+                    new {permission_id = entity.Id})
                 .ConfigureAwait(false);
-            
-            await _connection.ExecuteAsync(
-                    "DELETE FROM public.\"Permissions\" WHERE \"id\" = @id", 
-                    new { id = entity.Id })
+
+            await connection.ExecuteAsync(
+                    "DELETE FROM public.\"Permissions\" WHERE \"id\" = @id",
+                    new {id = entity.Id})
                 .ConfigureAwait(false);
         }
 
-        public async Task<Permission> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) 
-            => await _connection.QueryFirstOrDefaultAsync<Permission>(
-                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\" WHERE \"id\" = :id", 
-                    new { id })
-                .ConfigureAwait(false);
-
-        public async IAsyncEnumerable<Permission>GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async Task<Permission> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var reader = await _connection
-                .ExecuteReaderAsync("SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\"")
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.QueryFirstOrDefaultAsync<Permission>(
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\" WHERE \"id\" = :id",
+                    new {id})
+                .ConfigureAwait(false);
+        }
+
+        public async IAsyncEnumerable<Permission> GetAllAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var reader = await connection
+                .ExecuteReaderAsync(
+                    "SELECT \"id\" AS Id, \"name\" AS Name, \"display_name\" AS DisplayName, \"description\" AS Description FROM public.\"Permissions\"")
                 .ConfigureAwait(false);
             var parser = reader.GetRowParser<Permission>();
 
@@ -79,16 +97,22 @@ namespace IdentityServer.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default) 
-            => await _connection.ExecuteScalarAsync<bool>(
+        public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>(
                     "SELECT TRUE FROM public.\"Permissions\" where \"id\" = :id",
                     new {id})
                 .ConfigureAwait(false);
+        }
 
-        public async Task<bool> ExistAsync(string permissionName, CancellationToken cancellationToken = default) 
-            => await _connection.ExecuteScalarAsync<bool>(
+        public async Task<bool> ExistAsync(string permissionName, CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>(
                     "SELECT TRUE FROM public.\"Permissions\" where \"name\" = :permissionName",
                     new {permissionName})
                 .ConfigureAwait(false);
+        }
     }
 }

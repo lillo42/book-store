@@ -29,9 +29,8 @@ namespace IdentityServer.Web.Modules
                 .As<IDbFactory>()
                 .SingleInstance();
             
-            builder.Register(ctx => ctx.Resolve<IDbFactory>().Create())
-                .As<DbConnection>()
-                .OnRelease(x => x.Dispose())
+            builder.RegisterType<UnitOfWork>()
+                .As<IUnitOfWork>()
                 .InstancePerLifetimeScope();
 
             builder.Register(ctx =>
@@ -69,10 +68,6 @@ namespace IdentityServer.Web.Modules
 
             builder.Register(ctx => ctx.Resolve<IDocumentStore>().OpenAsyncSession())
                 .As<IAsyncDocumentSession>()
-                .InstancePerLifetimeScope();
-            
-            builder.RegisterType<UnitOfWork>()
-                .As<IUnitOfWork>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<EventRepository>()

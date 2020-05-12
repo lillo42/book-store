@@ -6,6 +6,7 @@ using IdentityServer.Domain.Role;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
+using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Domain.User
@@ -13,17 +14,26 @@ namespace IdentityServer.Domain.User
     public class UserAggregationStore : IUserAggregationStore
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserRepository _userRepository;
+        private readonly IReadOnlyPermissionRepository _permissionRepository;
+        private readonly IReadOnlyRoleRepository _roleRepository;
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<RoleAggregationStore> _logger;
         private readonly IHashAlgorithm _hash;
-        public UserAggregationStore(IUnitOfWork repository, 
+        public UserAggregationStore(IUnitOfWork unitOfWork,
+            IUserRepository userRepository, 
+            IReadOnlyPermissionRepository permissionRepository, 
+            IReadOnlyRoleRepository roleRepository,
             IEventRepository eventRepository,
             IHashAlgorithm hash,
             ILoggerFactory loggerFactory)
         {
-            _unitOfWork = repository ?? throw new ArgumentNullException(nameof(repository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _hash = hash ?? throw new ArgumentNullException(nameof(hash));
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _logger = _loggerFactory.CreateLogger<RoleAggregationStore>();
@@ -38,7 +48,7 @@ namespace IdentityServer.Domain.User
         public async Task<IUserAggregationRoot> GetAsync(Guid id, CancellationToken cancellation = default)
         { 
             _logger.LogDebug("Going to get user. [UserId: {roleId}]", id);
-            var entity = await _unitOfWork.UserRepository.GetByIdAsync(id, cancellation)
+            var entity = await _userRepository.GetByIdAsync(id, cancellation)
                 .ConfigureAwait(false);
             
             return entity == null ? null : CreateNew(entity);
@@ -48,16 +58,16 @@ namespace IdentityServer.Domain.User
         {
             return new UserAggregationRoot(new UserState(role),
                 _loggerFactory.CreateLogger<UserAggregationRoot>(),
-                _hash, _unitOfWork.PermissionRepository, _unitOfWork.RoleRepository);
+                _hash, _permissionRepository, _roleRepository);
         }
 
         public async Task SaveAsync(IUserAggregationRoot aggregate, CancellationToken cancellation = default)
         {
             _logger.LogDebug("Going being transaction");
-            using (_unitOfWork.BeginTransaction())
+            using (_unitOfWork.BeginTransactionAsync())
             {
                 var user = (Common.User) aggregate.State;
-                var repository = _unitOfWork.UserRepository;
+                var repository = _userRepository;
 
                 if (user.Id == Guid.Empty)
                 {

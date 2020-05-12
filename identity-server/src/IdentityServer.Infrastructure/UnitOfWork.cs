@@ -10,44 +10,85 @@ namespace IdentityServer.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbConnection _connection;
+        private readonly IDbFactory _factory;
+        private DbConnection _connection;
 
-        public UnitOfWork(DbConnection connection, 
-            IClientRepository clientRepository, 
-            IPermissionRepository permissionRepository, 
-            IResourceRepository resourceRepository, 
-            IRoleRepository roleRepository, 
-            IUserRepository userRepository)
+        public UnitOfWork(IDbFactory factory)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            ClientRepository = clientRepository ?? throw new ArgumentNullException(nameof(clientRepository));
-            PermissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
-            ResourceRepository = resourceRepository ?? throw new ArgumentNullException(nameof(resourceRepository));
-            RoleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            UserRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         private DbTransaction _transaction;
 
-        public IDisposable BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified) 
-            => _transaction = _connection.BeginTransaction(isolationLevel);
+        public ValueTask<DbConnection> GetOrCreateDbConnection(CancellationToken cancellationToken = default)
+        {
+            if (_connection == null)
+            {
+                return new ValueTask<DbConnection>(CreateConnection(cancellationToken));
+            }
+            
+            return new ValueTask<DbConnection>(_connection); 
+        }
+
+        private async Task<DbConnection> CreateConnection(CancellationToken cancellationToken)
+        {
+            return _connection = await CreateUnsafeConnection(cancellationToken)
+                .ConfigureAwait(false);
+        }
+        
+        public async Task<DbConnection> CreateUnsafeConnection(CancellationToken cancellationToken = default)
+        {
+            var connection = _factory.Create();
+            
+            await connection.OpenAsync(cancellationToken);
+
+            return connection;
+        }
+
+        public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+        {
+            return _transaction = await _connection
+                .BeginTransactionAsync(isolationLevel)
+                .ConfigureAwait(false);
+        } 
 
         public async Task CommitAsync(CancellationToken cancellationToken)
         {
             if (_transaction != null)
             {
-                await _transaction.CommitAsync(cancellationToken);
+                await _transaction
+                    .CommitAsync(cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 
-        public IClientRepository ClientRepository { get; }
+        public void Dispose()
+        {
+            if (_connection?.State == ConnectionState.Open)
+            {
+                _connection.Close();
+            }
 
-        public IPermissionRepository PermissionRepository { get; }
+            _connection?.Dispose();
+            _transaction?.Dispose();
+        }
 
-        public IResourceRepository ResourceRepository { get; }
+        public async ValueTask DisposeAsync()
+        {
+            if (_connection != null )
+            {
+                if (_connection.State == ConnectionState.Open)
+                {
+                    await _connection.CloseAsync().ConfigureAwait(false);
+                }
+                
+                await _connection.DisposeAsync().ConfigureAwait(false);    
+            }
 
-        public IRoleRepository RoleRepository { get; }
-
-        public IUserRepository UserRepository { get; }
+            if (_transaction != null)
+            {
+                await _transaction.DisposeAsync();
+            }
+        }
     }
 }

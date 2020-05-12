@@ -1,29 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using IdentityServer.Domain.Common;
+using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
     public class ClientRepository : IClientRepository
     {
-        private readonly DbConnection _connection;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ClientRepository(DbConnection connection)
+        public ClientRepository(IUnitOfWork unitOfWork)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
         
         public async Task CreateAsync(Client entity, CancellationToken cancellationToken = default)
         {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             entity.Id = Guid.NewGuid();
-            await _connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"Clients\" (\"id\", \"name\", \"is_active\", \"client_id\", \"client_secret\") VALUES (:id, :name, :is_active, :client_id, :client_secret)",
                     new
                     {
@@ -38,7 +39,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task UpdateAsync(Client entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "UPDATE public.\"Clients\" SET \"name\" = :name, \"is_active\" = :is_active, \"client_id\" = :client_id, \"client_secret\" = :client_secret WHERE \"id\" = :id",
                     new
                     {
@@ -52,17 +54,19 @@ namespace IdentityServer.Infrastructure.Repositories
         }
 
         #region Roles
-        public async Task AddRoleAsync(Client entity, Role role, CancellationToken cancellation = default)
+        public async Task AddRoleAsync(Client entity, Role role, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
-                "INSERT INTO public.\"ClientsRoles\" (client_id, role_id) VALUES (:client_id, :role_id)",
-                new { client_id = entity.Id, role_id = role.Id })
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                    "INSERT INTO public.\"ClientsRoles\" (client_id, role_id) VALUES (:client_id, :role_id)",
+                    new { client_id = entity.Id, role_id = role.Id })
                 .ConfigureAwait(false);
         }
 
-        public async Task RemoveRoleAsync(Client entity, Role role, CancellationToken cancellation = default)
+        public async Task RemoveRoleAsync(Client entity, Role role, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"ClientsRoles\" WHERE client_id = :client_id AND role_id = :role_id",
                     new { client_id = entity.Id, role_id = role.Id })
                 .ConfigureAwait(false);
@@ -70,17 +74,19 @@ namespace IdentityServer.Infrastructure.Repositories
         #endregion
 
         #region Permssions
-        public async Task AddPermissionAsync(Client entity, Permission permission, CancellationToken cancellation = default)
+        public async Task AddPermissionAsync(Client entity, Permission permission, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"ClientsPermissions\" (client_id, permission_id) VALUES (:client_id, :permission_id)",
                     new { client_id = entity.Id, permission_id = permission.Id })
                 .ConfigureAwait(false);
         }
 
-        public async Task RemovePermissionAsync(Client entity, Permission permission, CancellationToken cancellation = default)
+        public async Task RemovePermissionAsync(Client entity, Permission permission, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"ClientsPermissions\" WHERE client_id = :client_id AND  permission_id = :permission_id",
                     new { client_id = entity.Id, permission_id = permission.Id })
                 .ConfigureAwait(false);
@@ -89,17 +95,19 @@ namespace IdentityServer.Infrastructure.Repositories
 
         #region Resource
 
-        public async Task AddResourceAsync(Client entity, Resource resource, CancellationToken cancellation = default)
+        public async Task AddResourceAsync(Client entity, Resource resource, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "INSERT INTO public.\"ClientsResources\" (client_id, resource_id) VALUES (:client_id, :resource_id)",
                     new { client_id = entity.Id, resource_id = resource.Id })
                 .ConfigureAwait(false);
         }
 
-        public async Task RemoveResourceAsync(Client entity, Resource resource, CancellationToken cancellation = default)
+        public async Task RemoveResourceAsync(Client entity, Resource resource, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                 "DELETE FROM public.\"ClientsResources\" WHERE client_id = :client_id AND resource_id = :resource_id",
                 new {client_id = entity.Id, resource_id = resource.Id});
         }
@@ -108,22 +116,23 @@ namespace IdentityServer.Infrastructure.Repositories
         
         public async Task DeleteAsync(Client entity, CancellationToken cancellationToken = default)
         {
-            await _connection.ExecuteAsync(
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"ClientsPermissions\" WHERE \"client_id\" = :client_id",
                     new {client_id = entity.Id})
                 .ConfigureAwait(false);
             
-            await _connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"ClientsResources\" WHERE \"client_id\" = :client_id",
                     new {client_id = entity.Id})
                 .ConfigureAwait(false);
             
-            await _connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"ClientsRoles\" WHERE \"client_id\" = :client_id",
                     new {client_id = entity.Id})
                 .ConfigureAwait(false);
             
-            await _connection.ExecuteAsync(
+            await connection.ExecuteAsync(
                     "DELETE FROM public.\"Clients\" WHERE \"id\" = :id",
                     new {id = entity.Id})
                 .ConfigureAwait(false);
@@ -131,7 +140,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Client> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var multi = await _connection.QueryMultipleAsync($@"
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var multi = await connection.QueryMultipleAsync($@"
                 SELECT 
                     ""id"" AS Id,
                     ""name"" AS Name, 
@@ -194,7 +204,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async Task<Client> GetByClientIdAsync(string clientId, CancellationToken cancellationToken = default)
         {
-            var client = await _connection.QueryFirstOrDefaultAsync<Client>($@"
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var client = await connection.QueryFirstOrDefaultAsync<Client>($@"
                 SELECT 
                     ""id"" AS Id,
                     ""name"" AS Name, 
@@ -211,7 +222,7 @@ namespace IdentityServer.Infrastructure.Repositories
                 return null;
             }
             
-            var multi = await _connection.QueryMultipleAsync($@"
+            var multi = await connection.QueryMultipleAsync($@"
                 SELECT
                     P.""id"" AS Id,
                     P.""name"" AS Name,
@@ -258,7 +269,8 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<Client> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var reader = await _connection.ExecuteReaderAsync($@" 
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            var reader = await connection.ExecuteReaderAsync($@" 
                 SELECT 
                     ""id"" AS Id,
                     ""name"" AS Name, 
@@ -274,7 +286,7 @@ namespace IdentityServer.Infrastructure.Repositories
             {
                 var client = parse(reader);
 
-                var multi = await _connection.QueryMultipleAsync($@"
+                var multi = await connection.QueryMultipleAsync($@"
                 SELECT
                     P.""id"" AS Id,
                     P.""name"" AS Name,
