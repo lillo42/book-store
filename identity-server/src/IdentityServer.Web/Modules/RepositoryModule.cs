@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Autofac;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Abstractions;
@@ -7,8 +6,6 @@ using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
 using IdentityServer.Web.Configuration;
 using IdentityServer.Web.Factory;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Documents.Session;
@@ -16,8 +13,6 @@ using Raven.Client.Exceptions;
 using Raven.Client.Exceptions.Database;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
-using StackExchange.Profiling;
-using StackExchange.Profiling.Data;
 
 namespace IdentityServer.Web.Modules
 {

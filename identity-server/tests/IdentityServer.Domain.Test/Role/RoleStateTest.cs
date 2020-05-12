@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using IdentityServer.Domain.Abstractions.Role;

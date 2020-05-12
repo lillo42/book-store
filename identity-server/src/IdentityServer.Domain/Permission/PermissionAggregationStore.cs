@@ -5,7 +5,6 @@ using IdentityServer.Domain.Abstractions.Permission;
 using IdentityServer.Infrastructure.Abstractions;
 using IdentityServer.Infrastructure.Abstractions.Repositories;
 using Microsoft.Extensions.Logging;
-using Raven.Client.Documents.Queries.Spatial;
 
 namespace IdentityServer.Domain.Permission
 {

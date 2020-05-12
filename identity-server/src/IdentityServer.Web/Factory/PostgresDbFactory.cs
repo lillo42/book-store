@@ -16,7 +16,6 @@ namespace IdentityServer.Web.Factory
         public PostgresDbFactory(IConfiguration configuration)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Debug, true, true);
         }
 
         public DbConnection Create()

@@ -1,4 +1,3 @@
-using System;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Proto;
 

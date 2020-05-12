@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 using IdentityServer.Application.Operation.Permission;
-using IdentityServer.Application.Operation.Resource;
 using IdentityServer.Application.Request.Permission;
 using IdentityServer.Domain;
 using IdentityServer.Domain.Abstractions;
