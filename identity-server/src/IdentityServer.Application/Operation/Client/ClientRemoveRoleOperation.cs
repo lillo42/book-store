@@ -36,7 +36,7 @@ namespace IdentityServer.Application.Operation.Client
                     return DomainError.UserError.NotFound;
                 }
                 
-                var result = root.RemoveRoleAsync(new Domain.Common.Role(request.RoleId));
+                var result = root.RemoveRole(new Domain.Common.Role(request.RoleId));
 
                 if (result is ErrorResult error)
                 {

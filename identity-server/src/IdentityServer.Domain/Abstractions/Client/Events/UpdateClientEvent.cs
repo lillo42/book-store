@@ -5,10 +5,10 @@ namespace IdentityServer.Domain.Abstractions.Client.Events
 {
     public class UpdateClientEvent : Event
     {
-        public UpdateClientEvent(string mail, string password, string clientSecret, bool isEnable)
+        public UpdateClientEvent(string name, string clientId, string clientSecret, bool isEnable)
         {
-            Name = mail ?? throw new ArgumentNullException(nameof(mail));
-            ClientId = password ?? throw new ArgumentNullException(nameof(password));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ClientId = clientId ?? throw new ArgumentNullException(nameof(clientId));
             ClientSecret = clientSecret ?? throw new ArgumentNullException(nameof(clientSecret));
             IsEnable = isEnable;
         }

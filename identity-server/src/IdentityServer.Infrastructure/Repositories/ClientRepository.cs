@@ -332,5 +332,23 @@ namespace IdentityServer.Infrastructure.Repositories
                 yield return client;
             }
         }
+
+        public async Task<bool> ExistNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Clients\" where \"name\" = :name",
+                    new {name})
+                .ConfigureAwait(false);
+        }
+
+        public async Task<bool> ExistClientIdAsync(string clientId, CancellationToken cancellationToken = default)
+        {
+            var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
+            return await connection.ExecuteScalarAsync<bool>(
+                    "SELECT TRUE FROM public.\"Clients\" where \"client_id\" = :client_id",
+                    new {client_id = clientId})
+                .ConfigureAwait(false);
+        }
     }
 }

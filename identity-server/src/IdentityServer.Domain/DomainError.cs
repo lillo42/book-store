@@ -104,6 +104,11 @@ namespace IdentityServer.Domain
             public static ErrorResult InvalidResource { get; } = Fail("CLT013", "Invalid resource");
             public static ErrorResult ResourceAlreadyExist { get; } = Fail("CLT014", "Client already have this resource");
             public static ErrorResult NotContainsResource { get; } = Fail("CLT015", "Client does not have this resource");
+            
+            public static ErrorResult InvalidId { get; } = Fail("CLT016", "Invalid Id");
+            public static ErrorResult NameAlreadyExist { get; } = Fail("CLT017", "Name already exist");
+            
+            public static ErrorResult ClientIdAlreadyExist { get; } = Fail("CLT017", "Name already exist");
 
         }
     }

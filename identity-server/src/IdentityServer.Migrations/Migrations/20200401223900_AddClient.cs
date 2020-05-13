@@ -9,9 +9,9 @@ namespace IdentityServer.Migrations.Migrations
         {
             Create.Table("Clients")
                 .WithColumn("id").AsGuid().NotNullable().PrimaryKey("PK_Clients_Id")
-                .WithColumn("name").AsString(100).NotNullable()
+                .WithColumn("name").AsString(100).NotNullable().Unique("IX_Clients_Name")
                 .WithColumn("is_active").AsBoolean().NotNullable()
-                .WithColumn("client_id").AsAnsiString(50).NotNullable().Indexed("IX_Clients_ClientId")
+                .WithColumn("client_id").AsAnsiString(50).NotNullable().Unique("IX_Clients_ClientId")
                 .WithColumn("client_secret").AsString(250).NotNullable();
         }
 

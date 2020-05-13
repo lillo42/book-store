@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Domain.Abstractions.Client;
@@ -13,23 +14,26 @@ namespace IdentityServer.Domain.Client
 {
     public class ClientAggregationRoot : AggregateRoot<ClientState, Guid>, IClientAggregationRoot
     {
-        private readonly IReadOnlyPermissionRepository _permissions;
-        private readonly IReadOnlyRoleRepository _roles;
-        private readonly IReadOnlyResourceRepository _resources;
+        private readonly IReadOnlyClientRepository _clientRepository;
+        private readonly IReadOnlyPermissionRepository _permissionsRepository;
+        private readonly IReadOnlyRoleRepository _rolesRepository;
+        private readonly IReadOnlyResourceRepository _resourcesRepository;
 
         public ClientAggregationRoot(ClientState state, 
-            ILogger<ClientAggregationRoot> logger, 
-            IReadOnlyPermissionRepository permission, 
-            IReadOnlyRoleRepository roles, 
-            IReadOnlyResourceRepository resources) 
+            IReadOnlyClientRepository clientRepository,
+            IReadOnlyPermissionRepository permissionRepository, 
+            IReadOnlyRoleRepository rolesRepository, 
+            IReadOnlyResourceRepository resourcesRepository,
+            ILogger<ClientAggregationRoot> logger) 
             : base(state, logger)
         {
-            _permissions = permission ?? throw new ArgumentNullException(nameof(permission));
-            _roles = roles ?? throw new ArgumentNullException(nameof(roles));
-            _resources = resources ?? throw new ArgumentNullException(nameof(resources));
+            _clientRepository = clientRepository ?? throw new ArgumentNullException(nameof(clientRepository));
+            _permissionsRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
+            _rolesRepository = rolesRepository ?? throw new ArgumentNullException(nameof(rolesRepository));
+            _resourcesRepository = resourcesRepository ?? throw new ArgumentNullException(nameof(resourcesRepository));
         }
 
-        public Result Create(string name, string clientId, string clientSecret, bool isEnable)
+        public async Task<Result> CreateAsync(string name, string clientId, string clientSecret, bool isEnable, CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -39,6 +43,12 @@ namespace IdentityServer.Domain.Client
             if (name.Length > 100)
             {
                 return ClientError.InvalidName;
+            }
+
+            if (await _clientRepository.ExistNameAsync(name, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return ClientError.NameAlreadyExist;
             }
             
             if (clientId.IsMissing())
@@ -51,6 +61,12 @@ namespace IdentityServer.Domain.Client
                 return ClientError.InvalidClientId;
             }
             
+            if (await _clientRepository.ExistClientIdAsync(clientId, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return ClientError.ClientIdAlreadyExist;
+            }
+            
             if (clientSecret.IsMissing())
             {
                 return ClientError.MissingClientSecret;
@@ -61,11 +77,11 @@ namespace IdentityServer.Domain.Client
                 return ClientError.InvalidClientSecret;
             }
             
-            Apply(new CreateClientEvent(name, clientId, clientId, isEnable));
+            Apply(new CreateClientEvent(name, clientId, clientSecret, isEnable));
             return Result.Ok();
         }
 
-        public Result Update(string name, string clientId, string clientSecret, bool isEnable)
+        public async Task<Result> UpdateAsync(string name, string clientId, string clientSecret, bool isEnable, CancellationToken cancellationToken = default)
         {
             if (name.IsMissing())
             {
@@ -77,6 +93,12 @@ namespace IdentityServer.Domain.Client
                 return ClientError.InvalidName;
             }
             
+            if(State.Name != name && await _clientRepository.ExistNameAsync(name, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return ClientError.NameAlreadyExist;
+            }
+            
             if (clientId.IsMissing())
             {
                 return ClientError.MissingClientId;
@@ -86,7 +108,13 @@ namespace IdentityServer.Domain.Client
             {
                 return ClientError.InvalidClientId;
             }
-            
+
+            if (State.ClientId != clientId && await _clientRepository.ExistClientIdAsync(clientId, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                return ClientError.ClientIdAlreadyExist;
+            }
+
             if (clientSecret.IsMissing())
             {
                 return ClientError.MissingClientSecret;
@@ -97,18 +125,18 @@ namespace IdentityServer.Domain.Client
                 return ClientError.InvalidClientSecret;
             }
             
-            Apply(new UpdateClientEvent(name, clientId, clientId, isEnable));
+            Apply(new UpdateClientEvent(name, clientId, clientSecret, isEnable));
             return Result.Ok();
         }
 
-        public async Task<Result> AddPermissionAsync(Common.Permission permission)
+        public async Task<Result> AddPermissionAsync(Common.Permission permission, CancellationToken cancellationToken = default)
         {
             if (permission == null)
             {
                 return ClientError.InvalidPermission;
             }
 
-            if (!await _permissions.ExistAsync(permission.Id)
+            if (!await _permissionsRepository.ExistAsync(permission.Id, cancellationToken)
                 .ConfigureAwait(false))
             {
                 return ClientError.InvalidPermission;
@@ -139,14 +167,14 @@ namespace IdentityServer.Domain.Client
             return Result.Ok();
         }
 
-        public async Task<Result> AddRoleAsync(Common.Role role)
+        public async Task<Result> AddRoleAsync(Common.Role role, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {
                 return ClientError.InvalidRole;
             }
             
-            if (!await _roles.ExistAsync(role.Id)
+            if (!await _rolesRepository.ExistAsync(role.Id, cancellationToken)
                 .ConfigureAwait(false))
             {
                 return ClientError.InvalidRole;
@@ -161,7 +189,7 @@ namespace IdentityServer.Domain.Client
             return Result.Ok();
         }
 
-        public Result RemoveRoleAsync(Common.Role role)
+        public Result RemoveRole(Common.Role role)
         {
             if (role == null)
             {
@@ -177,44 +205,38 @@ namespace IdentityServer.Domain.Client
             return Result.Ok();
         }
 
-        public async Task<Result> AddResourceAsync(Common.Resource resource)
+        public async Task<Result> AddResourceAsync(Common.Resource resource, CancellationToken cancellationToken = default)
         {
             if (resource == null)
             {
-                return ClientError.InvalidRole;
+                return ClientError.InvalidResource;
             }
             
-            if (!await _resources.ExistAsync(resource.Id)
+            if (!await _resourcesRepository.ExistAsync(resource.Id, cancellationToken)
                 .ConfigureAwait(false))
             {
-                return ClientError.InvalidRole;
+                return ClientError.InvalidResource;
             }
             
             if (State.Resources.Contains(resource))
             {
-                return ClientError.RoleAlreadyExist;
+                return ClientError.ResourceAlreadyExist;
             }
             
             Apply(new AddResourceEvent(resource));
             return Result.Ok();
         }
 
-        public async Task<Result> RemoveResourceAsync(Common.Resource resource)
+        public Result RemoveResource(Common.Resource resource)
         {
             if (resource == null)
             {
-                return ClientError.InvalidRole;
-            }
-            
-            if (!await _resources.ExistAsync(resource.Id)
-                .ConfigureAwait(false))
-            {
-                return ClientError.InvalidRole;
+                return ClientError.InvalidResource;
             }
             
             if (!State.Resources.Contains(resource))
             {
-                return ClientError.NotContainsRole;
+                return ClientError.NotContainsResource;
             }
             
             Apply(new RemoveResourceEvent(resource));

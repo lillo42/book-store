@@ -58,10 +58,11 @@ namespace IdentityServer.Domain.Client
         private ClientAggregationRoot CreateNew(Common.Client entity)
         {
             return new ClientAggregationRoot(new ClientState(entity),
-                _loggerFactory.CreateLogger<ClientAggregationRoot>(),
+                _clientRepository,
                 _permissionRepository, 
                 _roleRepository,
-                _resourceRepository);
+                _resourceRepository,
+                _loggerFactory.CreateLogger<ClientAggregationRoot>());
         }
 
         public async Task SaveAsync(IClientAggregationRoot aggregate, CancellationToken cancellation = default)

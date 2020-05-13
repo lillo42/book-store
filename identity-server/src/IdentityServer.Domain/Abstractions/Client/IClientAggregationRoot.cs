@@ -1,24 +1,25 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Domain.Abstractions.Client
 {
     public interface IClientAggregationRoot : IAggregateRoot<ClientState, Guid>
     {
-        Result Create(string name, string clientId, string clientSecret, bool isEnable);
+        Task<Result> CreateAsync(string name, string clientId, string clientSecret, bool isEnable, CancellationToken cancellationToken = default);
         
-        Result Update(string name, string clientId, string clientSecret, bool isEnable);
+        Task<Result> UpdateAsync(string name, string clientId, string clientSecret, bool isEnable, CancellationToken cancellationToken = default);
         
-        Task<Result> AddPermissionAsync(Common.Permission permission);
+        Task<Result> AddPermissionAsync(Common.Permission permission, CancellationToken cancellationToken = default);
         
         Result RemovePermission(Common.Permission permission);
         
-        Task<Result> AddRoleAsync(Common.Role role);
+        Task<Result> AddRoleAsync(Common.Role role, CancellationToken cancellationToken = default);
         
-        Result RemoveRoleAsync(Common.Role role);
+        Result RemoveRole(Common.Role role);
         
-        Task<Result> AddResourceAsync(Common.Resource resource);
+        Task<Result> AddResourceAsync(Common.Resource resource, CancellationToken cancellationToken = default);
         
-        Task<Result> RemoveResourceAsync(Common.Resource resource);
+        Result RemoveResource(Common.Resource resource);
     }
 }
