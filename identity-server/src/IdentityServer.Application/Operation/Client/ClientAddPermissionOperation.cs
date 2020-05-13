@@ -36,7 +36,7 @@ namespace IdentityServer.Application.Operation.Client
                     return DomainError.UserError.NotFound;
                 }
                 
-                var result = await root.AddPermissionAsync(new Domain.Common.Permission(request.PermissionId))
+                var result = await root.AddPermissionAsync(new Domain.Common.Permission(request.PermissionId), cancellationToken)
                     .ConfigureAwait(false);
 
                 if (result is ErrorResult error)

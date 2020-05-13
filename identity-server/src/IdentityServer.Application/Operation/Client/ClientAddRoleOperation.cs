@@ -36,7 +36,7 @@ namespace IdentityServer.Application.Operation.Client
                     return DomainError.PermissionError.NotFound;
                 }
                 
-                var result = await root.AddRoleAsync(new Domain.Common.Role(request.RoleId))
+                var result = await root.AddRoleAsync(new Domain.Common.Role(request.RoleId), cancellationToken)
                     .ConfigureAwait(false);
 
                 if (result is ErrorResult error)

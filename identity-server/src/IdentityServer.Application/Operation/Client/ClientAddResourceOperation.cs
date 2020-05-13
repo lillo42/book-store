@@ -36,7 +36,7 @@ namespace IdentityServer.Application.Operation.Client
                     return DomainError.UserError.NotFound;
                 }
                 
-                var result = await root.AddResourceAsync(new Domain.Common.Resource(request.ResourceId))
+                var result = await root.AddResourceAsync(new Domain.Common.Resource(request.ResourceId), cancellationToken)
                     .ConfigureAwait(false);
 
                 if (result is ErrorResult error)
