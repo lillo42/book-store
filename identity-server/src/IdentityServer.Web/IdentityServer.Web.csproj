@@ -43,9 +43,7 @@
     <Protobuf Include="Protos/permission.proto" GrpcServices="Server" />
     <Protobuf Include="Protos/role.proto" GrpcServices="Server" />
     <Protobuf Include="Protos/user.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos/client.proto" GrpcServices="Server" />
   </ItemGroup>
   
-  
-
-
 </Project>
