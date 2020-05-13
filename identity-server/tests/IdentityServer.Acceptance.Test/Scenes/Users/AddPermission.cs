@@ -9,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using TestStack.BDDfy;
 using Xunit;
 
-namespace IdentityServer.Acceptance.Test.Scenes.Roles
+namespace IdentityServer.Acceptance.Test.Scenes.Users
 {
     public class AddPermission : BaseScene
     {
-        private Role _role;
+        private User _user;
         private Permission _permission;
-        private AddRolePermissionReplay _replay;
+        private AddUserPermissionReplay _replay;
         
         [Theory]
         [InlineData("")]
@@ -24,7 +24,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
         public void AddPermission_Should_ReturnInvalid_When_IdIsInvalid(string id)
         {
             this.When(x => x.WhenIRequestAddPermission(id, Guid.NewGuid().ToString()))
-                .Then(x => x.ThenIShouldGetError(DomainError.RoleError.InvalidId))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidId))
                 .BDDfy();
         }
         
@@ -35,7 +35,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
         public void AddPermission_Should_ReturnInvalid_When_PermissionIdIsInvalid(string id)
         {
             this.When(x => x.WhenIRequestAddPermission(Guid.NewGuid().ToString(), id))
-                .Then(x => x.ThenIShouldGetError(DomainError.RoleError.InvalidId))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidId))
                 .BDDfy();
         }
         
@@ -43,49 +43,49 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
         public void AddPermission_Should_ReturnNotFound_When_PermissionNotExist()
         {
             this.When(x => x.WhenIRequestAddPermission(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
-                .Then(x => x.ThenIShouldGetError(DomainError.RoleError.NotFound))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotFound))
                 .BDDfy();
         }
         
         [Fact]
         public void AddPermission_Should_ReturnInvalidPermission_When_PermissionNotExist()
         {
-            this.Given(x => x.GivenARole())
-                .When(x => x.WhenIRequestAddPermission(_role.Id, Guid.NewGuid().ToString()))
-                .Then(x => x.ThenIShouldGetError(DomainError.RoleError.InvalidPermission))
+            this.Given(x => x.GivenAUser())
+                .When(x => x.WhenIRequestAddPermission(_user.Id, Guid.NewGuid().ToString()))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidPermission))
                 .BDDfy();
         }
         
         [Fact]
         public void AddPermission_Should_ReturnOk()
         {
-            this.Given(x => x.GivenARole()).And(x => x.GivenAPermission())
-                .When(x => x.WhenIRequestAddPermission(_role.Id, _permission.Id))
-                .Then(x => x.ThenIShouldRoleWithPermission())
+            this.Given(x => x.GivenAUser()).And(x => x.GivenAPermission())
+                .When(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id))
+                .Then(x => x.ThenIShouldUserWithPermission())
                 .BDDfy();
         }
         
         [Fact]
         public void AddPermission_Should_ReturnPermissionAlreadyExist_When_PermissionAlreadyExist()
         {
-            this.Given(x => x.GivenARole()).And(x => x.GivenAPermission())
-                .When(x => x.WhenIRequestAddPermission(_role.Id, _permission.Id)).And(x => x.WhenIRequestAddPermission(_role.Id, _permission.Id))
-                .Then(x => x.ThenIShouldGetError(DomainError.RoleError.PermissionAlreadyExist))
+            this.Given(x => x.GivenAUser()).And(x => x.GivenAPermission())
+                .When(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id)).And(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.PermissionAlreadyExist))
                 .BDDfy();
         }
         
-        private void GivenARole()
+        private void GivenAUser()
         {
-            var request = Fixture.Build<CreateRoleRequest>()
-                .With(x => x.Name, Fixture.CreateWithLength(20))
+            var request = Fixture.Build<CreateUserRequest>()
+                .With(x => x.Mail, $"{Fixture.Create<string>()}@aaa.org")
                 .Create();
             
-            var client = Provider.GetRequiredService<Web.Proto.Roles.RolesClient>();
-            var replay = client.CreateRole(request);
+            var client = Provider.GetRequiredService<Web.Proto.Users.UsersClient>();
+            var replay = client.CreateUser(request);
 
             replay.Should().NotBeNull();
             replay.IsSuccess.Should().BeTrue();
-            _role = replay.Value;
+            _user = replay.Value;
         }
         
         private void GivenAPermission()
@@ -104,8 +104,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
         
         private void WhenIRequestAddPermission(string id, string permissionId)
         {
-            var client = Provider.GetRequiredService<Web.Proto.Roles.RolesClient>();
-            _replay = client.AddPermission(new AddRolePermissionRequest
+            var client = Provider.GetRequiredService<Web.Proto.Users.UsersClient>();
+            _replay = client.AddPermission(new AddUserPermissionRequest
             {
                 Id = id,
                 PermissionId = permissionId
@@ -120,17 +120,18 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
             _replay.Description.Should().Be(error.Description);
         }
         
-        private void ThenIShouldRoleWithPermission()
+        private void ThenIShouldUserWithPermission()
         {
             _replay.Should().NotBeNull();
             _replay.IsSuccess.Should().BeTrue();
             
-            var client = Provider.GetRequiredService<Web.Proto.Roles.RolesClient>();
-            var role = client.GetRoleById(new GetRoleByIdRequest {Id = _role.Id});
-            role.IsSuccess.Should().BeTrue();
+            var client = Provider.GetRequiredService<Web.Proto.Users.UsersClient>();
+            var user
+                = client.GetUserById(new GetUserByIdRequest {Id = _user.Id});
+            user.IsSuccess.Should().BeTrue();
 
-            role.Value.Permission.Should().NotBeNullOrEmpty();
-            role.Value.Permission.Should().Contain(x => x.Id == _permission.Id);
+            user.Value.Permission.Should().NotBeNullOrEmpty();
+            user.Value.Permission.Should().Contain(x => x.Id == _permission.Id);
         }
     }
 }

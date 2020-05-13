@@ -27,12 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos/resource.proto" Link="Protos/resource.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos/permission.proto" Link="Protos/permission.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos/role.proto" Link="Protos/role.proto" GrpcServices="Client" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -41,6 +35,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\IdentityServer.Domain\IdentityServer.Domain.csproj" />
     <ProjectReference Include="..\..\src\IdentityServer.Web\IdentityServer.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos/permission.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/resource.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/role.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/user.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

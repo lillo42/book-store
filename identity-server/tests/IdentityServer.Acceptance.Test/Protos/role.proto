@@ -74,23 +74,23 @@ message GetRolesRequest {
     google.protobuf.Int32Value take = 2;
 }
 
-message AddPermissionRequest {
+message AddRolePermissionRequest {
     string id = 1;
     string permission_id = 2;
 }
 
-message AddPermissionReplay {
+message AddRolePermissionReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;
 }
 
-message RemovePermissionRequest {
+message RemoveRolePermissionRequest {
     string id = 1;
     string permission_id = 2;
 }
 
-message RemovePermissionReplay {
+message RemoveRolePermissionReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

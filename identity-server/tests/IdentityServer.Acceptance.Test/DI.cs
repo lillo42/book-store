@@ -25,7 +25,8 @@ namespace IdentityServer.Acceptance.Test
             collection.AddScoped(p => new Web.Proto.Resources.ResourcesClient(channel));
             collection.AddScoped(p => new Web.Proto.Permissions.PermissionsClient(channel));
             collection.AddScoped(p => new Web.Proto.Roles.RolesClient(channel));
-
+            collection.AddScoped(p => new Web.Proto.Users.UsersClient(channel));
+            
             Provider = collection.BuildServiceProvider();
         }
     }

@@ -1,0 +1,96 @@
+syntax="proto3";
+
+option csharp_namespace = "IdentityServer.Web.Proto";
+
+//import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "Protos/permission.proto";
+
+service Users {
+    rpc CreateUser (CreateUserRequest) returns (CreateUserReplay) {}
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReplay) {}
+
+
+    rpc AddPermission (AddUserPermissionRequest) returns (AddUserPermissionReplay) {}
+    rpc RemovePermission (RemoveUserPermissionRequest) returns (RemoveUserPermissionReplay) {}
+    
+
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIeReplay) {}
+    rpc GetUsers (GetUsersRequest) returns (stream User) {}
+}
+
+/*
+###### User  ######
+*/
+
+message User {
+    string id = 1;
+    string mail = 2;
+    string password = 3;
+    bool is_enable = 4;
+    repeated Permission permission = 5;
+}
+
+message CreateUserRequest {
+    string mail = 1;
+    string password = 2;
+    bool is_enable = 3;
+}
+
+message CreateUserReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    User value = 4;
+}
+
+message UpdateUserRequest {
+    string id = 1;
+    string mail = 2;
+    bool is_enable = 3;
+}
+
+message UpdateUserReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    User value = 4;
+}
+
+message GetUserByIdRequest {
+    string id = 1;
+}
+
+message GetUserByIeReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    User value = 4;
+}
+
+message GetUsersRequest {
+    google.protobuf.Int32Value skip = 1;
+    google.protobuf.Int32Value take = 2;
+}
+
+message AddUserPermissionRequest {
+    string id = 1;
+    string permission_id = 2;
+}
+
+message AddUserPermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message RemoveUserPermissionRequest {
+    string id = 1;
+    string permission_id = 2;
+}
+
+message RemoveUserPermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
