@@ -53,15 +53,6 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
                 .Then(x => x.ThenIShouldGetError(DomainError.UserError.MailAlreadyExist))
                 .BDDfy();
         }
-        
-        [Fact]
-        public void CreateUser_Should__When_MailAlreadyExist()
-        {
-            this.Given(x => x.GivenUserWithMail(Fixture.CreateWithLength(21)))
-                .When(x => x.WhenCreateUserIsRequested())
-                .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidPassword))
-                .BDDfy();
-        }
 
         [Theory]
         [InlineData("")]

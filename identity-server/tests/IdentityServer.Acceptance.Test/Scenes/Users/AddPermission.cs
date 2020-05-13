@@ -69,7 +69,8 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
         public void AddPermission_Should_ReturnPermissionAlreadyExist_When_PermissionAlreadyExist()
         {
             this.Given(x => x.GivenAUser()).And(x => x.GivenAPermission())
-                .When(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id)).And(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id))
+                .When(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id))
+                    .And(x => x.WhenIRequestAddPermission(_user.Id, _permission.Id))
                 .Then(x => x.ThenIShouldGetError(DomainError.UserError.PermissionAlreadyExist))
                 .BDDfy();
         }

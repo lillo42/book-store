@@ -39,22 +39,22 @@ namespace IdentityServer.Domain.Abstractions.User
 
         public void Apply(AddPermissionEvent @event)
         {
-            _user.Permissions.Add(@event.Permission);
+            Permissions.Add(@event.Permission);
         }
 
         public void Apply(RemovePermissionEvent @event)
         {
-            _user.Permissions.Remove(@event.Permission);
+            Permissions.Remove(@event.Permission);
         }
         
         public void Apply(AddRoleEvent @event)
         {
-            _user.Roles.Add(@event.Role);
+            Roles.Add(@event.Role);
         }
 
         public void Apply(RemoveRoleEvent @event)
         {
-            _user.Roles.Remove(@event.Role);
+            Roles.Remove(@event.Role);
         }
         
         public static explicit operator Common.User(UserState state)
