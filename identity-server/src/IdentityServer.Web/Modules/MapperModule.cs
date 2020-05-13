@@ -95,6 +95,14 @@ namespace IdentityServer.Web.Modules
             builder.RegisterType<ResultToRemoveUserPermissionReplay>()
                 .As<IMapper<Result, Proto.RemoveUserPermissionReplay>>()
                 .SingleInstance();
+            
+            builder.RegisterType<ResultToRemoveUserRoleReplay>()
+                .As<IMapper<Result, Proto.RemoveUserRoleReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToAddUserRoleReplay>()
+                .As<IMapper<Result, Proto.AddUserRoleReplay>>()
+                .SingleInstance();
             #endregion
         }
     }

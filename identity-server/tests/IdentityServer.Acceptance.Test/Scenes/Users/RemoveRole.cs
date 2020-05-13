@@ -11,19 +11,19 @@ using Xunit;
 
 namespace IdentityServer.Acceptance.Test.Scenes.Users
 {
-    public class RemovePermission : BaseScene
+    public class RemoveRole : BaseScene
     {
         private User _user;
-        private Permission _permission;
-        private RemoveUserPermissionReplay _replay;
+        private Role _role;
+        private RemoveUserRoleReplay _replay;
         
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
         [InlineData("ANC")]
-        public void RemovePermission_Should_ReturnInvalid_When_IdIsInvalid(string id)
+        public void RemoveRole_Should_ReturnInvalid_When_IdIsInvalid(string id)
         {
-            this.When(x => x.WhenIRequestRemovePermission(id, Guid.NewGuid().ToString()))
+            this.When(x => x.WhenIRequestRemoveRole(id, Guid.NewGuid().ToString()))
                 .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidId))
                 .BDDfy();
         }
@@ -32,45 +32,45 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
         [InlineData("")]
         [InlineData(" ")]
         [InlineData("ANC")]
-        public void RemovePermission_Should_ReturnInvalid_When_PermissionIdIsInvalid(string id)
+        public void RemoveRole_Should_ReturnInvalid_When_RoleIdIsInvalid(string id)
         {
-            this.When(x => x.WhenIRequestRemovePermission(Guid.NewGuid().ToString(), id))
+            this.When(x => x.WhenIRequestRemoveRole(Guid.NewGuid().ToString(), id))
                 .Then(x => x.ThenIShouldGetError(DomainError.UserError.InvalidId))
                 .BDDfy();
         }
         
         [Fact]
-        public void RemovePermission_Should_ReturnNotFound_When_UserNotExist()
+        public void RemoveRole_Should_ReturnNotFound_When_UserNotExist()
         {
-            this.When(x => x.WhenIRequestRemovePermission(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+            this.When(x => x.WhenIRequestRemoveRole(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
                 .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotFound))
                 .BDDfy();
         }
         
         [Fact]
-        public void RemovePermission_Should_ReturnNotContainsPermission_When_PermissionNotExist()
+        public void RemoveRole_Should_ReturnNotContainsRole_When_RoleNotExist()
         {
             this.Given(x => x.GivenAUser())
-                .When(x => x.WhenIRequestRemovePermission(_user.Id, Guid.NewGuid().ToString()))
-                .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotContainsPermission))
+                .When(x => x.WhenIRequestRemoveRole(_user.Id, Guid.NewGuid().ToString()))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotContainsRole))
                 .BDDfy();
         }
         
         [Fact]
-        public void RemovePermission_Should_ReturnNotContainsPermission_When_UserDoesNotContainsPermission()
+        public void RemoveRole_Should_ReturnNotContainsRole_When_UserDoesNotContainsRole()
         {
-            this.Given(x => x.GivenAUser()).And(x => x.GivenAPermission())
-                .When(x => x.WhenIRequestRemovePermission(_user.Id, _permission.Id))
-                .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotContainsPermission))
+            this.Given(x => x.GivenAUser()).And(x => x.GivenARole())
+                .When(x => x.WhenIRequestRemoveRole(_user.Id, _role.Id))
+                .Then(x => x.ThenIShouldGetError(DomainError.UserError.NotContainsRole))
                 .BDDfy();
         }
         
         [Fact]
-        public void AddPermission_Should_ReturnOk()
+        public void AddRole_Should_ReturnOk()
         {
             this.Given(x => x.GivenAUserWithUser())
-                .When(x => x.WhenIRequestRemovePermission(_user.Id, _permission.Id))
-                .Then(x => x.ThenIShouldUserWithPermission())
+                .When(x => x.WhenIRequestRemoveRole(_user.Id, _role.Id))
+                .Then(x => x.ThenIShouldUserWithRole())
                 .BDDfy();
         }
         
@@ -88,18 +88,18 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
             _user = replay.Value;
         }
         
-        private void GivenAPermission()
+        private void GivenARole()
         {
-            var request = Fixture.Build<CreatePermissionRequest>()
+            var request = Fixture.Build<CreateRoleRequest>()
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .Create();
             
-            var client = Provider.GetRequiredService<Web.Proto.Permissions.PermissionsClient>();
-            var replay = client.CreatePermission(request);
+            var client = Provider.GetRequiredService<Web.Proto.Roles.RolesClient>();
+            var replay = client.CreateRole(request);
 
             replay.Should().NotBeNull();
             replay.IsSuccess.Should().BeTrue();
-            _permission = replay.Value;
+            _role = replay.Value;
         }
         
         private void GivenAUserWithUser()
@@ -116,29 +116,29 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
 
             _user = createUserReplay.Value;
             
-            var createPermissionRequest = Fixture.Build<CreatePermissionRequest>()
+            var createRoleRequest = Fixture.Build<CreateRoleRequest>()
                 .With(x => x.Name, Fixture.CreateWithLength(20))
                 .Create();
             
-            var permissionsClient = Provider.GetRequiredService<Web.Proto.Permissions.PermissionsClient>();
-            var createPermissionReplay = permissionsClient.CreatePermission(createPermissionRequest);
+            var rolesClient = Provider.GetRequiredService<Web.Proto.Roles.RolesClient>();
+            var createRoleReplay = rolesClient.CreateRole(createRoleRequest);
 
-            createPermissionReplay.Should().NotBeNull();
-            createPermissionReplay.IsSuccess.Should().BeTrue();
+            createRoleReplay.Should().NotBeNull();
+            createRoleReplay.IsSuccess.Should().BeTrue();
             
-            _permission = createPermissionReplay.Value;
+            _role = createRoleReplay.Value;
 
-            var addPermissionReplay = usersClient.AddPermission(new AddUserPermissionRequest {Id = _user.Id, PermissionId = _permission.Id});
-            addPermissionReplay.IsSuccess.Should().BeTrue();
+            var addRoleReplay = usersClient.AddRole(new AddUserRoleRequest {Id = _user.Id, RoleId = _role.Id});
+            addRoleReplay.IsSuccess.Should().BeTrue();
         }
         
-        private void WhenIRequestRemovePermission(string id, string permissionId)
+        private void WhenIRequestRemoveRole(string id, string roleId)
         {
             var client = Provider.GetRequiredService<Web.Proto.Users.UsersClient>();
-            _replay = client.RemovePermission(new RemoveUserPermissionRequest
+            _replay = client.RemoveRole(new RemoveUserRoleRequest
             {
                 Id = id,
-                PermissionId = permissionId
+                RoleId = roleId
             });
         }
 
@@ -150,7 +150,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
             _replay.Description.Should().Be(error.Description);
         }
         
-        private void ThenIShouldUserWithPermission()
+        private void ThenIShouldUserWithRole()
         {
             _replay.Should().NotBeNull();
             _replay.IsSuccess.Should().BeTrue();
@@ -159,7 +159,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
             var user = client.GetUserById(new GetUserByIdRequest {Id = _user.Id});
             user.IsSuccess.Should().BeTrue();
             
-            user.Value.Permissions.Should().NotContain(x => x.Id == _permission.Id);
+            user.Value.Roles.Should().NotContain(x => x.Id == _role.Id);
         }
     }
 }

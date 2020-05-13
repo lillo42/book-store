@@ -172,5 +172,60 @@ namespace IdentityServer.Web.Services
             return _provider.GetService<IMapper<Result, RemoveUserPermissionReplay>>()
                 .Map(result);
         }
+
+
+        public override async Task<AddUserRoleReplay> AddRole(AddUserRoleRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var id) 
+               && Guid.TryParse(request.RoleId, out var roleId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(UserAddRoleOperation)}");
+                var operation = _provider.GetRequiredService<UserAddRoleOperation>();
+                using (MiniProfiler.Current.Step(nameof(UserAddRoleOperation)))
+                {
+                    result = await operation.ExecuteAsync(new UserAddRole
+                        {
+                            Id = id,
+                            RoleId = roleId
+                        })
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.UserError.InvalidId;
+            }
+            
+            return _provider.GetService<IMapper<Result, AddUserRoleReplay>>()
+                .Map(result);
+        }
+
+        public override async Task<RemoveUserRoleReplay> RemoveRole(RemoveUserRoleRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var id) 
+               && Guid.TryParse(request.RoleId, out var roleId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(UserRemoveRoleOperation)}");
+                var operation = _provider.GetRequiredService<UserRemoveRoleOperation>();
+                using (MiniProfiler.Current.Step(nameof(UserRemoveRoleOperation)))
+                {
+                    result = await operation.ExecuteAsync(new UserRemoveRole
+                        {
+                            Id = id,
+                            RoleId = roleId
+                        })
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.UserError.InvalidId;
+            }
+            
+            return _provider.GetService<IMapper<Result, RemoveUserRoleReplay>>()
+                .Map(result);
+        }
     }
 }

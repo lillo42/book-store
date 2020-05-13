@@ -5,6 +5,7 @@ option csharp_namespace = "IdentityServer.Web.Proto";
 //import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "Protos/permission.proto";
+import "Protos/role.proto";
 
 service Users {
     rpc CreateUser (CreateUserRequest) returns (CreateUserReplay) {}
@@ -13,7 +14,10 @@ service Users {
 
     rpc AddPermission (AddUserPermissionRequest) returns (AddUserPermissionReplay) {}
     rpc RemovePermission (RemoveUserPermissionRequest) returns (RemoveUserPermissionReplay) {}
-    
+
+    rpc AddRole (AddUserRoleRequest) returns (AddUserRoleReplay) {}
+    rpc RemoveRole (RemoveUserRoleRequest) returns (RemoveUserRoleReplay) {}
+
 
     rpc GetUserById (GetUserByIdRequest) returns (GetUserByIeReplay) {}
     rpc GetUsers (GetUsersRequest) returns (stream User) {}
@@ -28,7 +32,8 @@ message User {
     string mail = 2;
     string password = 3;
     bool is_enable = 4;
-    repeated Permission permission = 5;
+    repeated Permission permissions = 5;
+    repeated Role roles = 6;
 }
 
 message CreateUserRequest {
@@ -90,6 +95,29 @@ message RemoveUserPermissionRequest {
 }
 
 message RemoveUserPermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+
+message AddUserRoleRequest {
+    string id = 1;
+    string role_id = 2;
+}
+
+message AddUserRoleReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message RemoveUserRoleRequest {
+    string id = 1;
+    string role_id = 2;
+}
+
+message RemoveUserRoleReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

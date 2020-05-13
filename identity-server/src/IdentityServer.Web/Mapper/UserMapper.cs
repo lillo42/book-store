@@ -35,17 +35,17 @@ namespace IdentityServer.Web.Mapper
 
             if(source.Permissions != null)
             {
-                user.Permission.Add(source
+                user.Permissions.Add(source
                     .Permissions
                     .Select(x => _permission.Map(x)));
             }
-            //
-            // if(source.Permissions != null)
-            // {
-            //     user.Permission.Add(source
-            //         .Permissions
-            //         .Select(x => _permission.Map(x)));
-            // }
+            
+            if(source.Roles != null)
+            {
+                user.Roles.Add(source
+                    .Roles
+                    .Select(x => _role.Map(x)));
+            }
             
             return user;
         }
