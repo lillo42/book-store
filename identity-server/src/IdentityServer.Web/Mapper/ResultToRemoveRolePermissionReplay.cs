@@ -3,7 +3,7 @@ using IdentityServer.Web.Proto;
 
 namespace IdentityServer.Web.Mapper
 {
-    public class ResultToRemovePermissionReplay : IMapper<Result, Proto.RemoveRolePermissionReplay>
+    public class ResultToRemoveRolePermissionReplay : IMapper<Result, Proto.RemoveRolePermissionReplay>
     {
         public RemoveRolePermissionReplay Map(Result source)
         {

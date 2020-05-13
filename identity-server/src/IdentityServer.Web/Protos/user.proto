@@ -27,14 +27,14 @@ message User {
     string id = 1;
     string mail = 2;
     string password = 3;
-    string is_enable = 4;
+    bool is_enable = 4;
     repeated Permission permission = 5;
 }
 
 message CreateUserRequest {
-    string name = 2;
-    string display_name = 3;
-    string description = 4;
+    string mail = 1;
+    string password = 2;
+    bool is_enable = 3;
 }
 
 message CreateUserReplay {
@@ -46,9 +46,8 @@ message CreateUserReplay {
 
 message UpdateUserRequest {
     string id = 1;
-    string name = 2;
-    string display_name = 3;
-    string description = 4;
+    string mail = 2;
+    bool is_enable = 3;
 }
 
 message UpdateUserReplay {

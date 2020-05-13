@@ -8,6 +8,7 @@ using IdentityServer.Web.IdentityServer4.Store;
 using IdentityServer.Web.IdentityServer4.Validators;
 using IdentityServer.Web.Middleware;
 using IdentityServer.Web.Modules;
+using IdentityServer.Web.Proto;
 using IdentityServer.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -130,6 +131,7 @@ namespace IdentityServer.Web
                 endpoints.MapGrpcService<ResourceService>();
                 endpoints.MapGrpcService<PermissionService>();
                 endpoints.MapGrpcService<RoleService>();
+                endpoints.MapGrpcService<UserService>();
             });
         }
     }

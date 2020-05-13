@@ -25,8 +25,7 @@ namespace IdentityServer.Web.Services
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-
+        
         public override async Task<CreateRoleReplay> CreateRole(CreateRoleRequest request, ServerCallContext context)
         {
             _logger.LogInformation($"Going to execute {nameof(RoleCreateOperation)}");

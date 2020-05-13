@@ -62,9 +62,8 @@ namespace IdentityServer.Domain
             
             
             public static ErrorResult NotFound { get; } = Fail("USR011", "User not found");
-            
-            
             public static ErrorResult MailAlreadyExist { get; } = Fail("USR012", "E-mail already exist");
+            public static ErrorResult InvalidId { get; } = Fail("USR013", "Invalid Id");
         }
         
         public static class ResourceError

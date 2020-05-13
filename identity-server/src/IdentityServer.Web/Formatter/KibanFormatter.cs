@@ -1,6 +1,6 @@
 using Serilog.Formatting.Elasticsearch;
 
-namespace Users.Web.Formatter
+namespace IdentityServer.Web.Formatter
 {
     public class KibanFormatter : ExceptionAsObjectJsonFormatter
     {
