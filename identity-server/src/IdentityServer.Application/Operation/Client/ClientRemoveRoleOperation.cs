@@ -33,7 +33,7 @@ namespace IdentityServer.Application.Operation.Client
                 if (root == null)
                 {
                     _logger.LogInformation("User not found. [User: {userId}]", request.Id);
-                    return DomainError.UserError.NotFound;
+                    return DomainError.ClientError.NotFound;
                 }
                 
                 var result = root.RemoveRole(new Domain.Common.Role(request.RoleId));

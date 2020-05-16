@@ -33,7 +33,7 @@ namespace IdentityServer.Application.Operation.Client
                 if (root == null)
                 {
                     _logger.LogInformation("Client not found. [Client: {clientId}]", request.Id);
-                    return DomainError.PermissionError.NotFound;
+                    return DomainError.ClientError.NotFound;
                 }
                 
                 var result = root.RemovePermission(new Domain.Common.Permission(request.PermissionId));

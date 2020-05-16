@@ -32,7 +32,7 @@ namespace IdentityServer.Application.Operation.Client
                 
                 if (result is ErrorResult error)
                 {
-                    _logger.LogInformation("Invalid information. [ErrorCode: {errorCode}][Client: {clientNam}]",
+                    _logger.LogInformation("Invalid information. [ErrorCode: {errorCode}][Client: {clientName}]",
                         error.ErrorCode, request.Name);
                     return error;
                 }

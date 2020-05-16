@@ -109,6 +109,7 @@ namespace IdentityServer.Domain
             public static ErrorResult NameAlreadyExist { get; } = Fail("CLT017", "Name already exist");
             
             public static ErrorResult ClientIdAlreadyExist { get; } = Fail("CLT017", "Name already exist");
+            public static ErrorResult NotFound { get; } = Fail("CLT018", "Client not found");
 
         }
     }

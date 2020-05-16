@@ -31,7 +31,7 @@ namespace IdentityServer.Application.Operation.Client
                 if (role == null)
                 {
                     _logger.LogInformation("Client not found. [Client: {clientId}]", request.Id);
-                    return DomainError.UserError.NotFound;
+                    return DomainError.ClientError.NotFound;
                 }
                 
                 return Result.Ok(role);
