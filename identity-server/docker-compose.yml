@@ -59,11 +59,13 @@ services:
     container_name: identity-migrations-book-store
     environment:
       ConnectionStrings__Postgres: "Server=postgres;Database=book-store-identity-server;User Id=postgres;Password=BookStore@123;ApplicationName=IdentityMigration;"
+      ConnectionStrings__RavenDb__Urls__0: http://raven:8080
     volumes:
       - "identity-volume:/var/output"
     entrypoint: /bin/sh -c "rm -f /var/output/migrator.txt && dockerize -wait tcp://postgres:5432 sh /docker-entrypoint.sh"
     depends_on:
       - postgres
+      - raven
   identity:
       build:
         context: ./src
@@ -88,3 +90,4 @@ services:
         - elastic-search
         - identity-migrations
         - zipkin
+        - raven
