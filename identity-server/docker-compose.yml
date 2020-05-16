@@ -62,7 +62,7 @@ services:
       ConnectionStrings__RavenDb__Urls__0: http://raven:8080
     volumes:
       - "identity-volume:/var/output"
-    entrypoint: /bin/sh -c "rm -f /var/output/migrator.txt && dockerize -wait tcp://postgres:5432 -timeout 100s  && dockerize -wait tcp://raven:808 -timeout 100s  sh /docker-entrypoint.sh"
+    entrypoint: /bin/sh -c "rm -f /var/output/migrator.txt && dockerize -wait tcp://postgres:5432 -timeout 100s  && dockerize -wait tcp://raven:8080 -timeout 100s  sh /docker-entrypoint.sh"
     depends_on:
       - postgres
       - raven

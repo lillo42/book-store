@@ -150,13 +150,16 @@ namespace IdentityServer.Migrations
             service.AddSingleton<IDocumentStore>(provider =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>()
-                    .GetSection("ConnectionString")
+                    .GetSection("ConnectionStrings")
                     .GetSection("RavenDb");
-                return new DocumentStore
+                var store = new DocumentStore
                 {
-                    Urls = configuration.GetValue<IEnumerable<string>>("Url").ToArray(),
-                    Database = configuration.GetValue<string>("Database")
+                    Urls = configuration.GetSection("Urls").Get<IEnumerable<string>>().ToArray(),
+                    Database = configuration.GetSection("Database").Get<string>()
                 };
+
+                store.Initialize();
+                return store;
             });
 
             var container = new ContainerBuilder();
