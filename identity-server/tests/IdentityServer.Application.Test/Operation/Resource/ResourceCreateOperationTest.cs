@@ -90,7 +90,7 @@ namespace IdentityServer.Application.Test.Operation.Resource
                 .Received(1)
                 .Create();
 
-            root
+            var __ = root
                 .Received(1)
                 .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 
@@ -128,7 +128,7 @@ namespace IdentityServer.Application.Test.Operation.Resource
                 .Received(1)
                 .Create();
             
-            root
+            var __ = root
                 .Received(1)
                 .CreateAsync(request.Name, request.DisplayName, request.Description, request.IsEnable);
 

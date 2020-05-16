@@ -126,7 +126,7 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.AddClientPermissionReplay>>()
                 .SingleInstance();
 
-            builder.RegisterType<ResultToRemoveUserPermissionReplay>()
+            builder.RegisterType<ResultToRemoveClientPermissionReplay>()
                 .As<IMapper<Result, Proto.RemoveClientPermissionReplay>>()
                 .SingleInstance();
             

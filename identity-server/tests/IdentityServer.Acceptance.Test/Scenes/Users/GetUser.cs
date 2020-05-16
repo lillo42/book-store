@@ -13,7 +13,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Users
     public class GetUser : BaseScene
     {
         private User _user;
-        private GetUserByIeReplay _replay;
+        private GetUserByIdReplay _replay;
         
         [Theory]
         [InlineData("")]

@@ -46,8 +46,7 @@ namespace IdentityServer.Application.Operation.Client
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error to create user. [Client: {clientNam}]", request.Name
-                );
+                _logger.LogError(e, "Error to create user. [Client: {clientNam}]", request.Name);
                 return Result.Fail(e);
             }
         }

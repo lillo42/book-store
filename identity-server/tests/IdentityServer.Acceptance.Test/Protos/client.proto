@@ -1,0 +1,130 @@
+syntax="proto3";
+
+option csharp_namespace = "IdentityServer.Web.Proto";
+
+//import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "Protos/permission.proto";
+import "Protos/role.proto";
+import "Protos/resource.proto";
+
+service Clients {
+    rpc CreateClient (CreateClientRequest) returns (CreateClientReplay) {}
+    rpc UpdateClient (UpdateClientRequest) returns (UpdateClientReplay) {}
+
+
+    rpc AddPermission (AddClientPermissionRequest) returns (AddClientPermissionReplay) {}
+    rpc RemovePermission (RemoveClientPermissionRequest) returns (RemoveClientPermissionReplay) {}
+
+    rpc AddRole (AddClientRoleRequest) returns (AddClientRoleReplay) {}
+    rpc RemoveRole (RemoveClientRoleRequest) returns (RemoveClientRoleReplay) {}
+
+
+    rpc GetClientById (GetClientByIdRequest) returns (GetClientByIdReplay) {}
+    rpc GetClients (GetClientsRequest) returns (stream Client) {}
+}
+
+/*
+###### Client  ######
+*/
+
+message Client {
+    string id = 1;
+    string name = 2;
+    string client_id = 3;
+    string client_secret = 4;
+    bool is_enable = 5;
+    repeated Permission permissions = 6;
+    repeated Role roles = 7;
+    repeated Resource resources = 8;
+}
+
+message CreateClientRequest {
+    string name = 1;
+    string client_id = 2;
+    string client_secret = 3;
+    bool is_enable = 4;
+}
+
+message CreateClientReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Client value = 4;
+}
+
+message UpdateClientRequest {
+    string id = 1;
+    string name = 2;
+    string client_id = 3;
+    string client_secret = 4;
+    bool is_enable = 5;
+}
+
+message UpdateClientReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Client value = 4;
+}
+
+message GetClientByIdRequest {
+    string id = 1;
+}
+
+message GetClientByIdReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Client value = 4;
+}
+
+message GetClientsRequest {
+    google.protobuf.Int32Value skip = 1;
+    google.protobuf.Int32Value take = 2;
+}
+
+message AddClientPermissionRequest {
+    string id = 1;
+    string permission_id = 2;
+}
+
+message AddClientPermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message RemoveClientPermissionRequest {
+    string id = 1;
+    string permission_id = 2;
+}
+
+message RemoveClientPermissionReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+
+message AddClientRoleRequest {
+    string id = 1;
+    string role_id = 2;
+}
+
+message AddClientRoleReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message RemoveClientRoleRequest {
+    string id = 1;
+    string role_id = 2;
+}
+
+message RemoveClientRoleReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}

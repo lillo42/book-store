@@ -62,7 +62,7 @@ message GetRoleByIdRequest {
     string id = 1;
 }
 
-message GetRoleByIeReplay {
+message GetRoleByIdReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

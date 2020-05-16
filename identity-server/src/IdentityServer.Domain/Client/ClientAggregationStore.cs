@@ -92,7 +92,7 @@ namespace IdentityServer.Domain.Client
                             await repository.AddRoleAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
-                        case State.Removed when trace.IsNew:
+                        case State.Removed when !trace.IsNew:
                             await repository.RemoveRoleAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
@@ -107,7 +107,7 @@ namespace IdentityServer.Domain.Client
                             await repository.AddPermissionAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
-                        case State.Removed when trace.IsNew:
+                        case State.Removed when !trace.IsNew:
                             await repository.RemovePermissionAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
@@ -122,7 +122,7 @@ namespace IdentityServer.Domain.Client
                             await repository.AddResourceAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;
-                        case State.Removed when trace.IsNew:
+                        case State.Removed when !trace.IsNew:
                             await repository.RemoveResourceAsync(entity, trace.Value, cancellation)
                                 .ConfigureAwait(false);
                             break;

@@ -58,7 +58,7 @@ message GetResourceByIdRequest {
     string id = 1;
 }
 
-message GetResourceByIeReplay {
+message GetResourceByIdReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

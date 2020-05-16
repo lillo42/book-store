@@ -248,7 +248,7 @@ namespace IdentityServer.Infrastructure.Repositories
                 FROM public.""Resources"" R
                 INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
                 WHERE CR.""client_id"" = :id;
-                ", new {id =  client})
+                ", new {id =  client.Id})
                 .ConfigureAwait(false);
             
             var permissions = await multi.ReadAsync<Permission>()
@@ -269,6 +269,7 @@ namespace IdentityServer.Infrastructure.Repositories
 
         public async IAsyncEnumerable<Client> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            await using var loader = await _unitOfWork.CreateUnsafeConnection(cancellationToken).ConfigureAwait(false);
             var connection = await _unitOfWork.GetOrCreateDbConnection(cancellationToken).ConfigureAwait(false);
             var reader = await connection.ExecuteReaderAsync($@" 
                 SELECT 
@@ -286,7 +287,7 @@ namespace IdentityServer.Infrastructure.Repositories
             {
                 var client = parse(reader);
 
-                var multi = await connection.QueryMultipleAsync($@"
+                var multi = await loader.QueryMultipleAsync($@"
                 SELECT
                     P.""id"" AS Id,
                     P.""name"" AS Name,
@@ -305,19 +306,13 @@ namespace IdentityServer.Infrastructure.Repositories
                 WHERE CR.""client_id"" = :id;
                 SELECT
                     R.""id"" AS Id,
-                    R.""name"" AS Name
-                FROM public.""Resources"" R
-                INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
-                WHERE CR.""client_id"" = :id;
-                SELECT
-                    R.""id"" AS Id,
                     R.""name"" AS Name,
                     R.""display_name"" AS DisplayName,
                     R.""description"" AS Description,
                     R.""is_active"" AS IsEnable
                 FROM public.""Resources"" R
                 INNER JOIN public.""ClientsResources"" CR ON R.""id"" = CR.""resource_id""
-                WHERE CR.""client_id"" = :id", new {id =  client})
+                WHERE CR.""client_id"" = :id", new {id =  client.Id})
                     .ConfigureAwait(false);
 
 

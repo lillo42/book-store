@@ -14,7 +14,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Permissions
     public class GetPermission : BaseScene
     {
         private Permission _permission;
-        private GetPermissionByIeReplay _replay;
+        private GetPermissionByIdReplay _replay;
         
         [Theory]
         [InlineData("")]

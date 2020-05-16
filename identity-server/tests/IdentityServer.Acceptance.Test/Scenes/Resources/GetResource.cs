@@ -14,7 +14,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Resources
     public class GetResource : BaseScene
     {
         private Resource _resource;
-        private GetResourceByIeReplay _replay;
+        private GetResourceByIdReplay _replay;
         
         [Theory]
         [InlineData("")]

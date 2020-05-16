@@ -58,6 +58,7 @@ namespace IdentityServer.Web.Services
                     result = await operation.ExecuteAsync(new ClientUpdate
                     {
                         Id = id,
+                        Name = request.Name,
                         ClientId = request.ClientId,
                         ClientSecret = request.ClientSecret,
                         IsEnable = request.IsEnable

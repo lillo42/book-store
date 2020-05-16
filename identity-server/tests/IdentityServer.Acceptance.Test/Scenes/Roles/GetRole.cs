@@ -14,7 +14,7 @@ namespace IdentityServer.Acceptance.Test.Scenes.Roles
     public class GetRole : BaseScene
     {
         private Role _role;
-        private GetRoleByIeReplay _replay;
+        private GetRoleByIdReplay _replay;
         
         [Theory]
         [InlineData("")]

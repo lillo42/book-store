@@ -34,7 +34,8 @@ namespace IdentityServer.Web.Mapper
                 Id = source.Id.ToString(),
                 Name = source.Name, 
                 ClientId = source.ClientId,
-                ClientSecret = source.ClientSecret
+                ClientSecret = source.ClientSecret,
+                IsEnable = source.IsEnable
             };
 
             if(source.Permissions != null)

@@ -18,51 +18,51 @@ service Permissions {
 */
 
 message Permission {
-string id = 1;
-string name = 2;
-string display_name = 3;
-string description = 4;
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
 }
 
 message CreatePermissionRequest {
-string name = 2;
-string display_name = 3;
-string description = 4;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
 }
 
 message CreatePermissionReplay {
-bool is_success = 1;
-string error_code = 2;
-string description = 3;
-Permission value = 4;
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
 }
 
 message UpdatePermissionRequest {
-string id = 1;
-string name = 2;
-string display_name = 3;
-string description = 4;
+    string id = 1;
+    string name = 2;
+    string display_name = 3;
+    string description = 4;
 }
 
 message UpdatePermissionReplay {
-bool is_success = 1;
-string error_code = 2;
-string description = 3;
-Permission value = 4;
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
 }
 
 message GetPermissionByIdRequest {
-string id = 1;
+    string id = 1;
 }
 
-message GetPermissionByIeReplay {
-bool is_success = 1;
-string error_code = 2;
-string description = 3;
-Permission value = 4;
+message GetPermissionByIdReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+    Permission value = 4;
 }
 
 message GetPermissionsRequest {
-google.protobuf.Int32Value skip = 1;
-google.protobuf.Int32Value take = 2;
+    google.protobuf.Int32Value skip = 1;
+    google.protobuf.Int32Value take = 2;
 }
