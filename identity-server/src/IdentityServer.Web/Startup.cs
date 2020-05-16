@@ -61,7 +61,8 @@ namespace IdentityServer.Web
                 .AddClientStore<ClientStore>()
                 .AddResourceStore<ResourceStore>()
                 .AddProfileService<ProfileService>()
-                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
+                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                .AddPersistedGrantStore<PersistedGrantStore>();
             
             services.AddHealthActuator(Configuration);
             services.AddDiscoveryClient(Configuration);
@@ -123,7 +124,6 @@ namespace IdentityServer.Web
             
             app.UseHealthActuator();
             app.UseDiscoveryClient();
-            
 
             app.UseEndpoints(endpoints =>
             {

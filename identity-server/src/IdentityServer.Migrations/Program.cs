@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using Raven.Client.Documents;
 using Serilog;
 using Serilog.Events;
 
@@ -144,7 +147,18 @@ namespace IdentityServer.Migrations
                     .ScanIn(typeof(AddClient).Assembly).For.Migrations());
             
             service.AddScoped<PostgresQuoter, CustomQuote>();
-            
+            service.AddSingleton<IDocumentStore>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>()
+                    .GetSection("ConnectionString")
+                    .GetSection("RavenDb");
+                return new DocumentStore
+                {
+                    Urls = configuration.GetValue<IEnumerable<string>>("Url").ToArray(),
+                    Database = configuration.GetValue<string>("Database")
+                };
+            });
+
             var container = new ContainerBuilder();
             container.Populate(service);
             

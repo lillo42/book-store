@@ -6,13 +6,9 @@ using IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly;
 using IdentityServer.Infrastructure.Repositories;
 using IdentityServer.Web.Configuration;
 using IdentityServer.Web.Factory;
+using IdentityServer.Web.IdentityServer4.Index;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Operations;
 using Raven.Client.Documents.Session;
-using Raven.Client.Exceptions;
-using Raven.Client.Exceptions.Database;
-using Raven.Client.ServerWide;
-using Raven.Client.ServerWide.Operations;
 
 namespace IdentityServer.Web.Modules
 {
@@ -36,25 +32,12 @@ namespace IdentityServer.Web.Modules
                         Urls = configuration.Urls,
                         Database = configuration.Database,
                     };
-
+                    
                     store.Initialize();
-
-                    try
-                    {
-                        store.Maintenance.ForDatabase(configuration.Database).Send(new GetStatisticsOperation());
-                    }
-                    catch (DatabaseDoesNotExistException)
-                    {
-                        try
-                        {
-                            store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(configuration.Database)));
-                        }
-                        catch (ConcurrencyException)
-                        {
-                            // The database was already created before calling CreateDatabaseOperation
-                        }
-                    }
-
+                    
+                    new PersistedGrant_ByKey().Execute(store);
+                    new PersistedGrant_BySubjectIdByClientIdByType().Execute(store);
+                    
                     return store;
                 })
                 .AsSelf()
