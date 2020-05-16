@@ -1,6 +1,7 @@
 using Autofac;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Mapper;
+using IdentityServer.Web.Mapper.Client;
 
 namespace IdentityServer.Web.Modules
 {
@@ -136,6 +137,14 @@ namespace IdentityServer.Web.Modules
             
             builder.RegisterType<ResultToAddClientRoleReplay>()
                 .As<IMapper<Result, Proto.AddClientRoleReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToRemoveClientResourceReplay>()
+                .As<IMapper<Result, Proto.RemoveClientResourceReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToAddClientResourceReplay>()
+                .As<IMapper<Result, Proto.AddClientResourceReplay>>()
                 .SingleInstance();
             #endregion
         }

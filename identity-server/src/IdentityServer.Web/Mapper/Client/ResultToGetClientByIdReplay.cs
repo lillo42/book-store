@@ -2,7 +2,7 @@ using System;
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Proto;
 
-namespace IdentityServer.Web.Mapper
+namespace IdentityServer.Web.Mapper.Client
 {
     public class ResultToGetClientByIdReplay : IMapper<Result, Proto.GetClientByIdReplay>
     {

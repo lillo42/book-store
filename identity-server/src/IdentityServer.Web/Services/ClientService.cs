@@ -228,5 +228,59 @@ namespace IdentityServer.Web.Services
             return _provider.GetService<IMapper<Result, RemoveClientRoleReplay>>()
                 .Map(result);
         }
+
+        public override async Task<AddClientResourceReplay> AddResource(AddClientResourceRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var id) 
+               && Guid.TryParse(request.ResourceId, out var resourceId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(ClientAddResourceOperation)}");
+                var operation = _provider.GetRequiredService<ClientAddResourceOperation>();
+                using (MiniProfiler.Current.Step(nameof(ClientAddResourceOperation)))
+                {
+                    result = await operation.ExecuteAsync(new ClientAddResource
+                        {
+                            Id = id,
+                            ResourceId = resourceId
+                        })
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.ClientError.InvalidId;
+            }
+            
+            return _provider.GetService<IMapper<Result, AddClientResourceReplay>>()
+                .Map(result);
+        }
+
+        public override async Task<RemoveClientResourceReplay> RemoveResource(RemoveClientResourceRequest request, ServerCallContext context)
+        {
+            Result result;
+            if(Guid.TryParse(request.Id, out var id) 
+               && Guid.TryParse(request.ResourceId, out var resourceId))
+            {
+                _logger.LogInformation($"Going to execute {nameof(ClientRemoveResourceOperation)}");
+                var operation = _provider.GetRequiredService<ClientRemoveResourceOperation>();
+                using (MiniProfiler.Current.Step(nameof(ClientRemoveResourceOperation)))
+                {
+                    result = await operation.ExecuteAsync(new ClientRemoveResource
+                        {
+                            Id = id,
+                            ResourceId = resourceId
+                        })
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                result = DomainError.ClientError.InvalidId;
+            }
+            
+            return _provider.GetService<IMapper<Result, RemoveClientResourceReplay>>()
+                .Map(result);
+        }
     }
 }

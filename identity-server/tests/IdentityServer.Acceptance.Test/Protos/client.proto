@@ -12,12 +12,14 @@ service Clients {
     rpc CreateClient (CreateClientRequest) returns (CreateClientReplay) {}
     rpc UpdateClient (UpdateClientRequest) returns (UpdateClientReplay) {}
 
-
     rpc AddPermission (AddClientPermissionRequest) returns (AddClientPermissionReplay) {}
     rpc RemovePermission (RemoveClientPermissionRequest) returns (RemoveClientPermissionReplay) {}
 
     rpc AddRole (AddClientRoleRequest) returns (AddClientRoleReplay) {}
     rpc RemoveRole (RemoveClientRoleRequest) returns (RemoveClientRoleReplay) {}
+
+    rpc AddResource (AddClientResourceRequest) returns (AddClientResourceReplay) {}
+    rpc RemoveResource (RemoveClientResourceRequest) returns (RemoveClientResourceReplay) {}
 
 
     rpc GetClientById (GetClientByIdRequest) returns (GetClientByIdReplay) {}
@@ -106,7 +108,6 @@ message RemoveClientPermissionReplay {
     string description = 3;
 }
 
-
 message AddClientRoleRequest {
     string id = 1;
     string role_id = 2;
@@ -124,6 +125,28 @@ message RemoveClientRoleRequest {
 }
 
 message RemoveClientRoleReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message AddClientResourceRequest {
+    string id = 1;
+    string resource_id = 2;
+}
+
+message AddClientResourceReplay {
+    bool is_success = 1;
+    string error_code = 2;
+    string description = 3;
+}
+
+message RemoveClientResourceRequest {
+    string id = 1;
+    string resource_id = 2;
+}
+
+message RemoveClientResourceReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

@@ -1,7 +1,7 @@
 using IdentityServer.Domain.Abstractions;
 using IdentityServer.Web.Proto;
 
-namespace IdentityServer.Web.Mapper
+namespace IdentityServer.Web.Mapper.Client
 {
     public class ResultToRemoveClientPermissionReplay : IMapper<Result, Proto.RemoveClientPermissionReplay>
     {

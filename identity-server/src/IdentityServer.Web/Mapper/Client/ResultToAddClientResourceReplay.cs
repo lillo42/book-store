@@ -3,11 +3,11 @@ using IdentityServer.Web.Proto;
 
 namespace IdentityServer.Web.Mapper.Client
 {
-    public class ResultToAddClientRoleReplay : IMapper<Result, Proto.AddClientRoleReplay>
+    public class ResultToAddClientResourceReplay : IMapper<Result, Proto.AddClientResourceReplay>
     {
-        public AddClientRoleReplay Map(Result source)
+        public AddClientResourceReplay Map(Result source)
         {
-            return new AddClientRoleReplay
+            return new AddClientResourceReplay
             {
                 IsSuccess = source.IsSuccess,
                 ErrorCode = source.ErrorCode ?? string.Empty,

@@ -36,7 +36,7 @@ namespace IdentityServer.Application.Operation.Client
                     return DomainError.ClientError.NotFound;
                 }
                 
-                var result = root.RemovePermission(new Domain.Common.Permission(request.ResourceId));
+                var result = root.RemoveResource(new Domain.Common.Resource(request.ResourceId));
 
                 if (result is ErrorResult error)
                 {

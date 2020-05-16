@@ -1,13 +1,9 @@
 using System;
 using System.Linq;
-using IdentityServer.Web.Proto;
-using Permission = IdentityServer.Domain.Common.Permission;
-using Role = IdentityServer.Domain.Common.Role;
-using User = IdentityServer.Domain.Common.User;
 
-namespace IdentityServer.Web.Mapper
+namespace IdentityServer.Web.Mapper.Client
 {
-    public class ClientMapper : IMapper<Domain.Common.Client, Client>
+    public class ClientMapper : IMapper<Domain.Common.Client, Proto.Client>
     {
         private readonly IMapper<Domain.Common.Permission, Proto.Permission> _permission;
         private readonly IMapper<Domain.Common.Role, Proto.Role> _role;
@@ -22,14 +18,14 @@ namespace IdentityServer.Web.Mapper
             _resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
 
-        public Client Map(Domain.Common.Client source)
+        public Proto.Client Map(Domain.Common.Client source)
         {
             if (source == null)
             {
-                return new Client();
+                return new Proto.Client();
             }
             
-            var client = new Client
+            var client = new Proto.Client
             {
                 Id = source.Id.ToString(),
                 Name = source.Name, 
