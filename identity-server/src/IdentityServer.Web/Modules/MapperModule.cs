@@ -17,8 +17,8 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.CreateResourceReplay>>()
                 .SingleInstance();
             
-            builder.RegisterType<ResultToGetResourceByIeReplay>()
-                .As<IMapper<Result, Proto.GetResourceByIeReplay>>()
+            builder.RegisterType<ResultToGetResourceByIdReplay>()
+                .As<IMapper<Result, Proto.GetResourceByIdReplay>>()
                 .SingleInstance();
             
             builder.RegisterType<ResultToUpdateResourceReplay>()
@@ -40,8 +40,8 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.UpdatePermissionReplay>>()
                 .SingleInstance();
             
-            builder.RegisterType<ResultToGetPermissionByIeReplay>()
-                .As<IMapper<Result, Proto.GetPermissionByIeReplay>>()
+            builder.RegisterType<ResultToGetPermissionByIdReplay>()
+                .As<IMapper<Result, Proto.GetPermissionByIdReplay>>()
                 .SingleInstance();
             #endregion
 
@@ -58,8 +58,8 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.UpdateRoleReplay>>()
                 .SingleInstance();
             
-            builder.RegisterType<ResultToGetRoleByIeReplay>()
-                .As<IMapper<Result, Proto.GetRoleByIeReplay>>()
+            builder.RegisterType<ResultToGetRoleByIdReplay>()
+                .As<IMapper<Result, Proto.GetRoleByIdReplay>>()
                 .SingleInstance();
             
             builder.RegisterType<ResultToAddRolePermissionReplay>()
@@ -84,8 +84,8 @@ namespace IdentityServer.Web.Modules
                 .As<IMapper<Result, Proto.UpdateUserReplay>>()
                 .SingleInstance();
             
-            builder.RegisterType<ResultToGetUserByIeReplay>()
-                .As<IMapper<Result, Proto.GetUserByIeReplay>>()
+            builder.RegisterType<ResultToGetUserByIdReplay>()
+                .As<IMapper<Result, Proto.GetUserByIdReplay>>()
                 .SingleInstance();
             
             builder.RegisterType<ResultToAddUserPermissionReplay>()
@@ -102,6 +102,40 @@ namespace IdentityServer.Web.Modules
             
             builder.RegisterType<ResultToAddUserRoleReplay>()
                 .As<IMapper<Result, Proto.AddUserRoleReplay>>()
+                .SingleInstance();
+            #endregion
+            
+            #region Client
+            builder.RegisterType<ClientMapper>()
+                .As<IMapper<Domain.Common.Client, Proto.Client>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToCreateClientReplay>()
+                .As<IMapper<Result, Proto.CreateClientReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToUpdateClientReplay>()
+                .As<IMapper<Result, Proto.UpdateClientReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToGetClientByIdReplay>()
+                .As<IMapper<Result, Proto.GetClientByIdReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToAddClientPermissionReplay>()
+                .As<IMapper<Result, Proto.AddClientPermissionReplay>>()
+                .SingleInstance();
+
+            builder.RegisterType<ResultToRemoveUserPermissionReplay>()
+                .As<IMapper<Result, Proto.RemoveClientPermissionReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToRemoveClientRoleReplay>()
+                .As<IMapper<Result, Proto.RemoveClientRoleReplay>>()
+                .SingleInstance();
+            
+            builder.RegisterType<ResultToAddClientRoleReplay>()
+                .As<IMapper<Result, Proto.AddClientRoleReplay>>()
                 .SingleInstance();
             #endregion
         }

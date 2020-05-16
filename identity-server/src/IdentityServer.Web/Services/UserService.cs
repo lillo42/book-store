@@ -72,7 +72,7 @@ namespace IdentityServer.Web.Services
                 .Map(result);
         }
 
-        public override async Task<GetUserByIeReplay> GetUserById(GetUserByIdRequest request, ServerCallContext context)
+        public override async Task<GetUserByIdReplay> GetUserById(GetUserByIdRequest request, ServerCallContext context)
         {
             Result result;
             if (Guid.TryParse(request.Id, out var id))
@@ -94,7 +94,7 @@ namespace IdentityServer.Web.Services
                 result = DomainError.UserError.InvalidId;
             }
 
-            return _provider.GetService<IMapper<Result, GetUserByIeReplay>>()
+            return _provider.GetService<IMapper<Result, GetUserByIdReplay>>()
                 .Map(result);
         }
 

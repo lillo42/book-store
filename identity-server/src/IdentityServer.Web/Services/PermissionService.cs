@@ -75,7 +75,7 @@ namespace IdentityServer.Web.Services
                 .Map(result);
         }
 
-        public override async Task<GetPermissionByIeReplay> GetPermissionById(GetPermissionByIdRequest request, ServerCallContext context)
+        public override async Task<GetPermissionByIdReplay> GetPermissionById(GetPermissionByIdRequest request, ServerCallContext context)
         {
             Result result;
             if (Guid.TryParse(request.Id, out var id))
@@ -97,7 +97,7 @@ namespace IdentityServer.Web.Services
                 result = DomainError.PermissionError.InvalidId;
             }
 
-            return _provider.GetService<IMapper<Result, GetPermissionByIeReplay>>()
+            return _provider.GetService<IMapper<Result, GetPermissionByIdReplay>>()
                 .Map(result);
         }
 

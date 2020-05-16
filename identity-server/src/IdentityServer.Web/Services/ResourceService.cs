@@ -97,7 +97,7 @@ namespace IdentityServer.Web.Services
             }
         }
 
-        public override async Task<GetResourceByIeReplay> GetResourceById(GetResourceByIdRequest request, ServerCallContext context)
+        public override async Task<GetResourceByIdReplay> GetResourceById(GetResourceByIdRequest request, ServerCallContext context)
         {
             using (MiniProfiler.Current.Step( nameof(GetResourceById)))
             {
@@ -122,7 +122,7 @@ namespace IdentityServer.Web.Services
                     result = DomainError.ResourceError.InvalidId;
                 }
 
-                return _provider.GetService<IMapper<Result, GetResourceByIeReplay>>()
+                return _provider.GetService<IMapper<Result, GetResourceByIdReplay>>()
                     .Map(result);
             }
         }

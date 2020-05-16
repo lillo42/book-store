@@ -73,7 +73,7 @@ namespace IdentityServer.Web.Services
                 .Map(result);
         }
 
-        public override async Task<GetRoleByIeReplay> GetRoleById(GetRoleByIdRequest request, ServerCallContext context)
+        public override async Task<GetRoleByIdReplay> GetRoleById(GetRoleByIdRequest request, ServerCallContext context)
         {
             Result result;
             if (Guid.TryParse(request.Id, out var id))
@@ -95,7 +95,7 @@ namespace IdentityServer.Web.Services
                 result = DomainError.RoleError.InvalidId;
             }
 
-            return _provider.GetService<IMapper<Result, GetRoleByIeReplay>>()
+            return _provider.GetService<IMapper<Result, GetRoleByIdReplay>>()
                 .Map(result);
         }
 

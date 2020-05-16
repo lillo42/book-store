@@ -17,9 +17,9 @@ service Users {
 
     rpc AddRole (AddUserRoleRequest) returns (AddUserRoleReplay) {}
     rpc RemoveRole (RemoveUserRoleRequest) returns (RemoveUserRoleReplay) {}
-    
 
-    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIeReplay) {}
+
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdReplay) {}
     rpc GetUsers (GetUsersRequest) returns (stream User) {}
 }
 
@@ -66,7 +66,7 @@ message GetUserByIdRequest {
     string id = 1;
 }
 
-message GetUserByIeReplay {
+message GetUserByIdReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

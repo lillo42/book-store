@@ -7,10 +7,10 @@ import "google/protobuf/wrappers.proto";
 
 service Resources {
     rpc CreateResource(CreateResourceRequest) returns(CreateResourceReplay) {}
-    rpc UpdateResource(UpdateResourceRequest) returns(UpdateResourceReplay) {}
+    rpc UpdateResource (UpdateResourceRequest) returns (UpdateResourceReplay) {}
 
-    rpc GetResourceById(GetResourceByIdRequest) returns(GetResourceByIeReplay) {}
-    rpc GetResources(GetResourcesRequest) returns(stream Resource) {}
+    rpc GetResourceById (GetResourceByIdRequest) returns (GetResourceByIdReplay) {}
+    rpc GetResources (GetResourcesRequest) returns (stream Resource) {}
 }
 
 /*

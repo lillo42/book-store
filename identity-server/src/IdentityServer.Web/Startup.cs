@@ -132,6 +132,7 @@ namespace IdentityServer.Web
                 endpoints.MapGrpcService<PermissionService>();
                 endpoints.MapGrpcService<RoleService>();
                 endpoints.MapGrpcService<UserService>();
+                endpoints.MapGrpcService<ClientService>();
             });
         }
     }

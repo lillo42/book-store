@@ -5,18 +5,18 @@ using Resource = IdentityServer.Domain.Common.Resource;
 
 namespace IdentityServer.Web.Mapper
 {
-    public class ResultToGetResourceByIeReplay : IMapper<Result, Proto.GetResourceByIeReplay>
+    public class ResultToGetResourceByIdReplay : IMapper<Result, Proto.GetResourceByIdReplay>
     {
         private readonly IMapper<Domain.Common.Resource, Proto.Resource> _resource;
 
-        public ResultToGetResourceByIeReplay(IMapper<Resource, Proto.Resource> resource)
+        public ResultToGetResourceByIdReplay(IMapper<Resource, Proto.Resource> resource)
         {
             _resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
 
-        public GetResourceByIeReplay Map(Result source)
+        public GetResourceByIdReplay Map(Result source)
         {
-            return new GetResourceByIeReplay
+            return new GetResourceByIdReplay
             {
                 IsSuccess = source.IsSuccess,
                 ErrorCode = source.ErrorCode ?? string.Empty,

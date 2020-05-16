@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer.Domain.Common
 {
-    public class Client
+    public class Client : IEquatable<Client>
     {
         public Client()
         {
@@ -21,5 +21,43 @@ namespace IdentityServer.Domain.Common
         public ISet<Role> Roles { get; set; }
         public ISet<Permission> Permissions { get; set; }
         public ISet<Resource> Resources { get; set; }
+
+        public bool Equals(Client other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            
+            return Id.Equals(other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Client client)
+            {
+                return Equals(client);
+            }
+            
+            return false;
+        }
+
+        public override int GetHashCode() 
+            => HashCode.Combine(Id);
     }
 }

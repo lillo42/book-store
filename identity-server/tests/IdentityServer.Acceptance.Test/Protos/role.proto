@@ -15,7 +15,7 @@ service Roles {
     rpc RemovePermission (RemoveRolePermissionRequest) returns (RemoveRolePermissionReplay) {}
 
 
-    rpc GetRoleById (GetRoleByIdRequest) returns (GetRoleByIeReplay) {}
+    rpc GetRoleById (GetRoleByIdRequest) returns (GetRoleByIdReplay) {}
     rpc GetRoles (GetRolesRequest) returns (stream Role) {}
 }
 

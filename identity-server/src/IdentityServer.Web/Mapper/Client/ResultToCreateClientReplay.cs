@@ -4,23 +4,23 @@ using IdentityServer.Web.Proto;
 
 namespace IdentityServer.Web.Mapper
 {
-    public class ResultToGetRoleByIeReplay : IMapper<Result, Proto.GetRoleByIeReplay>
+    public class ResultToCreateClientReplay : IMapper<Result, Proto.CreateClientReplay>
     {
-        private readonly IMapper<Domain.Common.Role, Proto.Role> _mapper;
+        private readonly IMapper<Domain.Common.Client, Proto.Client> _mapper;
 
-        public ResultToGetRoleByIeReplay(IMapper<Domain.Common.Role, Proto.Role> mapper)
+        public ResultToCreateClientReplay(IMapper<Domain.Common.Client, Proto.Client> mapper)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public GetRoleByIeReplay Map(Result source)
+        public CreateClientReplay Map(Result source)
         {
-            return new GetRoleByIeReplay
+            return new CreateClientReplay
             {
                 IsSuccess = source.IsSuccess,
                 ErrorCode = source.ErrorCode ?? string.Empty,
                 Description = source.Description ?? string.Empty,
-                Value = _mapper.Map((Domain.Common.Role)source.Value)
+                Value = _mapper.Map((Domain.Common.Client)source.Value)
             };
         }
     }

@@ -11,7 +11,7 @@ namespace IdentityServer.Infrastructure.Abstractions.Repositories.ReadOnly
     {
         Task<Permission> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         
-        IAsyncEnumerable<Permission> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Permission> GetAllAsync(CancellationToken cancellationToken = default);
         
         Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default);
         

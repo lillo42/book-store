@@ -19,7 +19,7 @@ service Users {
     rpc RemoveRole (RemoveUserRoleRequest) returns (RemoveUserRoleReplay) {}
 
 
-    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIeReplay) {}
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdReplay) {}
     rpc GetUsers (GetUsersRequest) returns (stream User) {}
 }
 

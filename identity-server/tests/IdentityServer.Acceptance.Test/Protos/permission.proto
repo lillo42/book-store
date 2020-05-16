@@ -6,11 +6,11 @@ option csharp_namespace = "IdentityServer.Web.Proto";
 import "google/protobuf/wrappers.proto";
 
 service Permissions {
-rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionReplay) {}
-rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionReplay) {}
+    rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionReplay) {}
+    rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionReplay) {}
 
-rpc GetPermissionById (GetPermissionByIdRequest) returns (GetPermissionByIeReplay) {}
-rpc GetPermissions (GetPermissionsRequest) returns (stream Permission) {}
+    rpc GetPermissionById (GetPermissionByIdRequest) returns (GetPermissionByIdReplay) {}
+    rpc GetPermissions (GetPermissionsRequest) returns (stream Permission) {}
 }
 
 /*

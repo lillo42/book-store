@@ -6,6 +6,7 @@ option csharp_namespace = "IdentityServer.Web.Proto";
 import "google/protobuf/wrappers.proto";
 import "Protos/permission.proto";
 import "Protos/role.proto";
+import "Protos/resource.proto";
 
 service Clients {
     rpc CreateClient (CreateClientRequest) returns (CreateClientReplay) {}
@@ -17,9 +18,9 @@ service Clients {
 
     rpc AddRole (AddClientRoleRequest) returns (AddClientRoleReplay) {}
     rpc RemoveRole (RemoveClientRoleRequest) returns (RemoveClientRoleReplay) {}
-    
 
-    rpc GetClientById (GetClientByIdRequest) returns (GetClientByIeReplay) {}
+
+    rpc GetClientById (GetClientByIdRequest) returns (GetClientByIdReplay) {}
     rpc GetClients (GetClientsRequest) returns (stream Client) {}
 }
 
@@ -29,17 +30,20 @@ service Clients {
 
 message Client {
     string id = 1;
-    string mail = 2;
-    string password = 3;
-    bool is_enable = 4;
-    repeated Permission permissions = 5;
-    repeated Role roles = 6;
+    string name = 2;
+    string client_id = 3;
+    string client_secret = 4;
+    bool is_enable = 5;
+    repeated Permission permissions = 6;
+    repeated Role roles = 7;
+    repeated Resource resources = 8;
 }
 
 message CreateClientRequest {
-    string mail = 1;
-    string password = 2;
-    bool is_enable = 3;
+    string name = 1;
+    string client_id = 2;
+    string client_secret = 3;
+    bool is_enable = 4;
 }
 
 message CreateClientReplay {
@@ -51,8 +55,10 @@ message CreateClientReplay {
 
 message UpdateClientRequest {
     string id = 1;
-    string mail = 2;
-    bool is_enable = 3;
+    string name = 2;
+    string client_id = 3;
+    string client_secret = 4;
+    bool is_enable = 5;
 }
 
 message UpdateClientReplay {
@@ -66,7 +72,7 @@ message GetClientByIdRequest {
     string id = 1;
 }
 
-message GetClientByIeReplay {
+message GetClientByIdReplay {
     bool is_success = 1;
     string error_code = 2;
     string description = 3;

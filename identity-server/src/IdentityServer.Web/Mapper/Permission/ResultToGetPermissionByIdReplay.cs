@@ -4,18 +4,18 @@ using IdentityServer.Web.Proto;
 
 namespace IdentityServer.Web.Mapper
 {
-    public class ResultToGetPermissionByIeReplay : IMapper<Result, Proto.GetPermissionByIeReplay>
+    public class ResultToGetPermissionByIdReplay : IMapper<Result, Proto.GetPermissionByIdReplay>
     {
         private readonly IMapper<Domain.Common.Permission, Proto.Permission> _mapper;
 
-        public ResultToGetPermissionByIeReplay(IMapper<Domain.Common.Permission, Proto.Permission> mapper)
+        public ResultToGetPermissionByIdReplay(IMapper<Domain.Common.Permission, Proto.Permission> mapper)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public GetPermissionByIeReplay Map(Result source)
+        public GetPermissionByIdReplay Map(Result source)
         {
-            return new GetPermissionByIeReplay
+            return new GetPermissionByIdReplay
             {
                 IsSuccess = source.IsSuccess,
                 ErrorCode = source.ErrorCode ?? string.Empty,
