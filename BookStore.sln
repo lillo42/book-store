@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{862AF1D0-23F0-466A-B935-D13331A16F19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStore.Domain", "src\BookStore.Domain\BookStore.Domain.csproj", "{F551D876-00A6-4AD6-B080-7B53947FBC6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F551D876-00A6-4AD6-B080-7B53947FBC6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F551D876-00A6-4AD6-B080-7B53947FBC6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F551D876-00A6-4AD6-B080-7B53947FBC6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F551D876-00A6-4AD6-B080-7B53947FBC6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F551D876-00A6-4AD6-B080-7B53947FBC6E} = {862AF1D0-23F0-466A-B935-D13331A16F19}
+	EndGlobalSection
+EndGlobal
